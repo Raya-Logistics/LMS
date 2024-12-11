@@ -1,0 +1,123 @@
+<!-- <div
+  class="barcode-container"
+  *ngFor="let value of barcodeValues; let i = index"
+>
+  <div class="d-flex align-items-center gap-4">
+    <div>
+      <canvas #barcode id="barcode{{ i }}"></canvas>
+    </div>
+    <div *ngIf="barcodeData[i]">
+      <p>
+        <strong>Company Name:</strong> {{ barcodeData[i]?.whqueueCompanyName }}
+      </p>
+      <p>
+        <strong>Warehouse Name:</strong>
+        {{ barcodeData[i]?.whqueueWarehouseName }}
+      </p>
+      <p>
+        <strong>Vendor Name:</strong> {{ barcodeData[i]?.whqueueVendorName }}
+      </p>
+      <p>
+        <strong>Car Pallet:</strong>
+        {{ barcodeData[i]?.whqueuePalletNumber }}
+      </p>
+      <p>
+        <strong>Truck Type:</strong> {{ barcodeData[i]?.whqueueTruckTypeName }}
+      </p>
+    </div>
+  </div>
+  <hr>
+</div> -->
+
+<!-- ------------------ -->
+
+<!-- <div class="barcode-container" *ngFor="let value of barcodeValues; let i = index">
+  <div class="d-flex align-items-start gap-4">
+    <div>
+      <canvas #qrcode id="qrcode{{i}}"></canvas>
+    </div>
+    <div>
+      <svg #barcode id="barcode{{i}}"></svg>
+    </div>
+  </div>
+  
+  <div *ngIf="barcodeData[i]" class="mt-3">
+    <p><strong>Company Name:</strong> {{ barcodeData[i]?.whqueueCompanyName }}</p>
+    <p><strong>Warehouse Name:</strong> {{ barcodeData[i]?.whqueueWarehouseName }}</p>
+    <p><strong>Vendor Name:</strong> {{ barcodeData[i]?.whqueueVendorName }}</p>
+    <p><strong>Car Pallet:</strong> {{ barcodeData[i]?.whqueuePalletNumber }}</p>
+    <p><strong>Truck Type:</strong> {{ barcodeData[i]?.whqueueTruckTypeName }}</p>
+  </div>
+  <hr>
+</div> -->
+
+<!-- <div class="barcode-container" *ngFor="let value of barcodeValues; let i = index">
+  <hr *ngIf="i != 0">
+  <div class="d-flex align-items-start gap-4 justify-content-between">
+    <div class="logo">
+      <img src="../../../../assets/images/faviconRaya.png" alt="Company Logo" class="company-logo" />
+    </div>
+    <div>
+      <canvas #qrcode id="qrcode{{i}}"></canvas>
+    </div>
+    <div>
+      <svg #barcode id="barcode{{i}}"></svg>
+    </div>
+  </div>
+  <hr>
+  <div *ngIf="barcodeData[i]" class="mt-3">
+    <p><strong>Company Name:</strong> {{ barcodeData[i]?.whqueueCompanyName }}</p>
+    <p><strong>Warehouse Name:</strong> {{ barcodeData[i]?.whqueueWarehouseName }}</p>
+    <p><strong>Vendor Name:</strong> {{ barcodeData[i]?.whqueueVendorName }}</p>
+    <p><strong>Car Pallet:</strong> {{ barcodeData[i]?.whqueuePalletNumber }}</p>
+    <p><strong>Truck Type:</strong> {{ barcodeData[i]?.whqueueTruckTypeName }}</p>
+  </div>
+</div> -->
+<div class="page-container mb-2" *ngFor="let value of barcodeValues; let i = index">
+  <div class="container">
+    <!-- Header with Logo, Barcode, and QR Code -->
+    <div class="header d-flex justify-content-between align-items-center section">
+      <div class="logo">
+        <img src="assets/images/faviconRaya.png" alt="Company Logo" class="company-logo" />
+      </div>
+      <div class="barcode">
+        <svg #barcode id="barcode{{i}}" class="barcodeCanvas"></svg> <!-- Use index `i` for unique IDs -->
+      </div>
+      <div class="qrcode">
+        <canvas #qrcode id="qrcode{{i}}" class="qrcodeCanvas"></canvas> <!-- Use index `i` for unique IDs -->
+      </div>
+    </div>
+    <!-- Date Info Section -->
+    <div class="date-info section">
+      <div>
+        <div><strong>Date: </strong> {{ barcodeData[i]?.whqueueCreatedDate | date: 'yyyy-MM-dd' }}</div>
+        <div><strong>Day: </strong> {{ barcodeData[i]?.whqueueCreatedDate | date: 'EEEE' }}</div>
+        <div><strong>Hour: </strong> {{ barcodeData[i]?.whqueueCreatedDate | date: 'HH:mm' }}</div>
+      </div>
+    </div>
+    <!-- Car Info (Shipment Info Section) -->
+    <div class="car-info section">
+      <h3>Car Info</h3>
+      <p><strong>Truck Type:</strong> {{ barcodeData[i]?.whqueueTruckTypeName }}</p>
+      <p><strong>Car Plate:</strong> {{ separateArabicCharacters(barcodeData[i]?.whqueuePalletNumber).letters.split("").reverse().join(" ") }} 
+        {{ separateArabicCharacters(barcodeData[i]?.whqueuePalletNumber).numbers }}</p>
+      <p *ngIf="barcodeData[i]?.whqueueTruckTypeId == 5"><strong>Conatiner Number:</strong> {{ barcodeData[i]?.whqueueContainerNumber}}</p>
+    </div>
+
+    <!-- General Info (Consignee Info Section) -->
+    <div class="general-info section">
+      <h3>General Info</h3>
+      <p><strong>Company Name:</strong> {{ barcodeData[i]?.whqueueCompanyName }}</p>
+      <p><strong>Warehouse Name:</strong> {{ barcodeData[i]?.whqueueWarehouseName }}</p>
+      <p><strong>Vendor Name:</strong> {{ barcodeData[i]?.whqueueVendorName }}</p>
+    </div>
+    <!-- Additional content as per your requirement -->
+    <div class="additional-content section d-flex align-items-center justify-content-between">
+      <p><strong>Driver Name:</strong> {{ barcodeData[i]?.whqueueDriverName }}</p>
+      <p><strong>Driver Phone:</strong> {{ barcodeData[i]?.whqueueDriverPhoneNumber }}</p>
+      <p><strong>Driver Id:</strong> {{ barcodeData[i]?.whqueueDriverId }}</p>
+      <!-- You can add additional dynamic content here -->
+    </div>
+  </div>
+</div>
+

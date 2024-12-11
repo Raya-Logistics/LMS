@@ -1,0 +1,30 @@
+* {
+    font-size: 12px !important;
+}
+.serials-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0; /* No gap between cells */
+    border-top: 1px solid #ddd;
+    border-left: 1px solid #ddd;
+  }
+  
+  .serial-row {
+    display: contents; /* Ensures grid cells are treated individually */
+  }
+  
+  .serial-cell {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-right: 2px solid #ddd; /* Vertical line */
+    border-bottom: 1px solid #ddd; /* Horizontal line */
+  }
+  
+  .full-row-divider {
+    grid-column: span 3;
+    height: 1px;
+    background-color: #ddd;
+  }
+  

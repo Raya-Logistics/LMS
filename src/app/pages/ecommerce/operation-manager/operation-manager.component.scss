@@ -1,0 +1,47 @@
+.serials-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .serials-container .badge {
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    margin: 0.2rem;
+    display: inline-block;
+    min-width: 60px;
+    text-align: center;
+  }
+  
+  .badge-color-0 {
+    background-color: #FF5733; /* Vibrant red */
+  }
+  
+  .badge-color-1 {
+    background-color: #33C3FF; /* Bright blue */
+  }
+  
+  .badge-color-2 {
+    background-color: #33FF57; /* Vivid green */
+  }
+  
+  .badge-color-3 {
+    background-color: #FF33E3; /* Bright pink */
+  }
+  
+  .badge-color-4 {
+    background-color: #FFC300; /* Golden yellow */
+  }
+  
+  .badge-color-5 {
+    background-color: #9C33FF; /* Purple */
+  }
+  
+  .badge-color-6 {
+    background-color: #FF3365; /* Vivid magenta */
+  }
+  
+  .badge-color-7 {
+    background-color: #33FFA8; /* Aqua green */
+  }
+  

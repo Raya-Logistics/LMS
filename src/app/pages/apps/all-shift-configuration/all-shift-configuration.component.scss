@@ -1,0 +1,20 @@
+.underConstruction {
+    background-image: url('./../../../../assets/images/underConstraction.jpg');
+    background-size: cover;
+    background-position: 50% 50%;
+    height: 300px
+}
+
+.dx-scrollable {
+    overflow: visible !important;
+  }
+  
+  .dx-datagrid {
+    position: relative;
+    z-index: 0;
+  }
+
+  .custom-datetimepicker {
+    z-index: 9999 !important;
+    position: absolute !important;
+  }

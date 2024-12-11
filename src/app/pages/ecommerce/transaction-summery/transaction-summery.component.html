@@ -1,0 +1,147 @@
+
+<app-breadcrumbs [breadcrumbItems]="breadCrumbItems" title="Transaction Summery"></app-breadcrumbs>
+
+<div class="card">
+  <div class="card-body">
+    <form
+      [formGroup]="transactionSummeryForm"
+      (ngSubmit)="GetTransactions(transactionSummeryForm)"
+    >
+      <div class="row">
+        <div class="col-lg-3 col-md-6">
+          <div>
+            <label for="companyId">Company</label>
+            <select
+              formControlName="companyId"
+              id="companyId"
+              class="form-select mb-3"
+              [(ngModel)]="companySelectedValue"
+            >
+              <option *ngFor="let option of companyLookUp" [value]="option.id">
+                {{ option.name }}
+              </option>
+            </select>
+            <div
+              *ngIf="
+              transactionSummeryForm.get('companyId')?.errors &&
+              transactionSummeryForm.get('companyId')?.touched
+              "
+              class="alert alert-danger"
+            >
+              <p
+                *ngIf="transactionSummeryForm.get('companyId')?.errors?.['required']"
+                class="m-0 p-0"
+              >
+                *Company Is Required
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div>
+              <label for="warehouseId">Warehouse</label>
+              <select
+                formControlName="warehouseId"
+                id="warehouseId"
+                class="form-select mb-3"
+              >
+                <option *ngFor="let option of warehouseLookUp" [value]="option.id">
+                  {{ option.name }}
+                </option>
+              </select>
+              <div
+                *ngIf="
+                transactionSummeryForm.get('warehouseId')?.errors &&
+                transactionSummeryForm.get('warehouseId')?.touched
+                "
+                class="alert alert-danger"
+              >
+                <p
+                  *ngIf="transactionSummeryForm.get('warehouseId')?.errors?.['required']"
+                  class="m-0 p-0"
+                >
+                  *Warehouse Is Required
+                </p>
+              </div>
+            </div>
+          </div>
+        <div class="col-lg-3 col-md-6">
+          <div>
+            <label for="DateFrom">From Date</label>
+            <input type="date" formControlName="DateFrom" class="form-control mb-3"/>
+            <div
+              *ngIf="
+              transactionSummeryForm.get('DateFrom')?.errors &&
+              transactionSummeryForm.get('DateFrom')?.touched
+              "
+              class="alert alert-danger"
+            >
+              <p
+                *ngIf="transactionSummeryForm.get('DateFrom')?.errors?.['required']"
+                class="m-0 p-0"
+              >
+                *From Date Is Required
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div>
+              <label for="DateTo">From Date</label>
+              <input type="date" formControlName="DateTo"  class="form-control mb-3"/>
+              <div
+                *ngIf="
+                transactionSummeryForm.get('DateTo')?.errors &&
+                transactionSummeryForm.get('DateTo')?.touched
+                "
+                class="alert alert-danger"
+              >
+                <p
+                  *ngIf="transactionSummeryForm.get('DateTo')?.errors?.['required']"
+                  class="m-0 p-0"
+                >
+                  *To Date Is Required
+                </p>
+              </div>
+            </div>
+          </div>
+      </div>
+      <button [disabled]="transactionSummeryForm.invalid" class="btn btn-success">
+        <span *ngIf="!isLoading"><i class="ri-search-line me-2"></i> Search</span>
+        <i *ngIf="isLoading" class="fas fa-spinner fa-pulse"></i>
+      </button>
+    </form>
+  </div>
+</div>
+<div class="card">
+    <div class="card-body p-0">
+      <div class="p-4">
+        <dx-data-grid
+          id="grid"
+          [dataSource]="dataSource"
+          [repaintChangesOnly]="true"
+          [showBorders]="true"
+          [columnAutoWidth]="true"
+        >
+          <dxi-column dataField="transactionNumber" caption="Raya Number"></dxi-column>
+          <dxi-column dataField="refrence_Number" caption="Reference Number"></dxi-column>
+          <dxi-column dataField="transactionType" caption="Type"></dxi-column>
+          <dxi-column dataField="transacionDate" caption="Transaction Date" dataType="date"></dxi-column>
+          <dxi-column dataField="customersName" caption="Customer Name"></dxi-column>
+          <dxi-column dataField="item_Code" caption="Code"></dxi-column>
+          <dxi-column dataField="global_SKU" caption="Global SKU"></dxi-column>
+          <dxi-column dataField="description" caption="Description"></dxi-column>
+          <dxi-column dataField="quantity" caption="Quantity"></dxi-column>
+          <dxo-paging [pageSize]="10"> </dxo-paging>
+          <dxo-pager
+            [visible]="true"
+            [showPageSizeSelector]="showPageSizeSelector"
+            [showInfo]="showInfo"
+            [showNavigationButtons]="showNavButtons"
+          >
+          </dxo-pager>
+        </dx-data-grid>
+      </div>
+    </div>
+    <!-- end card-body-->
+  </div>

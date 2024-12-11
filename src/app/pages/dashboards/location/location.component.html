@@ -1,0 +1,470 @@
+
+<app-breadcrumbs *ngIf="permissionIsLoadded && internalPermission?.includes(permissionData.View)" [title]="pagesname.Locations" [breadcrumbItems]="breadCrumbItems"></app-breadcrumbs>
+
+<div class="p-2" *ngIf="(permissionIsLoadded && internalPermission?.includes(permissionData.Add))">
+  <!-- Base Example -->
+  <div class="accordion" id="default-accordion-example">
+    <div class="accordion-item">
+      <h2 class="accordion-header p-2" id="headingOne">
+        <button
+        class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo"
+        >
+          Create Location
+        </button>
+      </h2>
+      <div
+      id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample"
+      >
+        <div class="accordion-body">
+          <form [formGroup]="locationForm" (ngSubmit)="AddHandle(locationForm)">
+            <div *ngIf="apiError" class="alert alert-danger">{{ apiError }}</div>
+            <fieldset>
+              <legend>Location Info</legend>
+              <!-- <div class="container d-flex justify-content-center py-4">
+                <app-barcode [barcodeValue]="inputValue"></app-barcode>
+              </div> -->
+              <div class="row justify-content-start">
+                <div class="col-md-6">
+                  <div>
+                    <label for="warehouseId">Warehouse</label>
+                    <select
+                      formControlName="warehouseId"
+                      name="warehouseId"
+                      id="warehouseId"
+                      class="form-select mb-3"
+                      (change)="warehouseSelectChanged()"
+                      [(ngModel)]="warehouseSelectedValue"
+                    >
+                      <option [ngValue]="null">Select Warehouse</option>
+                      <option *ngFor="let item of warehouseLookUp" [value]="item.id">
+                        {{ item.name }}
+                      </option>
+                    </select>
+                    <div
+                      *ngIf="
+                        locationForm.controls['warehouseId'].touched &&
+                        locationForm.controls['warehouseId'].invalid
+                      "
+                      class="alert alert-danger"
+                    >
+                      <p
+                        *ngIf="locationForm.controls['warehouseId'].errors?.['required']"
+                        class="m-0 p-0"
+                      >
+                        *Warehouse Is Required
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div>
+                    <label for="storageTypeId">Storage Type</label>
+                    <select
+                      formControlName="storageTypeId"
+                      name="storageTypeId"
+                      id="storageTypeId"
+                      class="form-select mb-3"
+                      (change)="storedTypeSelectChanged()"
+                      [(ngModel)]="storageTypeSelectedValue"
+                    >
+                      <option [ngValue]="null">Select Storage Type</option>
+                      <option *ngFor="let item of storageTypeLookUp" [value]="item.id">
+                        {{ item.name }}
+                      </option>
+                    </select>
+                    <div
+                      *ngIf="
+                        locationForm.controls['storageTypeId'].touched &&
+                        locationForm.controls['storageTypeId'].invalid
+                      "
+                      class="alert alert-danger"
+                    >
+                      <p
+                        *ngIf="locationForm.controls['storageTypeId'].errors?.['required']"
+                        class="m-0 p-0"
+                      >
+                        *Storage Type Is Required
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </fieldset>
+            <div class="row justify-content-start">
+              <h3>Build Location Code</h3>
+              <div class="col-md-4">
+                <div>
+                  <label for="aisle">Aisle</label>
+                  <select
+                    formControlName="aisle"
+                    name="aisle"
+                    id="aisle"
+                    class="form-select mb-3"
+                    (change)="aisleSelectChanged()"
+                    [(ngModel)]="aisleSelectedValue"
+                  >
+                    <option [ngValue]="null">Select Aisle</option>
+                    <option *ngFor="let item of aisleLookUp" [value]="item.id">
+                      {{ item.name }}
+                    </option>
+                  </select>
+                  <div
+                    *ngIf="
+                      locationForm.controls['aisle'].touched &&
+                      locationForm.controls['aisle'].invalid
+                    "
+                    class="alert alert-danger"
+                  >
+                    <p
+                      *ngIf="locationForm.controls['aisle'].errors?.['required']"
+                      class="m-0 p-0"
+                    >
+                      *Aisle Is Required
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div>
+                  <label for="direction">Direction</label>
+                  <select
+                    formControlName="direction"
+                    name="direction"
+                    id="direction"
+                    class="form-select mb-3"
+                    (change)="positionDirectionSelectChanged()"
+                    [(ngModel)]="positionDirectionSelectedValue"
+                  >
+                    <option [ngValue]="null">Select Direction</option>
+                    <option
+                      *ngFor="let item of positionDirectionLookUp"
+                      [value]="item.id"
+                    >
+                      {{ item.name }}
+                    </option>
+                  </select>
+                  <div
+                    *ngIf="
+                      locationForm.controls['direction'].touched &&
+                      locationForm.controls['direction'].invalid
+                    "
+                    class="alert alert-danger"
+                  >
+                    <p
+                      *ngIf="locationForm.controls['direction'].errors?.['required']"
+                      class="m-0 p-0"
+                    >
+                      *Direction Is Required
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div>
+                  <label for="positionNo">Position</label>
+                  <select
+                    formControlName="positionNo"
+                    name="positionNo"
+                    id="positionNo"
+                    class="form-select mb-3"
+                  >
+                    <option [ngValue]="null">Select Position</option>
+                    <option
+                      *ngFor="let item of positionLookUp"
+                      [value]="item.id"
+                    >
+                      {{ item.name }}
+                    </option>
+                  </select>
+                  <div
+                    *ngIf="
+                      locationForm.controls['positionNo'].touched &&
+                      locationForm.controls['positionNo'].invalid
+                    "
+                    class="alert alert-danger"
+                  >
+                    <p
+                      *ngIf="locationForm.controls['positionNo'].errors?.['required']"
+                      class="m-0 p-0"
+                    >
+                      *Position Is Required
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div>
+                  <label for="level">Level</label>
+                  <select
+                    formControlName="level"
+                    name="level"
+                    id="level"
+                    class="form-select mb-3"
+                  >
+                    <option [ngValue]="null">Select Level</option>
+                    <option
+                      *ngFor="let item of levelLookUp"
+                      [value]="item.id"
+                    >
+                      {{ item.name }}
+                    </option>
+                  </select>
+                  <div
+                    *ngIf="
+                      locationForm.controls['level'].touched &&
+                      locationForm.controls['level'].invalid
+                    "
+                    class="alert alert-danger"
+                  >
+                    <p
+                      *ngIf="locationForm.controls['level'].errors?.['required']"
+                      class="m-0 p-0"
+                    >
+                      *Level Is Required
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div>
+                  <label for="column">Column</label>
+                  <select
+                    formControlName="column"
+                    name="column"
+                    id="column"
+                    class="form-select mb-3"
+                  >
+                    <option [ngValue]="null">Select Column</option>
+                    <option
+                      *ngFor="let item of columnLookUp"
+                      [value]="item.id"
+                    >
+                      {{ item.name }}
+                    </option>
+                  </select>
+                  <div
+                    *ngIf="
+                      locationForm.controls['column'].touched &&
+                      locationForm.controls['column'].invalid
+                    "
+                    class="alert alert-danger"
+                  >
+                    <p
+                      *ngIf="locationForm.controls['column'].errors?.['required']"
+                      class="m-0 p-0"
+                    >
+                      *Column Is Required
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row justify-content-start">
+                <h3>Location Dimensions</h3>
+                <div class="col-md-3">
+                    <div>
+                        <label for="width">Width</label>
+                        <input formControlName="width" type="number" name="width" id="width" class="form-control mb-3">
+                        <div *ngIf="locationForm.controls['width'].touched && locationForm.controls['width'].invalid" class="alert alert-danger">
+                            <p *ngIf="locationForm.controls['width'].errors?.['required']" class="m-0 p-0">*Width Is Required</p>
+                            <p *ngIf="locationForm.controls['width'].errors?.['min']" class="m-0 p-0">*Width Must Be Bigger Than Zero</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div>
+                        <label for="height">Height</label>
+                        <input formControlName="height" type="number" name="height" id="height" class="form-control mb-3">
+                        <div *ngIf="locationForm.controls['height'].touched && locationForm.controls['height'].invalid" class="alert alert-danger">
+                            <p *ngIf="locationForm.controls['height'].errors?.['required']" class="m-0 p-0">*Height Is Required</p>
+                            <p *ngIf="locationForm.controls['height'].errors?.['min']" class="m-0 p-0">*Height Must Be Bigger Than Zero</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div>
+                        <label for="depth">Depth</label>
+                        <input formControlName="depth" type="number" name="depth" id="depth" class="form-control mb-3">
+                        <div *ngIf="locationForm.controls['depth'].touched && locationForm.controls['depth'].invalid" class="alert alert-danger">
+                            <p *ngIf="locationForm.controls['depth'].errors?.['required']" class="m-0 p-0">*Depth Is Required</p>
+                            <p *ngIf="locationForm.controls['depth'].errors?.['min']" class="m-0 p-0">*Depth Must Be Bigger Than Zero</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div>
+                        <label for="availableWeight">Available Weight</label>
+                        <input formControlName="availableWeight" type="number" name="availableWeight" id="availableWeight" class="form-control mb-3">
+                        <div *ngIf="locationForm.controls['availableWeight'].touched && locationForm.controls['availableWeight'].invalid" class="alert alert-danger">
+                            <p *ngIf="locationForm.controls['availableWeight'].errors?.['required']" class="m-0 p-0">*Available Weight Is Required</p>
+                            <p *ngIf="locationForm.controls['availableWeight'].errors?.['min']" class="m-0 p-0">*Available Weight Must Be Bigger Than Zero</p>
+                        </div>
+                    </div>
+                </div>
+              </div>
+            <button [disabled]="locationForm.invalid" class="btn btn-success">
+              <span *ngIf="!isLoading">Create</span>
+              <i *ngIf="isLoading" class="fas fa-spinner fa-pulse"></i>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Start Breadcrumbs -->
+<div class="row" *ngIf="permissionIsLoadded && internalPermission?.includes(permissionData.View)">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body p-0">
+        <form
+        class="p-3"
+        [formGroup]="LocationFilterForm"
+        (ngSubmit)="GetLocation(LocationFilterForm)"
+      >
+      <div *ngIf="apiError" id="apiError" class="alert alert-danger">{{apiError}}</div>
+        <div class="row gap-3">
+          <div class="col-md-8">
+              <div>
+                <select
+                  formControlName="warehouseId"
+                  id="warehouseId"
+                  class="form-select mb-3"
+                >
+                <option [value]="null" selected>--Select Warehouse ---</option>
+                  <option *ngFor="let option of warehouseLookUp" [value]="option.id">
+                    {{ option.name }}
+                  </option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <button [disabled]="LocationFilterForm.invalid" class="btn btn-success">
+                <span *ngIf="!isLoading"><i class="ri-search-line me-2"></i> Search</span>
+                <i *ngIf="isLoading" class="fas fa-spinner fa-pulse"></i>
+              </button>
+            </div>
+        </div>
+      </form>
+        <button class="btn btn-primary m-3" (click)="readSelectedCodes()"><i class='bx bx-barcode'></i> Generate List Of Bracode</button>
+        <div class="p-4">
+          <ng-container  *ngIf="permissionIsLoadded && internalPermission?.includes(permissionData.Add)">
+            <button (click)="downloadFile()" class="btn btn-primary">Download Template</button>
+            <dx-file-uploader
+            [multiple]="true"
+            uploadMode="useButtons"
+            uploadUrl="https://js.devexpress.com/Demos/NetCore/FileUploader/Upload"
+            [allowedFileExtensions]="['.xlsx','xls']"
+            (onValueChanged)="onFileSelected($event)"
+          >
+          </dx-file-uploader>
+          </ng-container>
+          <dx-data-grid
+              id="grid"
+              [dataSource]="dataSource"
+              [repaintChangesOnly]="true"
+              [showBorders]="true"
+              [columnAutoWidth]="true"
+              (onExporting)="exportGrid($event)"
+            >
+                <dxo-scrolling mode="standard" [useNative]="false"></dxo-scrolling>
+            <dxo-editing
+              mode="cell"
+              [allowUpdating]="(permissionIsLoadded && internalPermission?.includes(permissionData.Update) ?? false)"
+            >
+            </dxo-editing>
+            <dxo-selection mode="multiple"></dxo-selection>
+            
+            <dxi-column type="buttons" [width]="110">
+              <dxi-button
+                hint="Genetrate Barcode"
+                icon="print"
+                [onClick]="onCloneIconClick"
+              ></dxi-button>
+          </dxi-column>
+            <dxi-column dataField="code"></dxi-column>
+            <dxi-column dataField="warehouseId" caption="Warehouse">
+              <dxo-lookup
+                [dataSource]="warehouseData"
+                valueExpr="id"
+                displayExpr="name"
+              ></dxo-lookup>
+            </dxi-column>
+            <dxi-column dataField="storageTypeId" caption="Storage Type">
+              <dxo-lookup
+                [dataSource]="storageTypeData"
+                valueExpr="id"
+                displayExpr="name"
+              ></dxo-lookup>
+            </dxi-column>
+            <dxi-column dataField="aisle" caption="Aisle">
+              <dxo-lookup
+                [dataSource]="aisleData"
+                valueExpr="id"
+                displayExpr="name"
+              ></dxo-lookup>
+            </dxi-column>
+            <dxi-column dataField="direction" caption="Direction">
+              <dxo-lookup
+                [dataSource]="directionData"
+                valueExpr="id"
+                displayExpr="name"
+              ></dxo-lookup>
+            </dxi-column>
+            <dxi-column dataField="positionNo" caption="Position">
+              <dxo-lookup
+                [dataSource]="positionData"
+                valueExpr="id"
+                displayExpr="name"
+              ></dxo-lookup>
+            </dxi-column>
+            <dxi-column dataField="level" caption="Level">
+              <dxo-lookup
+                [dataSource]="levelData"
+                valueExpr="id"
+                displayExpr="name"
+              ></dxo-lookup>
+            </dxi-column>
+            <dxi-column dataField="column" caption="Column">
+              <dxo-lookup
+                [dataSource]="columnData"
+                valueExpr="id"
+                displayExpr="name"
+              ></dxo-lookup>
+            </dxi-column>
+            <dxi-column dataField="status" dataType="boolean"></dxi-column>
+            <dxi-column dataField="width"></dxi-column>
+            <dxi-column dataField="height"></dxi-column>
+            <dxi-column dataField="depth"></dxi-column>
+            <dxi-column dataField="availableWeight"></dxi-column>
+            <dxo-paging [pageSize]="10"> </dxo-paging>
+            <dxo-pager
+              [visible]="true"
+              [showPageSizeSelector]="showPageSizeSelector"
+              [showInfo]="showInfo"
+              [showNavigationButtons]="showNavButtons"
+            >
+            </dxo-pager>
+            <dxo-export 
+                [enabled]="true"
+                [formats]="['xlsx', 'pdf']"
+                [allowExportSelectedData]="true"
+                >
+              </dxo-export>
+            <dxo-filter-row [visible]="true"></dxo-filter-row>
+            <dxo-search-panel [visible]="true"></dxo-search-panel>
+            <dxo-group-panel [visible]="true"></dxo-group-panel>
+          </dx-data-grid>
+        </div>
+      </div>
+      <!-- end card-body-->
+    </div>
+  </div>
+  <!-- end col-->
+</div>
+<!-- End Breadcrumbs -->
+
+<div *ngIf="permissionIsLoadded && !internalPermission?.includes(permissionData.View)" class="alert alert-danger">
+  You Don't Have Permission For This Page Please Contact With Your Manager
+  </div>

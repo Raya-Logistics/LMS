@@ -1,0 +1,110 @@
+<!-- Start Breadcrumbs -->
+<app-breadcrumbs *ngIf="!isChildComponent && permissionIsLoadded && internalPermission?.includes(permissionData.View)" [title]="pagesname.ShiftType" [breadcrumbItems]="breadCrumbItems"></app-breadcrumbs>
+<!-- End Breadcrumbs -->
+
+<!-- Start Breadcrumbs -->
+<div class="row" *ngIf="permissionIsLoadded && internalPermission?.includes(permissionData.View)">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body p-0">
+              <div class="p-4">
+              <dx-data-grid
+              id="grid"
+              [dataSource]="dataSource"
+              [repaintChangesOnly]="true"
+              [showBorders]="true"
+              [columnAutoWidth]="true"
+              (onExporting)="exportGrid($event)"
+              (onRowValidating)="onRowValidating($event)"
+              (onInitNewRow)="onInitNewRow($event)"
+            >
+                <dxo-scrolling mode="standard" [useNative]="false"></dxo-scrolling>
+                <dxo-editing
+                  mode="cell"
+                  [allowAdding]="(permissionIsLoadded && internalPermission?.includes(permissionData.Add) ?? false)"
+                  [allowUpdating]="(permissionIsLoadded && internalPermission?.includes(permissionData.Update) ?? false)"
+                >
+                </dxo-editing>
+                <dxo-selection mode="multiple"></dxo-selection>
+                <dxi-column dataField="typeIsFixedHour" caption="Shift Type"  [calculateCellValue]="calculateShiftType" [setCellValue]="setShiftType">
+                    <dxo-lookup
+                      [dataSource]="shiftType"
+                      valueExpr="id"
+                      displayExpr="name"
+                    ></dxo-lookup>
+                  </dxi-column>
+                  <dxi-column dataField="typeStartHour" dataType="number" caption="Start Hour"></dxi-column>
+                  <dxi-column dataField="typeEndHour" dataType="number" caption="End Hour"></dxi-column>
+                  <dxi-column dataField="typeTotalShiftHour" dataType="number"  caption="Total Hour"   [calculateCellValue]='calculateCellTotalHourValue' [allowEditing]="false"></dxi-column>
+                  <dxi-column dataField="typeName"  caption="Name"></dxi-column>
+                  <dxi-column dataField="typeWarehouseId" caption="Warehouse">
+                    <dxo-lookup
+                      [dataSource]="warehouseSource"
+                      valueExpr="id"
+                      displayExpr="name"
+                    ></dxo-lookup>
+                  </dxi-column>
+                  
+                  <dxi-column
+                        dataField="typeAttributes"
+                        caption="Attributes"
+                        [width]="200"
+                        [allowSorting]="false"
+                        editCellTemplate="tagBoxEditor"
+                        [cellTemplate]="cellTemplate"
+                        [calculateFilterExpression]="calculateFilterExpression"
+                    >
+                        <dxo-lookup [dataSource]="attributeData" valueExpr="id" displayExpr="name">
+                        </dxo-lookup>
+                        <dxi-validation-rule type="required"></dxi-validation-rule>
+                    </dxi-column>
+
+                    <div *dxTemplate="let cellInfo of 'tagBoxEditor'">
+                      <dx-tag-box
+                      [dropDownOptions]="dropDownOptions"
+                        [dataSource]="attributeData"
+                        [value]="cellInfo.value"
+                        valueExpr="id"
+                        displayExpr="name"
+                        [showSelectionControls]="true"
+                        [maxDisplayedTags]="3"
+                        [showMultiTagOnly]="false"
+                        [inputAttr]="{ 'aria-label': 'Attributes' }"
+                        applyValueMode="useButtons"
+                        [searchEnabled]="true"
+                        (onValueChanged)="onValueChanged($event, cellInfo)"
+                        (onSelectionChanged)="onSelectionChanged($event, cellInfo)"
+                      >
+                      </dx-tag-box>
+                    </div>
+
+                <dxi-column dataField="typeNote"  caption="Note"></dxi-column>
+                <dxi-column dataField="typeIsActive" dataType="boolean"  caption="Is Active"></dxi-column>
+                <dxo-paging [pageSize]="10"> </dxo-paging>
+                <dxo-pager
+                  [visible]="true"
+                  
+                  [showPageSizeSelector]="showPageSizeSelector"
+                  [showInfo]="showInfo"
+                  [showNavigationButtons]="showNavButtons"
+                >
+                </dxo-pager>
+                <dxo-export 
+                [enabled]="true"
+                [formats]="['xlsx', 'pdf']"
+                [allowExportSelectedData]="true"
+                ></dxo-export>
+                <dxo-filter-row [visible]="true"></dxo-filter-row>
+                <dxo-search-panel [visible]="true"></dxo-search-panel>
+                <dxo-group-panel [visible]="true"></dxo-group-panel>
+              </dx-data-grid>
+              </div>
+            </div> <!-- end card-body-->
+        </div>
+    </div> <!-- end col-->
+</div> 
+<!-- End Breadcrumbs -->
+
+<div *ngIf="permissionIsLoadded && !internalPermission?.includes(permissionData.View)" class="alert alert-danger">
+  You Don't Have Permission For This Page Please Contact With Your Manager
+  </div>

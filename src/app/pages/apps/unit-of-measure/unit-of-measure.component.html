@@ -1,0 +1,166 @@
+<!-- Start Breadcrumbs -->
+<app-breadcrumbs *ngIf="permissionIsLoadded && internalPermission?.includes(permissionData.View)" [title]="pagesname.UnitOfMeasure" [breadcrumbItems]="breadCrumbItems"></app-breadcrumbs>
+
+<!-- End Breadcrumbs -->
+<div class="p-2" *ngIf="permissionIsLoadded && internalPermission?.includes(permissionData.Add)">
+    <!-- Base Example -->
+    <div class="accordion" id="default-accordion-example">
+      <div class="accordion-item">
+        <h2 class="accordion-header p-2" id="headingOne">
+          <button
+          class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo"
+          >
+            Create Unit Of Measure
+          </button>
+        </h2>
+        <div
+        id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample"
+        >
+          <div class="accordion-body">
+            <form [formGroup]="unitofmeasureForm" (ngSubmit)="addUnitOfMeasure(unitofmeasureForm)">
+              <div class="row">
+                  <div class="col-md-3">
+                      <div>
+                          <label for="code">Code</label>
+                          <input formControlName="code" type="text" name="code" id="code" class="form-control mb-3" [(ngModel)]="codeValue">
+                          <div *ngIf="code?.errors && name?.touched" class="alert alert-danger">
+                              <p *ngIf="code?.errors?.['required']" class="m-0 p-0">*Code Is Required</p>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="col-md-3">
+                      <div>
+                          <label for="name">Name</label>
+                          <input formControlName="name" type="text" name="name" id="name" class="form-control mb-2">
+                          <div *ngIf="name?.errors && name?.touched" class="alert alert-danger">
+                              <p *ngIf="name?.errors?.['required']" class="m-0 p-0">*Name Is Required</p>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="col-md-3">
+                      <div>
+                          <label for="descriptions">Descriptions</label>
+                          <textarea formControlName="descriptions" type="text" name="descriptions" id="descriptions" class="form-control mb-3"></textarea>
+                          <div *ngIf="descriptions?.errors && descriptions?.touched" class="alert alert-danger">
+                              <p *ngIf="descriptions?.errors?.['required']" class="m-0 p-0">*Descriptions Is Required</p>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="col-md-3">
+                      <div>
+                          <label for="basicUomId">UOM Class</label>
+                          <select formControlName="basicUomId" id="basicUomId" class="form-select mb-3" [(ngModel)]="classSelectedValue" (change)="classSelectChanged()">
+                              <option [ngValue]="null" [selected]="true">Choose A Value </option>
+                              <option *ngFor="let option of classLookupData" [value]="option.id">{{ option.name }}</option>
+                            </select>
+                          <div *ngIf="basicUomId?.errors && basicUomId?.touched" class="alert alert-danger">
+                              <p *ngIf="basicUomId?.errors?.['required']" class="m-0 p-0">*basicUomId Is Required</p>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="col-md-3">
+                      <div>
+                          <label >Basic UOM:</label>
+                          <input disabled type="text"  class="form-control mb-2" [(ngModel)]="basicSelectedValue" [ngModelOptions]="{standalone: true}">
+                      </div>
+                  </div>
+                  <div class="col-md-3">
+                      <div>
+                          <label for="conversionValue">Conversion:</label>
+                          <input formControlName="conversionValue" type="number" name="conversionValue" id="conversionValue" class="form-control mb-3" [(ngModel)]="conversionValueInput" (change)="conversionValueFunc()"/>
+                          <div *ngIf="conversionValue?.errors && conversionValue?.touched" class="alert alert-danger">
+                              <p *ngIf="conversionValue?.errors?.['required']" class="m-0 p-0">*conversion Value Is Required</p>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="col-md-3">
+                      <div>
+                          <label >Conversion result:</label>
+                          <input disabled type="text"  class="form-control mb-2" [(ngModel)]="conversionResult" [ngModelOptions]="{standalone: true}">
+                      </div>
+                  </div>
+              </div>
+              <button [disabled]="unitofmeasureForm.invalid" class="btn btn-success">
+                  <span *ngIf="!isLoading">Create</span>
+                  <i *ngIf="isLoading" class="fas fa-spinner fa-pulse"></i>
+              </button>
+          </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<!-- Start Breadcrumbs -->
+<div class="row" *ngIf="permissionIsLoadded && internalPermission?.includes(permissionData.View)">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body p-0">
+        <div class="p-4">
+          <dx-data-grid
+              id="grid"
+              [dataSource]="dataSource"
+              [repaintChangesOnly]="true"
+              [showBorders]="true"
+              [columnAutoWidth]="true"
+              (onExporting)="exportGrid($event)"
+              (onRowValidating)="onRowValidating($event)"
+            >
+                <dxo-scrolling mode="standard" [useNative]="false"></dxo-scrolling>
+            <dxo-editing
+              mode="cell"
+              [allowUpdating]="(permissionIsLoadded && internalPermission?.includes(permissionData.Update) ?? false)"
+            >
+            </dxo-editing>
+            <dxo-selection mode="multiple"></dxo-selection>
+            <dxi-column dataField="code">
+              <dxi-validation-rule type="required" message="code is required"></dxi-validation-rule>
+            </dxi-column>
+            <dxi-column dataField="name">
+              <dxi-validation-rule type="required" message="name is required"></dxi-validation-rule>
+            </dxi-column>
+            <dxi-column dataField="descriptions"></dxi-column>
+            <dxi-column dataField="basicUomId" caption="Class">
+              <dxo-lookup
+                [dataSource]="classData"
+                valueExpr="id"
+                displayExpr="name"
+              ></dxo-lookup>
+              <dxi-validation-rule type="required" message="Class is required"></dxi-validation-rule>
+            </dxi-column>
+            <dxi-column dataField="basicUomId" caption="Basic">
+              <dxo-lookup
+                [dataSource]="basicData"
+                valueExpr="id"
+                displayExpr="name"
+              ></dxo-lookup>
+            </dxi-column>
+            <dxo-paging [pageSize]="10"> </dxo-paging>
+            <dxo-pager
+              [visible]="true"
+              [showPageSizeSelector]="showPageSizeSelector"
+              [showInfo]="showInfo"
+              [showNavigationButtons]="showNavButtons"
+            >
+            </dxo-pager>
+            <dxo-export 
+                [enabled]="true"
+                [formats]="['xlsx', 'pdf']"
+                [allowExportSelectedData]="true"
+                >
+              </dxo-export>
+            <dxo-filter-row [visible]="true"></dxo-filter-row>
+            <dxo-search-panel [visible]="true"></dxo-search-panel>
+            <dxo-group-panel [visible]="true"></dxo-group-panel>
+          </dx-data-grid>
+        </div>
+      </div>
+      <!-- end card-body-->
+    </div>
+  </div>
+  <!-- end col-->
+</div>
+<!-- End Breadcrumbs -->
+
+<div *ngIf="permissionIsLoadded && !internalPermission?.includes(permissionData.View)" class="alert alert-danger">
+  You Don't Have Permission For This Page Please Contact With Your Manager
+  </div>

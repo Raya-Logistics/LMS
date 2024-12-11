@@ -1,0 +1,19 @@
+::ng-deep .dx-datagrid .dx-link:first-of-type {
+    background-color: #28a745 !important; /* Bootstrap's success color */
+    color: white !important;
+    padding: 0.375rem 0.75rem; /* Bootstrap's button padding */
+    border-radius: 0.25rem; /* Bootstrap's button border-radius */
+    text-align: center;
+    text-decoration: none;
+    font-weight: 400;
+    border: 1px solid transparent;
+    display: inline-block;
+    cursor: pointer;
+    transition: background-color 0.15s ease-in-out;
+}
+
+/* Optional: Hover effect for the button */
+::ng-deep .dx-datagrid .dx-link:first-of-type:hover {
+    background-color: #218838 !important; /* Darker shade for hover */
+    color: white !important;
+}

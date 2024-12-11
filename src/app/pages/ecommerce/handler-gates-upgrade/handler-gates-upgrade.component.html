@@ -1,0 +1,305 @@
+<!-- Start Breadcrumbs -->
+<app-breadcrumbs
+  *ngIf="
+    permissionIsLoadded && internalPermission?.includes(permissionData.View)
+  "
+  [title]="pagesname.GatesHandler"
+  [breadcrumbItems]="breadCrumbItems"
+></app-breadcrumbs>
+<ngx-spinner
+  bdColor="rgba(51,51,51,0.8)"
+  size="medium"
+  color="#fff"
+  type="square-jelly-box"
+>
+  <p style="font-size: 20px; color: white">Loading...</p>
+</ngx-spinner>
+<!-- End Breadcrumbs -->
+<div class="accordion" id="default-accordion-example">
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="headingOne">
+      <button
+      class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo"
+      >
+        Gates Handler
+      </button>
+    </h2>
+    <div
+    id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample"
+    >
+      <div class="accordion-body">
+        <div
+        class="row"
+        *ngIf="
+          permissionIsLoadded && internalPermission?.includes(permissionData.View)
+        "
+      >
+        <div class="col-12">
+          <div class="card">
+            <div class="card-body p-0">
+              <div>
+                <form [formGroup]="form" (ngSubmit)="onSubmit()" class="container">
+                  <div class="row mb-3">
+                    <div class="col">
+                      <label class="form-label">Move</label>
+                      <select
+                        class="form-select"
+                        formControlName="TransactionsType"
+                        (change)="typeIsChange()"
+                        [(ngModel)]="typeSelectedValue"
+                      >
+                        <option [value]="null" disabled>Select Type</option>
+                        <option *ngFor="let type of transactionsTypeLookup" [value]="type.id">{{ type.name }}</option>
+                      </select>
+                      <div *ngIf="form.get('TransactionsType')?.touched && form.get('TransactionsType')?.invalid" class="text-danger">
+                        Type is required.
+                      </div>
+                    </div>
+                
+                    <div class="col">
+                      <label class="form-label">Container N</label>
+                      <input
+                        type="number"
+                        class="form-control"
+                        formControlName="containerNumber"
+                        (input)="oncontainerNumberChange()"
+                      />
+                      <div *ngIf="form.get('containerNumber')?.touched && form.get('containerNumber')?.invalid" class="text-danger">
+                        Container number is required.
+                      </div>
+                    </div>
+                
+                    <div class="col">
+                      <label class="form-label">Booking</label>
+                      <input type="text" class="form-control" formControlName="Patch_BookinkRefrence" />
+                    
+                      <!-- Display validation errors -->
+                      <div *ngIf="form.get('Patch_BookinkRefrence')?.touched && form.get('Patch_BookinkRefrence')?.errors" class="alert alert-danger mt-2">
+                        <p *ngIf="form.get('Patch_BookinkRefrence')?.errors?.['required']" class="m-0 p-0">
+                          *Transaction number is required.
+                        </p>
+                        <p *ngIf="form.get('Patch_BookinkRefrence')?.errors?.['notUnique']" class="m-0 p-0">
+                          *Transaction number must be unique.
+                        </p>
+                      </div>
+                    </div>
+                
+                    <div class="col">
+                      <label class="form-label">Free Time</label>
+                      <input type="datetime-local" class="form-control" formControlName="freeTime" [min]="minDate" />
+                      <div *ngIf="form.get('freeTime')?.touched && form.get('freeTime')?.invalid" class="text-danger">
+                        Free time is required.
+                      </div>
+                    </div>
+                  <div class="col"*ngIf="typeIsSelected">
+                    <label class="form-label">Company</label>
+                    <select class="form-select" formControlName="CompanyId" (change)="companyIschnage()">
+                      <option [value]="null" disabled>Select Company</option>
+                      <option *ngFor="let company of companyLookup" [value]="company.id">{{ company.name }}</option>
+                    </select>
+                  </div>
+                  <div class="col" *ngIf="typeIsSelected">
+                    <label class="form-label">WH</label>
+                    <select class="form-select" formControlName="WarehouseId">
+                      <option [value]="null" disabled>Select Warehouse</option>
+                      <option *ngFor="let warehouse of warehouseLookup" [value]="warehouse.id">{{ warehouse.name }}</option>
+                    </select>
+                  </div>
+                  <div class="col" *ngIf="typeIsSelected">
+                    <label class="form-label">Type/Size</label>
+                    <select class="form-select" formControlName="ItemId" (change)="itemIschnage()">
+                      <option [value]="null" disabled>Select Code</option>
+                      <option *ngFor="let code of codeLookup" [value]="code.id">{{ code.itemCode }}</option>
+                    </select>
+                  </div>
+                  
+                </div>
+                <div *ngIf="typeSelectedValue == 1" formArrayName="SerialNumber" class="mb-3">
+                  <div class="row">
+                    <ng-container *ngFor="let serialControl of SerialNumber.controls; let i = index">
+                      <div class="col-2 mb-3">
+                        <label>Container {{ i + 1 }}</label>
+                        <input
+                          type="text"
+                          [formControlName]="i"
+                          class="form-control"
+                          placeholder="serial"
+                          autocomplete="off"
+                          (input)="onInputChange($event, i)"
+                        />
+                        <div *ngIf="serialControl.touched && serialControl.invalid" class="text-danger">
+                          <div *ngIf="serialControl.errors?.['required']">Serial is required.</div>
+                          <div *ngIf="serialControl.errors?.['pattern']">(4 Capital Letters and 7 Numbers)</div>
+                          <div *ngIf="serialControl.errors?.['duplicate']">Duplicate serials are not allowed.</div>
+                          <div *ngIf="serialControl.errors?.['existsInDatabase']">Serial already exists in the database.</div>
+                        </div>
+                      </div>
+                    </ng-container>
+                  </div>
+                </div>
+                  <!-- <div formArrayName="SerialNumber" class="mb-3">
+                    <div class="row">
+                      <ng-container *ngFor="let serialControl of SerialNumber.controls; let i = index">
+                        <div class="col-2 mb-3">
+                          <label>Container {{ i + 1 }}</label>
+                          <input type="text" [formControlName]="i" class="form-control" placeholder="serial" autocomplete="off" />
+                          <div *ngIf="serialControl.touched && serialControl.invalid" class="text-danger">
+                            <div *ngIf="serialControl.errors?.['required']">Serial is required.</div>
+                            <div *ngIf="serialControl.errors?.['pattern']">(4 Capital Letters and 7 Numbers)</div>
+                            <div *ngIf="serialControl.errors?.['duplicate']">Duplicate serials are not allowed.</div>
+                            <div *ngIf="serialControl.errors?.['existsInDatabase']">Serial already exists in the database.</div>
+                          </div>
+                        </div>
+                      </ng-container>
+                    </div>
+                  </div> -->
+                
+                  <button type="submit" class="btn btn-primary mt-3" [disabled]="form.invalid">Submit</button>
+                </form>
+                
+                <!-- <form [formGroup]="form" (ngSubmit)="onSubmit()" class="container">
+                  <div class="row mb-3">
+                    <div class="col">
+                      <label class="form-label">move</label>
+                      <select class="form-select" formControlName="TransactionsType" (change)="typeIsChange()" [(ngModel)]="typeSelectedValue">
+                        <option [value]="null" disabled>Select Type</option>
+                        <option *ngFor="let type of transactionsTypeLookup" [value]="type.id">{{ type.name }}</option>
+                      </select>
+                    </div>
+                    <div class="col">
+                      <label class="form-label">Container N</label>
+                      <input type="number" class="form-control" formControlName="containerNumber" (input)="oncontainerNumberChange()"/>
+                    </div>
+                    <div class="col">
+                      <label class="form-label">Booking</label>
+                      <input type="text" class="form-control" formControlName="Patch_BookinkRefrence" />
+                    </div>
+                    <div class="col">
+                      <label class="form-label">Free Time</label>
+                      <input type="datetime-local" class="form-control" formControlName="freeTime"   [min]="minDate"/>
+                    </div>
+                    <div class="col"*ngIf="(typeIsSelected && typeSelectedValue == 1) || (typeIsSelected && SerialIsScan && typeSelectedValue == 2)">
+                      <label class="form-label">Company</label>
+                      <select class="form-select" formControlName="CompanyId" (change)="companyIschnage()">
+                        <option [value]="null" disabled>Select Company</option>
+                        <option *ngFor="let company of companyLookup" [value]="company.id">{{ company.name }}</option>
+                      </select>
+                    </div>
+                    <div class="col" *ngIf="(typeIsSelected && typeSelectedValue == 1) || (typeIsSelected && SerialIsScan && typeSelectedValue == 2)">
+                      <label class="form-label">WH</label>
+                      <select class="form-select" formControlName="WarehouseId">
+                        <option [value]="null" disabled>Select Warehouse</option>
+                        <option *ngFor="let warehouse of warehouseLookup" [value]="warehouse.id">{{ warehouse.name }}</option>
+                      </select>
+                    </div>
+                    <div class="col" *ngIf="(typeIsSelected && typeSelectedValue == 1)">
+                      <label class="form-label">Type/Size</label>
+                      <select class="form-select" formControlName="ItemId" (change)="itemIschnage()">
+                        <option [value]="null" disabled>Select Code</option>
+                        <option *ngFor="let code of codeLookup" [value]="code.id">{{ code.itemCode }}</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div formArrayName="SerialNumber" class="col mb-3">
+                      <div class="mb-3 row">
+                          <ng-container *ngFor="let serial of SerialNumber.controls; let i = index" >
+                        <div class="col-2 mb-3">
+                          <label for="SerialNumber-{{ i }}">Conatiner {{ i + 1 }}</label>
+                          <input type="text" [formControlName]="i" class="form-control" placeholder="serial" autocomplete="off" (input)="serialEnter(i)"/>
+                        </div>
+                      </ng-container>
+                      </div>
+                    </div>
+                  <button type="submit" class="btn btn-primary mt-3">Submit</button>
+                </form> -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row mt-2" *ngIf="permissionIsLoadded && internalPermission?.includes(permissionData.View)">
+  <div class="col-12">
+      <div class="card">
+          <div class="card-body p-0">
+            <div class="p-4">
+              <ng-container  *ngIf="permissionIsLoadded && internalPermission?.includes(permissionData.Add)">
+                <div class="d-flex align-items-center justify-content-between">
+                  <!-- <button (click)="downloadFile()" class="btn btn-primary">Download Template</button> -->
+                  <!-- <dx-file-uploader
+                [multiple]="true"
+                uploadMode="useButtons"
+                uploadUrl="https://js.devexpress.com/Demos/NetCore/FileUploader/Upload"
+                [allowedFileExtensions]="['.xlsx','xls']"
+                (onValueChanged)="onFileSelected($event)"
+                style="width: 400px !important;"
+              >
+              </dx-file-uploader> -->
+                </div>
+              </ng-container>
+            <dx-data-grid
+            id="grid"
+            [dataSource]="dataSource"
+            [repaintChangesOnly]="true"
+            [showBorders]="true"
+            [allowColumnReordering]="true"
+            [columnAutoWidth]="true"
+            (onExporting)="exportGrid($event)"
+          >
+              <dxo-scrolling mode="standard" [useNative]="false"></dxo-scrolling>
+              <dxo-editing
+                mode="cell"
+                [allowAdding]="false"
+                [allowUpdating]="(permissionIsLoadded && internalPermission?.includes(permissionData.Update) ?? false)"
+              >
+              </dxo-editing>
+              <dxo-selection mode="multiple"></dxo-selection>
+              <dxi-column dataField="transactionsType" caption="Move" [allowEditing]="false">
+                <dxi-validation-rule type="required" message="Serial is required"></dxi-validation-rule>
+              </dxi-column>
+              <dxi-column dataField="serialNumber" caption="Conatiner" [allowEditing]="false">
+              </dxi-column>
+              <dxi-column dataField="warehouseName" caption="Warehouse" [allowEditing]="false">
+                <dxi-validation-rule type="required" message="Serial is required"></dxi-validation-rule>
+              </dxi-column>
+              <dxi-column dataField="companyName" caption="Company" [allowEditing]="false">
+                <dxi-validation-rule type="required" message="Serial is required"></dxi-validation-rule>
+              </dxi-column>
+              <dxi-column dataField="itemCode" caption="Type/Size" [allowEditing]="false">
+                <dxi-validation-rule type="required" message="Serial is required"></dxi-validation-rule>
+              </dxi-column>
+              <dxi-column dataField="patch_BookinkRefrence" caption="Booking" [allowEditing]="false">
+                <dxi-validation-rule type="required" message="Booking Reference is required"></dxi-validation-rule>
+              </dxi-column>
+                <dxi-column dataField="categoryId" [visible]="false">
+                </dxi-column>
+                <dxi-column dataField="freeTime" caption="FreeTime" dataType="datetime">
+                </dxi-column>
+              <!-- <dxi-column dataField="status" dataType="boolean"></dxi-column> -->
+              <dxo-paging [pageSize]="10"> </dxo-paging>
+              <dxo-pager
+                [visible]="true"
+                
+                [showPageSizeSelector]="showPageSizeSelector"
+                [showInfo]="showInfo"
+                [showNavigationButtons]="showNavButtons"
+              >
+              </dxo-pager>
+              <dxo-export 
+              [enabled]="true"
+              [formats]="['xlsx', 'pdf']"
+              [allowExportSelectedData]="true"
+              ></dxo-export>
+              <dxo-filter-row [visible]="true"></dxo-filter-row>
+              <dxo-search-panel [visible]="true"></dxo-search-panel>
+              <dxo-group-panel [visible]="true"></dxo-group-panel>
+            </dx-data-grid>
+            </div>
+          </div> <!-- end card-body-->
+      </div>
+  </div> <!-- end col-->
+</div> 

@@ -1,0 +1,83 @@
+<!-- Start Breadcrumbs -->
+<app-breadcrumbs *ngIf="internalPermission?.includes(permissionData.View)" [title]="pagesname.ShiftSellingPrice" [breadcrumbItems]="breadCrumbItems"></app-breadcrumbs>
+<!-- End Breadcrumbs -->
+
+<!-- Start Breadcrumbs -->
+<div class="row" *ngIf="internalPermission?.includes(permissionData.View)">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body p-0">
+              <div class="p-4">
+                <!-- <button (click)="downloadFile()" class="btn btn-primary">Download Template</button>
+                <dx-file-uploader
+                [multiple]="true"
+                uploadMode="useButtons"
+                uploadUrl="https://js.devexpress.com/Demos/NetCore/FileUploader/Upload"
+                [allowedFileExtensions]="['.xlsx','xls']"
+                (onValueChanged)="onFileSelected($event)"
+              >
+              </dx-file-uploader> -->
+              <dx-data-grid
+              id="grid"
+              [dataSource]="dataSource"
+              [repaintChangesOnly]="true"
+              [showBorders]="true"
+              [columnAutoWidth]="true"
+              (onExporting)="exportGrid($event)"
+              (onEditorPreparing)="onEditorPreparing($event)"
+              (onRowValidating)="onRowValidating($event)"
+            >
+                <dxo-scrolling mode="standard" [useNative]="false"></dxo-scrolling>
+                <dxo-editing
+                  mode="cell"
+                  [allowAdding]="(internalPermission?.includes(permissionData.Add)) ?? false"
+                >
+                </dxo-editing>
+                <dxo-selection mode="multiple"></dxo-selection>
+                <dxi-column dataField="sellingAttributesId" caption="Attribute">
+                    <dxo-lookup
+                      [dataSource]="atrributeSource"
+                      valueExpr="id"
+                      displayExpr="name"
+                    ></dxo-lookup>
+                  </dxi-column>
+                  <dxi-column dataField="sellingCompanyId" caption="Company">
+                    <dxo-lookup
+                      [dataSource]="companySource"
+                      valueExpr="id"
+                      displayExpr="name"
+                    ></dxo-lookup>
+                  </dxi-column>
+                <dxi-column dataField="sellingPrice" dataType="number"></dxi-column>
+                <dxi-column dataField="sellingStartDate" dataType="date"></dxi-column>
+                <dxi-column dataField="sellingEndDate" dataType="date"></dxi-column>
+                <dxi-column dataField="sellingComment"></dxi-column>
+                <dxi-column dataField="sellingIsActive" dataType="boolean"></dxi-column>
+                <dxo-paging [pageSize]="10"> </dxo-paging>
+                <dxo-pager
+                  [visible]="true"
+                  
+                  [showPageSizeSelector]="showPageSizeSelector"
+                  [showInfo]="showInfo"
+                  [showNavigationButtons]="showNavButtons"
+                >
+                </dxo-pager>
+                <dxo-export 
+                [enabled]="true"
+                [formats]="['xlsx', 'pdf']"
+                [allowExportSelectedData]="true"
+                ></dxo-export>
+                <dxo-filter-row [visible]="true"></dxo-filter-row>
+                <dxo-search-panel [visible]="true"></dxo-search-panel>
+                <dxo-group-panel [visible]="true"></dxo-group-panel>
+              </dx-data-grid>
+              </div>
+            </div> <!-- end card-body-->
+        </div>
+    </div> <!-- end col-->
+</div> 
+<!-- End Breadcrumbs -->
+
+<div *ngIf="!internalPermission?.includes(permissionData.View)" class="alert alert-danger">
+  You Don't Have Permission For This Page Please Contact With Your Manager
+  </div>

@@ -1,0 +1,82 @@
+<div class="row mt-2" *ngIf="permissionIsLoadded && internalPermission?.includes(permissionData.View)">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body p-0">
+              <div class="p-4">
+                <ng-container  *ngIf="permissionIsLoadded && internalPermission?.includes(permissionData.Add)">
+                  <div class="d-flex align-items-center justify-content-between">
+                    <!-- <button (click)="downloadFile()" class="btn btn-primary">Download Template</button> -->
+                    <!-- <dx-file-uploader
+                  [multiple]="true"
+                  uploadMode="useButtons"
+                  uploadUrl="https://js.devexpress.com/Demos/NetCore/FileUploader/Upload"
+                  [allowedFileExtensions]="['.xlsx','xls']"
+                  (onValueChanged)="onFileSelected($event)"
+                  style="width: 400px !important;"
+                >
+                </dx-file-uploader> -->
+                  </div>
+                </ng-container>
+              <dx-data-grid
+              id="grid"
+              [dataSource]="dataSource"
+              [repaintChangesOnly]="true"
+              [showBorders]="true"
+              [allowColumnReordering]="true"
+              [columnAutoWidth]="true"
+              (onExporting)="exportGrid($event)"
+            >
+                <dxo-scrolling mode="standard" [useNative]="false"></dxo-scrolling>
+                <dxo-editing
+                  mode="cell"
+                  [allowAdding]="false"
+                  [allowUpdating]="(permissionIsLoadded && internalPermission?.includes(permissionData.Update) ?? false)"
+                >
+                </dxo-editing>
+                <dxo-selection mode="multiple"></dxo-selection>
+                <dxi-column dataField="transactionsType" caption="Move" [allowEditing]="false">
+                  <dxi-validation-rule type="required" message="Serial is required"></dxi-validation-rule>
+                </dxi-column>
+                <dxi-column dataField="serialNumber" caption="Conatiner" [allowEditing]="false">
+                  <dxi-validation-rule type="required" message="Serial is required"></dxi-validation-rule>
+                </dxi-column>
+                <dxi-column dataField="warehouseName" caption="Warehouse" [allowEditing]="false">
+                  <dxi-validation-rule type="required" message="Serial is required"></dxi-validation-rule>
+                </dxi-column>
+                <dxi-column dataField="companyName" caption="Company" [allowEditing]="false">
+                  <dxi-validation-rule type="required" message="Serial is required"></dxi-validation-rule>
+                </dxi-column>
+                <dxi-column dataField="itemCode" caption="Type/Size" [allowEditing]="false">
+                  <dxi-validation-rule type="required" message="Serial is required"></dxi-validation-rule>
+                </dxi-column>
+                <dxi-column dataField="patch_BookinkRefrence" caption="Booking" [allowEditing]="false">
+                  <dxi-validation-rule type="required" message="Booking Reference is required"></dxi-validation-rule>
+                </dxi-column>
+                  <dxi-column dataField="categoryId" [visible]="false">
+                  </dxi-column>
+                  <dxi-column dataField="freeTime" caption="FreeTime" dataType="datetime">
+                  </dxi-column>
+                <!-- <dxi-column dataField="status" dataType="boolean"></dxi-column> -->
+                <dxo-paging [pageSize]="10"> </dxo-paging>
+                <dxo-pager
+                  [visible]="true"
+                  
+                  [showPageSizeSelector]="showPageSizeSelector"
+                  [showInfo]="showInfo"
+                  [showNavigationButtons]="showNavButtons"
+                >
+                </dxo-pager>
+                <dxo-export 
+                [enabled]="true"
+                [formats]="['xlsx', 'pdf']"
+                [allowExportSelectedData]="true"
+                ></dxo-export>
+                <dxo-filter-row [visible]="true"></dxo-filter-row>
+                <dxo-search-panel [visible]="true"></dxo-search-panel>
+                <dxo-group-panel [visible]="true"></dxo-group-panel>
+              </dx-data-grid>
+              </div>
+            </div> <!-- end card-body-->
+        </div>
+    </div> <!-- end col-->
+  </div> 

@@ -1,0 +1,403 @@
+<app-breadcrumbs
+  *ngIf="
+    permissionIsLoadded && internalPermission?.includes(permissionData.View)
+  "
+  title="Price List"
+  [breadcrumbItems]="breadCrumbItems"
+></app-breadcrumbs>
+
+<div
+  class="row mt-2"
+  *ngIf="
+    permissionIsLoadded && internalPermission?.includes(permissionData.View)
+  "
+>
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">
+        <form [formGroup]="priceListForm" (ngSubmit)="onSubmit(priceListForm)">
+          <!-- Header Section -->
+          <div class="row mb-4">
+            <div class="form-group col-md-2 mb-3">
+              <label for="warehouseId">Warehouse <i class="fas fa-exclamation-circle text-danger" title="Warehouse Is Required" style="cursor: pointer; margin-left: 5px;"></i></label>
+              <select
+                id="warehouseId"
+                formControlName="warehouseId"
+                class="form-control"
+              >
+                <option *ngFor="let warehouse of warehouseLookup" [value]="warehouse.id">
+                  {{ warehouse.name }}
+                </option>
+              </select>
+            </div>
+        
+            <div class="form-group col-md-2 mb-3">
+              <label for="companyId">Company <i class="fas fa-exclamation-circle text-danger" title="Company Is Required" style="cursor: pointer; margin-left: 5px;"></i></label>
+              <select
+                id="companyId"
+                formControlName="companyId"
+                class="form-control"
+              >
+                <option *ngFor="let company of companyLookup" [value]="company.id">
+                  {{ company.name }}
+                </option>
+              </select>
+            </div>
+        
+            <div class="form-group col-md-2 mb-3">
+              <label for="startDate">Start Date  <i class="fas fa-exclamation-circle text-danger" title="Start Date Is Required" style="cursor: pointer; margin-left: 5px;"></i></label>
+              <input
+                type="date"
+                id="startDate"
+                formControlName="startDate"
+                class="form-control"
+              />
+            </div>
+        
+            <div class="form-group col-md-2 mb-3">
+              <label for="endDate">End Date  <i class="fas fa-exclamation-circle text-danger" title="EndDate Is Required" style="cursor: pointer; margin-left: 5px;"></i></label>
+              <input
+                type="date"
+                id="endDate"
+                formControlName="endDate"
+                class="form-control"
+              />
+            </div>
+        
+            <div class="form-group col-md-2 mb-3">
+              <label for="Evidence">Evidence</label>
+              <input
+                type="file"
+                id="Evidence"
+                formControlName="evidence"
+                class="form-control"
+                multiple
+                (change)="onFileSelect($event)"
+              />
+            </div>
+        
+            <div class="form-group col-md-2 mb-3">
+              <label for="PriceListTypeId">Price List Type <i class="fas fa-exclamation-circle text-danger" title="Type Is Required" style="cursor: pointer; margin-left: 5px;"></i></label>
+              <select
+                id="PriceListTypeId"
+                formControlName="priceListTypeId"
+                class="form-control"
+              >
+                <option *ngFor="let type of priceListTypeLookup" [value]="type.id">
+                  {{ type.name }}
+                </option>
+              </select>
+            </div>
+          </div>
+          <!-- Details Section -->
+          <div formArrayName="details" *ngFor="let detail of details.controls; let i = index; let l = last">
+            <div [formGroupName]="i" class="row">
+              <div class="form-group col mb-3">
+                <label for="CurrencyId">Currency <i class="fas fa-exclamation-circle text-danger" title="Currency Is Required" style="cursor: pointer; margin-left: 5px;"></i></label>
+                <select
+                  id="CurrencyId"
+                  formControlName="currencyId"
+                  class="form-control"
+                >
+                  <option *ngFor="let currency of currencyLookup" [value]="currency.id">
+                    {{ currency.name }}
+                  </option>
+                </select>
+              </div>
+          
+              <div class="form-group col mb-3">
+                <label for="PriceList_serviceId">Service <i class="fas fa-exclamation-circle text-danger" title="Service Is Required" style="cursor: pointer; margin-left: 5px;"></i></label>
+                <select
+                  id="PriceList_serviceId"
+                  formControlName="priceListServiceId"
+                  class="form-control"
+                  (change)="onPriceListServiceChange(i)"
+                >
+                  <option *ngFor="let service of priceListServiceLookup" [value]="service.id">
+                    {{ service.serviceName }}
+                  </option>
+                </select>
+              </div>
+          
+              <div
+                class="form-group col mb-3"
+              >
+                <label for="Rate">Rate <i class="fas fa-exclamation-circle text-danger" title="Rate Is Required" style="cursor: pointer; margin-left: 5px;"></i></label>
+                <input
+                  type="number"
+                  id="Rate"
+                  formControlName="rate"
+                  class="form-control"
+                />
+              </div>
+          
+              <div
+                *ngIf="detail.get('isStorage')?.value"
+                class="form-group col mb-3"
+              >
+                <label for="PalletCategoryId">Pallet <i class="fas fa-exclamation-circle text-danger" title="Pallet Category Is Required For Implemented Service" style="cursor: pointer; margin-left: 5px;"></i></label>
+                <select
+                  id="PalletCategoryId"
+                  formControlName="palletCategoryId"
+                  class="form-control"
+                >
+                  <option *ngFor="let pallet of palletCategoryLookup" [value]="pallet.id">
+                    {{ pallet.name }}
+                  </option>
+                </select>
+              </div>
+              <div
+                *ngIf="detail.get('isImplemented')?.value"
+                class="form-group col mb-3"
+              >
+                <label for="priceListDetailsTypeId">Type <i class="fas fa-exclamation-circle text-danger" title="Details Is Required" style="cursor: pointer; margin-left: 5px;"></i></label>
+                <select
+                  id="priceListDetailsTypeId"
+                  formControlName="priceListDetailsTypeId"
+                  class="form-control"
+                  (change)="detailsTypeChanged(i)"
+                >
+                  <option *ngFor="let price of detail.get('priceListDetailsTypeLookup')?.value" [value]="price.id">
+                    {{ price.type }}
+                  </option>
+                </select>
+              </div>
+              <div
+                *ngIf="detail.get('isTruck')?.value"
+                class="form-group col mb-3"
+              >
+                <label for="truckTypeId">Truck</label>
+                <select
+                  id="truckTypeId"
+                  formControlName="truckTypeId"
+                  class="form-control"
+                >
+                  <option *ngFor="let price of TruckTypeLookup" [value]="price.id">
+                    {{ price.name }}
+                  </option>
+                </select>
+              </div>
+                <div
+                  *ngIf="detail.get('isHandling')?.value"
+                  class="form-group col-md-2 mb-3"
+                >
+                  <label for="isOnTime" class="d-block">Is On Time</label>
+                  <input
+                    type="checkbox"
+                    id="isOnTime"
+                    formControlName="isOnTime"
+                    class="form-check-input"
+                  />
+                </div>
+                <div
+                  *ngIf="detail.get('isHandling')?.value"
+                  class="form-group col mb-3"
+                >
+                  <label for="isMonthly" class="d-block">Is Monthly</label>
+                  <input
+                    type="checkbox"
+                    id="isMonthly"
+                    formControlName="isMonthly"
+                    class="form-check-input"
+                  />
+                </div>
+                <div
+                  *ngIf="detail.get('isStorage')?.value"
+                  class="form-group col mb-3"
+                >
+                  <label for="partialMonth15" class="d-block">P.Month15</label>
+                  <input
+                    type="checkbox"
+                    id="partialMonth15"
+                    formControlName="partialMonth15"
+                    class="form-check-input"
+                  />
+                </div>
+                <div
+                  *ngIf="detail.get('isStorage')?.value"
+                  class="form-group col mb-3"
+                >
+                  <label for="partialMonth30" class="d-block">P.Month30</label>
+                  <input
+                    type="checkbox"
+                    id="partialMonth30"
+                    formControlName="partialMonth30"
+                    class="form-check-input"
+                  />
+                </div>
+                <div
+                *ngIf="detail.get('isFixedStorage')?.value"
+                class="form-group col mb-3"
+              >
+                <label for="freeStorageDays" class="d-block">F.S.Days</label>
+                <input
+                  type="number"
+                  id="freeStorageDays"
+                  formControlName="freeStorageDays"
+                  class="form-control"
+                />
+              </div>
+              <div
+              *ngIf="detail.get('isFixedStorage')?.value"
+              class="form-group col mb-3"
+            >
+              <label for="fixedAreaCm" class="d-block">F.Space</label>
+              <input
+                type="number"
+                id="fixedAreaCm"
+                formControlName="fixedAreaCm"
+                class="form-control"
+                />
+            </div>
+            <div
+            *ngIf="detail.get('isFixedStorage')?.value"
+            class="form-group col mb-3"
+          >
+            <label for="fixedStorageAmount" class="d-block">F.Amount</label>
+            <input
+              type="number"
+              id="fixedStorageAmount"
+              formControlName="fixedStorageAmount"
+              class="form-control"
+              />
+          </div>
+          <div
+                *ngIf="detail.get('isStorage')?.value && detail.get('isPallet')?.value"
+                class="form-group col mb-3"
+              >
+                <label for="minimumPallets" class="d-block">M.Pallet</label>
+                <input
+                  type="number"
+                  id="minimumPallets"
+                  formControlName="minimumPallets"
+                  class="form-control"
+                />
+              </div>
+              <div
+                *ngIf="detail.get('isStorage')?.value && detail.get('isPallet')?.value"
+                class="form-group col mb-3"
+              >
+                <label for="minimumPalletRate" class="d-block">M.P.Rate</label>
+                <input
+                  type="number"
+                  id="minimumPalletRate"
+                  formControlName="minimumPalletRate"
+                  class="form-control"
+                />
+              </div>
+              <!-- Add other detail fields here... -->
+              <div class="col-md-2 mb-3 d-flex align-items-end" *ngIf="i != 0">
+                <button type="button" class="btn btn-danger" (click)="removeDetail(i)"><i class="fas fa-trash-alt"></i> Remove</button>
+              </div>
+            </div>
+            <hr *ngIf="!l">
+          </div>
+        
+          <div class="row">
+            <div class="col-md-12 d-flex gap-3 justify-content-end">
+              <button type="button" class="btn btn-secondary" (click)="addDetail()"><i class="fas fa-plus-circle"></i> Add</button>
+              <button type="submit" class="btn btn-primary" [disabled]="priceListForm.invalid"><i class="fas fa-check-circle"></i> Submit</button>
+              <!-- <button type="submit" class="btn btn-primary"><i class="fas fa-check-circle"></i> Submit</button> -->
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+            </div>
+          </div>
+        </form>
+        
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row mt-2" *ngIf="permissionIsLoadded && internalPermission?.includes(permissionData.View)">
+  <div class="col-12">
+      <div class="card">
+          <div class="card-body p-0">
+            <div class="p-4">
+              <ng-container  *ngIf="permissionIsLoadded && internalPermission?.includes(permissionData.Add)">
+                <div class="d-flex align-items-center justify-content-between">
+                  <!-- <button (click)="downloadFile()" class="btn btn-primary">Download Template</button> -->
+                  <!-- <dx-file-uploader
+                [multiple]="true"
+                uploadMode="useButtons"
+                uploadUrl="https://js.devexpress.com/Demos/NetCore/FileUploader/Upload"
+                [allowedFileExtensions]="['.xlsx','xls']"
+                (onValueChanged)="onFileSelected($event)"
+                style="width: 400px !important;"
+              >
+              </dx-file-uploader> -->
+                </div>
+              </ng-container>
+            <dx-data-grid
+            id="grid"
+            [dataSource]="dataSource"
+            [repaintChangesOnly]="true"
+            [showBorders]="true"
+            [allowColumnReordering]="true"
+            [columnAutoWidth]="true"
+            (onExporting)="exportGrid($event)"
+          >
+              <dxo-scrolling mode="standard" [useNative]="false"></dxo-scrolling>
+              <dxo-editing
+                mode="cell"
+                [allowAdding]="false"
+                [allowUpdating]="(permissionIsLoadded && internalPermission?.includes(permissionData.Update) ?? false)"
+              >
+              </dxo-editing>
+              <dxo-selection mode="multiple"></dxo-selection>
+              <dxi-column dataField="companyName" caption="Company" [allowEditing]="false">
+              </dxi-column>
+              <dxi-column dataField="warehouseName" caption="Warehouse" [allowEditing]="false">
+              </dxi-column>
+              <dxi-column dataField="startDate" caption="Start Date" [allowEditing]="false" dataType="datetime">
+              </dxi-column>
+              <dxi-column dataField="endDate" caption="End Date" [allowEditing]="false" dataType="datetime">
+              </dxi-column>
+              <dxi-column dataField="currency" caption="Currency" [allowEditing]="false">
+              </dxi-column>
+              <dxi-column dataField="palletCategory" caption="Category" [allowEditing]="false">
+              </dxi-column>
+              <dxi-column dataField="priceListType" caption="Type" [allowEditing]="false">
+              </dxi-column>
+                <dxi-column dataField="serviceName" caption="Service" [visible]="false">
+                </dxi-column>
+                <dxi-column dataField="rate" caption="Rate" [visible]="false">
+                </dxi-column>
+                <dxi-column type="buttons" [width]="110" caption="Details">
+                  <dxi-button
+                    hint="Details"
+                    icon="eyeopen"
+                    [onClick]="onOpenFiles"
+                  ></dxi-button>
+                  </dxi-column>
+                  <dxi-column type="buttons" [width]="110" caption="Clone">
+                    <dxi-button
+                      hint="Clone"
+                      icon="copy"
+                      [onClick]="onCopyHeader"
+                    ></dxi-button>
+                    </dxi-column>
+              <dxo-paging [pageSize]="10"> </dxo-paging>
+              <dxo-pager
+                [visible]="true"
+                
+                [showPageSizeSelector]="showPageSizeSelector"
+                [showInfo]="showInfo"
+                [showNavigationButtons]="showNavButtons"
+              >
+              </dxo-pager>
+              <dxo-export 
+              [enabled]="true"
+              [formats]="['xlsx', 'pdf']"
+              [allowExportSelectedData]="true"
+              ></dxo-export>
+              <dxo-filter-row [visible]="true"></dxo-filter-row>
+              <dxo-search-panel [visible]="true"></dxo-search-panel>
+              <dxo-group-panel [visible]="true"></dxo-group-panel>
+            </dx-data-grid>
+            </div>
+          </div> <!-- end card-body-->
+      </div>
+  </div> <!-- end col-->
+</div> 

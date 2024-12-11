@@ -1,0 +1,1281 @@
+<app-breadcrumbs
+  *ngIf="internalPermission?.includes(permissionData.View)"
+  [title]="pagesname.HandlingIN"
+  [breadcrumbItems]="breadCrumbItems"
+></app-breadcrumbs>
+
+<!-- Header Details -->
+<div class="card" *ngIf="isStockDetailsCreation">
+  <div class="card-body">
+    <div class="d-flex align-items-center justify-content-between">
+      <div>
+        Company :
+        <strong>{{
+          isHeaderTransactionOperationData?.headerInfo?.companyName
+        }}</strong>
+      </div>
+      <div>
+        Warehouse :
+        <strong>{{
+          isHeaderTransactionOperationData?.headerInfo?.warehouseName
+        }}</strong>
+      </div>
+      <div>
+        <i class="fas fa-eye ms-2 text-info" (click)="showDialogTransactionDetails()"></i> TRX :
+        <strong>{{ isHeaderTransactionOperationData?.headerInfo?.id }}</strong>
+      </div>
+      <div>
+        Way :
+        <strong>{{
+          isHeaderTransactionOperationData?.headerInfo?.transactionWay
+        }}</strong>
+      </div>
+      <div *ngIf="isHeaderTransactionOperationData?.headerInfo?.whQueue">
+        WhQueue :
+        <strong>{{
+          isHeaderTransactionOperationData?.headerInfo?.whQueue
+        }}</strong>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Card For Scanning Item And It's Details -->
+<div class="row gx-5" *ngIf="isStockDetailsCreation">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">
+        <div>
+          <!-- Form For Scanning Item -->
+          <form
+            id="addnewDetailsFormId"
+            [formGroup]="addnewDetailsForm"
+            (ngSubmit)="addNewDetailsFormAdd(addnewDetailsForm)"
+          >
+            <div class="row">
+              <input formControlName="itemId" hidden />
+              <input
+                formControlName="itemIsSerializedIn"
+                hidden
+                type="checkbox"
+              />
+              <input
+                formControlName="itemIsBulkyStore"
+                hidden
+                type="checkbox"
+              />
+              <input
+                formControlName="itemIsExpiration"
+                hidden
+                type="checkbox"
+              />
+              <input
+                formControlName="itemMinExpiredDays"
+                hidden
+                type="number"
+                autocomplete="off"
+              />
+              <input formControlName="companyId" hidden type="number" />
+              <div class="col">
+                <div>
+                  <label>BarCode</label>
+                  <input
+                    #barCodeInput
+                    formControlName="itemCode"
+                    type="text"
+                    name="itemCode"
+                    id="itemCode"
+                    class="form-control mb-3"
+                    placeholder="Scan Code"
+                    [(ngModel)]="scanItemCode"
+                    autocomplete="off"
+                    autofocus
+                    (keyup.enter)="scanBarCodeOperation()"
+                  />
+                </div>
+              </div>
+              <div class="col" *ngIf="ItemIsSerializedIn">
+                <div>
+                  <label>Serial</label>
+                  <input
+                    #serialInput
+                    formControlName="serial"
+                    type="text"
+                    name="ItemSerialized"
+                    id="ItemSerialized"
+                    class="form-control mb-3"
+                    placeholder="Scan Serial"
+                    [(ngModel)]="scanSerial"
+                    autocomplete="off"
+                    (keyup.enter)="scanSerialOperation()"
+                    />
+                  <div
+                    *ngIf="
+                      addnewDetailsForm.controls['serial'].invalid &&
+                      (addnewDetailsForm.controls['serial'].dirty ||
+                        addnewDetailsForm.controls['serial'].touched)
+                    "
+                    class="text-danger"
+                  >
+                    Serial is required.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+          <!-- ItemScanedDetails -->
+          <hr *ngIf="ItemScanedData" />
+          <div *ngIf="ItemScanedData" class="my-2">
+            <div class="d-flex align-items-center justify-content-between">
+              <div>
+                Item Code :
+                <strong>{{ ItemScanedData?.itemCode }}</strong>
+              </div>
+              <div>
+                Description :
+                <strong>{{ ItemScanedData?.description }}</strong>
+              </div>
+              <div *ngIf="ItemScanedData?.itemIsExpiration">
+                Minimum Expiration Date (Days) :
+                <strong>{{ ItemScanedData?.itemMinExpirationDays }}</strong>
+              </div>
+            </div>
+          </div>
+          <form
+            [formGroup]="form"
+            (ngSubmit)="submitForm()"
+            *ngIf="items().controls.length > 0"
+            class="overflow-x-auto"
+          >
+            <div formArrayName="items">
+              <table class="table table-bordered table-responsive">
+                <thead
+                  class="thead-dark"
+                  style="
+                    position: sticky;
+                    top: 0;
+                    background-color: white;
+                    z-index: 1;
+                  "
+                >
+                  <tr class="text-center">
+                    <!-- <th>Code</th>
+                    <th>Serials</th> -->
+                    <th>Details</th>
+                    <th>Quantity</th>
+                    <th>Patch</th>
+                    <th>Status</th>
+                    <th>Image</th>
+                    <th>Exp</th>
+                    <th>Category</th>
+                    <th>Type</th>
+                    <th>L</th>
+                    <!-- <th>S.Type</th> -->
+                    <th>N.L</th>
+                    <th>A</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    *ngFor="let item of items().controls; let i = index"
+                    [formGroupName]="i"
+                    [ngStyle]="{
+                      'background-color': 
+                        item.get('status')?.value === 1 ? '#f3aaaa7d' :
+                        item.get('status')?.value === 2 ? '#66cc99' :
+                        item.get('status')?.value === 7 ? '#ffcc66' : '#f3aaaa7d'
+                    }"
+                  >
+                    <td>
+                      <div>
+                        <div
+                          class="d-flex align-items-center justify-content-between gap-2"
+                        >
+                          <span
+                            (click)="showDialog(i)"
+                            style="
+                              display: inline-block;
+                              margin: 0.25em;
+                              border: 1px solid silver;
+                              border-radius: 0.25em;
+                              padding: 0.25em 0.5em;
+                            "
+                            role="button"
+                            ><i class="pi pi-eye" style="font-size: 1.5rem"></i
+                          ></span>
+                        </div>
+                        <p-dialog
+                          [modal]="true"
+                          [(visible)]="visibleDialogs[i]"
+                          [style]="{ width: '50rem' }"
+                          [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
+                          [maximizable]="true"
+                        >
+                          <!-- BarCode and Serial Count in the same row -->
+                          <div
+                            class="d-flex justify-content-between align-items-center p-2"
+                          >
+                            <div>
+                              <strong>SKU:</strong>
+                              {{ item.get("itemSku")?.value }}
+                            </div>
+                            <div>
+                              <strong>BarCode</strong>:
+                              {{ item.get("itemCode")?.value }}
+                            </div>
+                          </div>
+                          <div>
+                            <strong>Description:</strong>
+                            {{ item.get("itemDescription")?.value }}
+                          </div>
+                          <div
+                            class="accordion my-2"
+                            id="default-accordion-example"
+                            *ngIf="item.get('itemIsSerializedIn')?.value"
+                          >
+                            <div class="accordion-item">
+                              <h2 class="accordion-header p-2" id="headingOne">
+                                <div class="d-flex align-items-center justify-content-between">
+                                  <button
+                                  class="accordion-button"
+                                  type="button"
+                                  data-bs-toggle="collapse"
+                                  data-bs-target="#collapseTwo"
+                                  aria-expanded="false"
+                                  aria-controls="collapseTwo"
+                                >
+                                  Serials Details
+                                </button>
+                                <!-- <input type="file" class="form-control"/> -->
+                                </div>
+                              </h2>
+                              <div
+                                id="collapseTwo"
+                                class="accordion-collapse collapse show"
+                                data-bs-parent="#accordionExample"
+                              >
+                              <div class="accordion-body">
+                                <div class="row">
+                                  <div class="col-12">
+                                    <div class="card">
+                                      <div class="card-body p-0">
+                                        <div>
+                                          <!-- Serial Input and Search Field -->
+                                          <div class="row mb-2">
+                                            <!-- Add serial input -->
+                                            <!-- <input type="text" class="form-control" placeholder="Add new serial"
+                                                   (keydown.enter)="addSerial(i)" formControlName="newSerial"> -->
+                              
+                                            <!-- Search serials input -->
+                                            <div class="col-4 offset-8">
+                                              <input type="text" class="form-control ms-2" placeholder="Search serials"
+                                                   [(ngModel)]="searchText" formControlName="searchSerial">
+                                            </div>
+                                          </div>
+                                          
+                                          <!-- Serials Table -->
+                                          <table class="table table-bordered">
+                                            <thead>
+                                              <tr>
+                                                <th colspan="3">
+                                                  <div class="d-flex align-items-center justify-content-between">
+                                                    <strong>Serials Data</strong>
+                                                    <div>
+                                                      <strong>Serial Count:</strong>
+                                                      {{ getSerialsCount(item.get("serials")?.value) }}
+                                                    </div>
+                                                  </div>
+                                                </th>
+                                              </tr>
+                                            </thead>
+                                            <tbody>
+                                              <tr>
+                                                <td>
+                                                  <div class="serials-container">
+                                                    <div class="serial-row" *ngFor="let serial of getFilteredSerials(item.get('serials')?.value); let j = index">
+                                                      <div class="serial-cell">
+                                                        <span>{{ serial }}</span>
+                                                        <button [disabled]="item.get('status')?.value == 2" type="button" class="btn btn-danger btn-sm" (click)="removeSerial(i, j)">
+                                                          <i class="fa fa-trash"></i>
+                                                        </button>
+                                                      </div>
+                                                      <!-- Insert <hr> after every 3rd serial -->
+                                                      <div class="full-row-divider" *ngIf="(j + 1) % 3 === 0"></div>
+                                                    </div>
+                                                  </div>
+                                                  
+                                                  
+                                                  <!-- oldWorkedCode
+                                                  <div class="row">
+                                                    <ng-container *ngFor="let serial of getFilteredSerials(item.get('serials')?.value); let j = index">
+                                                      <div class="col-md-4 mb-2">
+                                                        <div class="d-flex align-items-center justify-content-between">
+                                                          {{ serial }}
+                                                          <button type="button" class="btn btn-danger btn-sm" (click)="removeSerial(i, j)">
+                                                            <i class="fa fa-trash"></i>
+                                                          </button>
+                                                        </div>
+                                                      </div>
+                                          
+                                                      <div class="col-12" *ngIf="(j + 1) % 3 === 0">
+                                                        <hr />
+                                                      </div>
+                                                    </ng-container>
+                                                  </div> -->
+                                                  <!-- <div class="row">
+                                                    <ng-container *ngFor="let serial of getFilteredSerials(item.get('serials')?.value); let j = index">
+                                                      <div class="col-md-4  mb-2">
+                                                        <div class="d-flex align-items-center justify-content-between">
+                                                          {{ serial }}
+                                                          <button type="button" class="btn btn-danger btn-sm"
+                                                                  (click)="removeSerial(i, j)">
+                                                            <i class="fa fa-trash"></i>
+                                                          </button>
+                                                        </div>
+                                                      </div>
+                                                    </ng-container>
+                                                  </div> -->
+                                                </td>
+                                              </tr>
+                                            </tbody>
+                                          </table>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              
+                                <!-- <div class="accordion-body">
+                                  <div class="row">
+                                    <div class="col-12">
+                                      <div class="card">
+                                        <div class="card-body p-0">
+                                          <div>
+                                            <div>
+                                              <div
+                                                class="d-flex align-items-center justify-content-between mb-2"
+                                              >
+                                                <div>
+                                                  <input
+                                                    type="text"
+                                                    class="form-control"
+                                                    formControlName="newSerial"
+                                                    placeholder="Add new serial"
+                                                    (keydown.enter)="
+                                                      addSerial(i)
+                                                    "
+                                                  />
+                                                </div>
+
+                                                <div>
+                                                  <strong>Serials Count</strong
+                                                  >:
+                                                  {{
+                                                    getSerialsCount(
+                                                      item.get("serials")?.value
+                                                    )
+                                                  }}
+                                                </div>
+                                              </div>
+                                              <div
+                                                class="d-flex align-items-center justify-content-end mb-2"
+                                              >
+                                                <div>
+                                                  <input
+                                                    type="text"
+                                                    class="form-control"
+                                                    id="searchValue"
+                                                    placeholder="Search"
+                                                  />
+                                                </div>
+                                              </div>
+                                              <table
+                                                class="table table-bordered"
+                                              >
+                                                <thead>
+                                                  <tr class="text-center">
+                                                    <th>Serials Data</th>
+                                                  </tr>
+                                                </thead>
+                                                <tbody>
+                                                  <tr>
+                                                    <td>
+                                                      <div class="row">
+                                                        <div
+                                                          class="col-4"
+                                                          *ngFor="
+                                                            let serial of item.get(
+                                                              'serials'
+                                                            )?.value;
+                                                            let j = index
+                                                          "
+                                                        >
+                                                        <div class="d-flex align-items-center justify-content-between">
+                                                          {{ serial }}
+                                                          <button
+                                                            type="button"
+                                                            class="btn"
+                                                            (click)="
+                                                              removeSerial(i, j)
+                                                            "
+                                                          >
+                                                            <i
+                                                              class="fa fa-trash text-danger"
+                                                            ></i>
+                                                          </button>
+                                                        </div>
+                                                      </div>
+                                                      </div>
+                                                    </td>
+                                                  </tr>
+                                                </tbody>
+                                              </table>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div> -->
+                              </div>
+                            </div>
+                          </div>
+                        </p-dialog>
+                      </div>
+                    </td>
+                    <td>
+                      <input
+                        formControlName="quantity"
+                        type="number"
+                        class="form-control"
+                        autocomplete="off"
+                        [readonly]="!(item.get('status')?.value == 7 && !item.get('itemIsSerializedIn')?.value)"
+                        (input)="onQuantityChanges($event, i)"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        formControlName="patchNumber"
+                        type="text"
+                        autocomplete="off"
+                        class="form-control"
+                        [readOnly]="item.get('status')?.value == 2"
+                      />
+                    </td>
+                    <td>
+                      <select
+                        formControlName="itemStatus"
+                        id="itemStatus"
+                        class="form-select mb-3"
+                        [disabled]="item.get('status')?.value == 2"
+                      >
+                        <option
+                          *ngFor="let option of itemStatusLookup; let i = index"
+                          [value]="option.id"
+                          [selected]="i == 0"
+                        >
+                          {{ option.name }}
+                        </option>
+                      </select>
+                    </td>
+                    <td>
+                      <input
+                        *ngIf="item.get('itemStatus')?.value != 1"
+                        formControlName="itemImage"
+                        type="file"
+                        class="form-control"
+                        multiple
+                        (change)="onFileSelected($event)"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        *ngIf="item.get('itemIsExpiration')?.value"
+                        formControlName="expiration"
+                        type="date"
+                        class="form-control"
+                        [attr.min]="
+                          calculateMinExpirationDate(
+                            item.get('itemMinExpiredDays')?.value
+                          )
+                        "
+                        step="1"
+                      />
+                    </td>
+                    <!-- <td>
+                      <select
+                        formControlName="palletCategory"
+                        class="form-select"
+                      >
+                        <option [ngValue]="null" [selected]="true">
+                          Select Type
+                        </option>
+                        <ng-container *ngIf="item.get('itemDetails')?.value as itemDetails">
+                            <option *ngFor="let detail of itemDetails" [value]="detail.palletCategoryId">
+                                {{ detail.palletCategoryName }}
+                            </option>
+                        </ng-container>
+                      </select>
+                    </td> -->
+                    <td>
+                      <select
+                        formControlName="palletCategory"
+                        class="form-select"
+                        (change)="onPalletCategoryChange($event, i)"
+                      >
+                        <option [ngValue]="null">
+                          Select Type
+                        </option>
+                        <ng-container
+                          *ngIf="item.get('itemPalletCategories')?.value as itemDetails"
+                        >
+                          <option
+                            *ngFor="let detail of itemDetails"
+                            [value]="detail.id"
+                            [selected] = "detail.id == item.get('palletCategory')?.value"                          >
+                            {{ detail.name }}
+                          </option>
+                        </ng-container>
+                      </select>
+                    </td>
+                    <!-- Hidden inputs for Pallet Category fields -->
+                    <input
+                      formControlName="palletCategoryConversion"
+                      type="hidden"
+                    />
+                    <input formControlName="palletCategoryHigh" type="hidden" />
+                    <input formControlName="palletCategorySpc" type="hidden" />
+                    <input formControlName="palletCategoryTieVertical" type="hidden" />
+                    <input formControlName="palletCategoryTieHorizontal" type="hidden" />
+                    <input formControlName="itemDetailId" type="hidden" />
+                    <input formControlName="status" type="hidden" /> 
+                    <input formControlName="ids" type="hidden" /> 
+                    <!-- <td formArrayName="itemDetails">
+                      <ng-container *ngFor="let detail of itemDetails.controls; let i = index" [formGroupName]="i">
+                        <select formControlName="palletCategory">
+                          <option *ngFor="let category of palletCategoryLookups" [value]="category.palletCategoryId">
+                            {{ category.palletCategoryName }}
+                          </option>
+                        </select>                        
+                        <input type="hidden" formControlName="palletCategoryTie" />
+                        <input type="hidden" formControlName="palletCategoryHigh" />
+                        <input type="hidden" formControlName="palletCategorySpc" />
+                        <input type="hidden" formControlName="palletCategoryConversion" />
+                      </ng-container>
+                    </td> -->
+                    <td>
+                      <select
+                        formControlName="storageType"
+                        class="form-select"
+                        (change)="
+                          onStorageTypeChange(item.get('storageType')?.value, i)
+                        "
+                      >
+                        <option [ngValue]="null" [selected]="true">
+                          Select Type
+                        </option>
+                        <ng-container *ngFor="let type of storageTypesLookup">
+                          <option
+                            *ngIf="
+                              this.isHeaderTransactionOperationData?.headerInfo
+                                ?.transactionWayId == 4 &&
+                              item.get('itemIsBulkyStore')?.value == false
+                                ? false
+                                : this.isHeaderTransactionOperationData
+                                    ?.headerInfo?.transactionWayId == 4 &&
+                                  item.get('itemIsBulkyStore')?.value == true
+                                ? type.id == 1
+                                : this.isHeaderTransactionOperationData
+                                    ?.headerInfo?.transactionWayId != 4 &&
+                                  item.get('itemIsBulkyStore')?.value == false
+                                ? type.id != 1
+                                : true
+                            "
+                            [value]="type.id"
+                          >
+                            {{ type.name }}
+                          </option>
+                        </ng-container>
+                      </select>
+                    </td>
+                    <td>
+                      <ng-multiselect-dropdown
+                        [placeholder]="'Select Locations'"
+                        [settings]="dropdownSettings"
+                        [data]="item.get('locationOptions')?.value"
+                        (onSelect)="onSelectLocationChange($event, i)"
+                        (onDeSelect)="onDeSelectLocationChange($event, i)"
+                        (onSelectAll)="onSelectAllLocationChange($event, i)"
+                        (onDeSelectAll)="onDeSelectAllLocationChange($event, i)"
+                        formControlName="location"
+                      >
+                      </ng-multiselect-dropdown>
+                    </td>
+                    <!-- <td>
+                      <select
+                        *ngIf="item.get('storageType')?.value"
+                        formControlName="priceList"
+                        class="form-select"
+                      >
+                        <option [ngValue]="null" [selected]="true">
+                          Select Price
+                        </option>
+                        <option
+                          *ngFor="let type of priceListLookup"
+                          [value]="type.id"
+                        >
+                          {{ type.name }}
+                        </option>
+                      </select>
+                    </td> -->
+                    <td>
+                      <input
+                        *ngIf="item.get('storageType')?.value"
+                        [value]="item.get('numberOfLocations')?.value"
+                        disabled
+                        class="form-control"
+                      />
+                    </td>
+                    <td>
+                      <div
+                        class="d-flex align-items-center justify-content-between gap-2"
+                      >
+                        <span
+                          *ngIf="item.get('status')?.value == 1"
+                          (click)="onAddButtonClick(item.value)"
+                          style="
+                            display: inline-block;
+                            margin: 0.25em;
+                            border: 1px solid silver;
+                            border-radius: 0.25em;
+                            padding: 0.25em 0.5em;
+                          "
+                          role="button"
+                          ><i
+                            class="fa fa-check fa-fw text-success"
+                            title="Submit"
+                          ></i
+                        ></span>
+                        <span
+                          *ngIf="item.get('status')?.value != 2"
+                          (click)="removeItem(i, item.value)"
+                          style="
+                            display: inline-block;
+                            margin: 0.25em;
+                            border: 1px solid silver;
+                            border-radius: 0.25em;
+                            padding: 0.25em 0.5em;
+                          "
+                          role="button"
+                          ><i
+                            class="fa fa-trash fa-fw text-danger"
+                            title="Submit"
+                          ></i
+                        ></span>
+                        <span
+                          *ngIf="item.get('status')?.value == 7"
+                          (click)="onRevokeButtonClick(item.value)"
+                          style="
+                            display: inline-block;
+                            margin: 0.25em;
+                            border: 1px solid silver;
+                            border-radius: 0.25em;
+                            padding: 0.25em 0.5em;
+                          "
+                          role="button"
+                          ><i
+                            class="fa fa-undo fa-fw text-success"
+                            title="Revoke"
+                          ></i
+                        ></span>
+                      </div>
+                    </td>
+                    <!-- Hidden inputs -->
+                    <input formControlName="id" type="hidden" />
+                    <input formControlName="companyId" type="hidden" />
+                    <input formControlName="itemId" type="hidden" />
+                    <input formControlName="transactionId" type="hidden" />
+                    <input formControlName="conversion" type="hidden" />
+                    <input formControlName="spcForBulk" type="hidden" />
+                    <input formControlName="spcForRacks" type="hidden" />
+                    <input formControlName="itemMinExpiredDays" type="hidden" />
+                    <input formControlName="itemIsExpiration" type="hidden" />
+                    <input formControlName="itemIsSerializedIn" type="hidden" />
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <!-- <button class="btn btn-success mt-3">Submit All</button> -->
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card" *ngIf="!isStockDetailsCreation">
+  <div class="card-body">
+    <form
+      [formGroup]="headerTransactionForm"
+      (ngSubmit)="CreateHeaderTransaction(headerTransactionForm)"
+    >
+      <div class="row">
+        <div class="col-lg-3 col-md-6">
+          <div>
+            <label for="companyId">Company</label>
+            <select
+              formControlName="companyId"
+              id="companyId"
+              class="form-select mb-3"
+            >
+              <option *ngFor="let option of companyLookUp" [value]="option.id">
+                {{ option.name }}
+              </option>
+            </select>
+            <div
+              *ngIf="companyId?.errors && companyId?.touched"
+              class="alert alert-danger"
+            >
+              <p *ngIf="companyId?.errors?.['required']" class="m-0 p-0">
+                *Company Is Required
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+          <div>
+            <label for="typeId">Transaction Type</label>
+            <select
+              formControlName="typeId"
+              id="typeId"
+              class="form-select mb-3"
+              [(ngModel)]="SelectedTypeValue"
+              (change)="TypeySelectChanged()"
+            >
+              <option [ngValue]="null">Choose A Value</option>
+              <option *ngFor="let option of typeLookUp" [value]="option.id">
+                {{ option.name }}
+              </option>
+            </select>
+            <div
+              *ngIf="typeId?.errors && typeId?.touched"
+              class="alert alert-danger"
+            >
+              <p *ngIf="typeId?.errors?.['required']" class="m-0 p-0">
+                *Transaction Type Is Required
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+          <div>
+            <label for="refrenceNumber">Reference</label>
+            <input
+              formControlName="refrenceNumber"
+              type="text"
+              id="refrenceNumber"
+              autocomplete="off"
+              class="form-control mb-3"
+            />
+            <div
+              *ngIf="refrenceNumber?.errors && refrenceNumber?.touched"
+              class="alert alert-danger"
+            >
+              <p *ngIf="refrenceNumber?.errors?.['required']" class="m-0 p-0">
+                *Transaction number Is Required
+              </p>
+              <p *ngIf="refrenceNumber?.errors?.['notUnique']" class="m-0 p-0">
+                *Transaction number must be unique
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+          <div>
+            <label for="warehouseId">Warehouse</label>
+            <select
+              formControlName="warehouseId"
+              id="warehouseId"
+              class="form-select mb-3"
+              (change)="onWarehouseSelected()"
+            >
+              <ng-container *ngIf="shiftsUserDetails; else warehouselookups">
+                <option
+                  *ngFor="let option of shiftsUserDetails"
+                  [value]="option.warehouseId"
+                >
+                  {{ option.warehouseName }}
+                </option>
+              </ng-container>
+              <ng-template #warehouselookups>
+                <option
+                  *ngFor="let option of warehouseLookUp"
+                  [value]="option.id"
+                >
+                  {{ option.name }}
+                </option>
+              </ng-template>
+            </select>
+            <div
+              *ngIf="warehouseId?.errors && warehouseId?.touched"
+              class="alert alert-danger"
+            >
+              <p *ngIf="warehouseId?.errors?.['required']" class="m-0 p-0">
+                *Warehouse Is Required
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+          <div>
+            <label for="truckType">Truck Type</label>
+            <select
+              formControlName="truckType"
+              id="truckType"
+              class="form-select mb-3"
+              (change)="onTruckTypeSelected()" [(ngModel)]="truckTypeValue"
+            >
+              <option
+                *ngFor="let option of trucktypeLookUp"
+                [value]="option.id"
+              >
+                {{ option.name }}
+              </option>
+            </select>
+            <div
+              *ngIf="truckType?.errors && truckType?.touched"
+              class="alert alert-danger"
+            >
+              <p *ngIf="truckType?.errors?.['required']" class="m-0 p-0">
+                *Truck Type Is Required
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-6" *ngIf="TruckTypeIsConatiner">
+          <div>
+            <label for="containerNumber">Container Number</label>
+            <input
+              formControlName="containerNumber"
+              type="text"
+              id="containerNumber"
+              class="form-control mb-3"
+            />
+            <div *ngIf="containerNumber?.errors && containerNumber?.touched" class="alert alert-danger">
+              <p *ngIf="containerNumber?.errors?.['required']">*Container Number Is Required</p>
+              <p *ngIf="containerNumber?.errors?.['pattern']">*Container Number must be 11 alphanumeric characters</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-6" *ngIf="toWarehouseVisible">
+          <div>
+            <label for="toWarehouse">Warehouse From</label>
+            <select
+              formControlName="toWarehouse"
+              id="toWarehouse"
+              class="form-select mb-3"
+            >
+              <option [ngValue]="null" [selected]="true">Choose A Value</option>
+              <option
+                *ngFor="let option of warehouseLookUp"
+                [value]="option.id"
+              >
+                {{ option.name }}
+              </option>
+            </select>
+            <div
+              *ngIf="toWarehouse?.errors && toWarehouse?.touched"
+              class="alert alert-danger"
+            >
+              <p *ngIf="toWarehouse?.errors?.['required']" class="m-0 p-0">
+                *Warehouse Is Required
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-6" *ngIf="customerVisible">
+          <div>
+            <label for="cutomerId">Customer</label>
+            <select
+              formControlName="cutomerId"
+              id="cutomerId"
+              class="form-select mb-3"
+            >
+              <option [ngValue]="null" [selected]="true">Choose A Value</option>
+              <option *ngFor="let option of customerLookUp" [value]="option.id">
+                {{ option.name }}
+              </option>
+            </select>
+            <div
+              *ngIf="cutomerId?.errors && cutomerId?.touched"
+              class="alert alert-danger"
+            >
+              <p *ngIf="cutomerId?.errors?.['required']" class="m-0 p-0">
+                *Customer Is Required
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+          <div>
+            <label for="transactionWayId">Transaction Way</label>
+            <select
+              formControlName="transactionWayId"
+              id="transactionWayId"
+              class="form-select mb-3"
+            >
+              <option
+                *ngFor="let option of transactionWays"
+                [value]="option.id"
+              >
+                {{ option.name }}
+              </option>
+            </select>
+            <div
+              *ngIf="transactionWayId?.errors && transactionWayId?.touched"
+              class="alert alert-danger"
+            >
+              <p *ngIf="transactionWayId?.errors?.['required']" class="m-0 p-0">
+                *Transaction Way Is Required
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+          <div>
+            <label for="dockNumber">Dock</label>
+            <select
+              formControlName="dockNumber"
+              id="dockNumber"
+              class="form-select mb-3"
+            >
+              <option
+                *ngFor="let option of dockLookUp"
+                [value]="option.id"
+              >
+                {{ option.name }}
+              </option>
+            </select>
+            <div
+              *ngIf="dockNumber?.errors && dockNumber?.touched"
+              class="alert alert-danger"
+            >
+              <p *ngIf="dockNumber?.errors?.['required']" class="m-0 p-0">
+                *Dock Is Required
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+          <label for="vendorId">
+            Vendor
+          </label>
+          <select formControlName="vendorId" class="form-select">
+            <option [value]="null" selected>--Select Vendor--</option>
+            <option *ngFor="let vendor of vendorLookup" [value]="vendor.id">{{ vendor.name }}</option>
+          </select>
+        </div>
+        <div class="col-lg-3 col-md-6" *ngIf="TruckTypeIsConatiner">
+          <div>
+            <label for="sealNumber">Seal Number</label>
+            <input
+              formControlName="sealNumber"
+              type="text"
+              id="sealNumber"
+              autocomplete="off"
+              class="form-control mb-3"
+            />
+            <div *ngIf="sealNumber?.errors && sealNumber?.touched" class="alert alert-danger">
+              <p *ngIf="sealNumber?.errors?.['required']" class="m-0 p-0">*Seal Number is required</p>
+            </div>
+            <!-- <div *ngIf="sealNumber?.errors?.['required'] && sealNumber?.touched" class="alert alert-danger">
+              <p>*Seal Number Is Required</p>
+            </div> -->
+          </div>
+        </div>
+        <div
+          formArrayName="shiftAttributes"
+          *ngIf="shiftAttributes.controls.length"
+          class="row"
+        >
+          <div
+            *ngFor="
+              let shiftAttribute of shiftAttributes.controls;
+              let i = index
+            "
+            [formGroupName]="i"
+            class="col-lg-3 col-md-6"
+          >
+            <select
+              formControlName="attributeName"
+              class="form-select mb-3"
+              [disabled]="true"
+            >
+              <option
+                *ngFor="let attribute of selectedShiftDetails?.shiftAttributes"
+                [value]="attribute.shiftDetailsId"
+              >
+                {{ attribute.attributeName }}
+              </option>
+            </select>
+            <input
+              formControlName="maxValue"
+              type="number"
+              [attr.max]="getMaxValue(i)"
+              autocomplete="off"
+              class="form-control mb-3"
+            />
+            <div
+              *ngIf="
+                shiftAttribute.get('maxValue')?.errors &&
+                shiftAttribute.get('maxValue')?.touched
+              "
+              class="alert alert-danger"
+            >
+              <p
+                *ngIf="shiftAttribute.get('maxValue')?.errors?.['max']"
+                class="m-0 p-0"
+              >
+                *The Max Value For This Attribute Is {{ getMaxValue(i) }}
+              </p>
+              <p
+                *ngIf="shiftAttribute.get('maxValue')?.errors?.['min']"
+                class="m-0 p-0"
+              >
+                *The Min Value For This Attribute Is Zero
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="d-flex justify-content-between">
+        <div>
+          <button
+        [disabled]="headerTransactionForm.invalid"
+        class="btn btn-success"
+      >
+        <span *ngIf="!isLoading">Create</span>
+        <i *ngIf="isLoading" class="fas fa-spinner fa-pulse"></i>
+      </button>
+        </div>
+        <div *ngIf="scanWhQueueBarcodeValue">
+          <strong>{{scanWhQueueBarcodeValue}}</strong>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+
+
+<!-- <p-dialog header="All Transaction Details" [modal]="true" [(visible)]="visibleTransactionDetails" [style]="{ width: '50rem' }"
+[breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
+[maximizable]="true">
+<div  *ngIf="items().controls.length > 0">
+  <h5>Calculated SKU</h5>
+  <p>Total Count: {{ totalCountItemsWithId }}</p>
+  <p>Sum of Quantity: {{ sumQuantityItemsWithId }}</p>
+  <p>Number of Serialized Items: {{ numberOfSerializedItemsWithId }}</p>
+  <p>Sum of Quantity (Serialized Items): {{ sumQuantitySerializedItemsWithId }}</p>
+  <p>Number of Not Serialized Items: {{ numberOfNotSerializedItemsWithId }}</p>
+  <p>Sum of Quantity (Not Serialized Items): {{ sumQuantityNotSerializedItemsWithId }}</p>
+
+</div>
+
+<hr>
+
+<div  *ngIf="items().controls.length > 0">
+  <h5>Pending SKU</h5>
+  <p>Total Count: {{ totalCountItemsWithoutId }}</p>
+  <p>Sum of Quantity: {{ sumQuantityItemsWithoutId }}</p>
+  <p>Number of Serialized Items: {{ numberOfSerializedItemsWithoutId }}</p>
+  <p>Sum of Quantity (Serialized Items): {{ sumQuantitySerializedItemsWithoutId }}</p>
+  <p>Number of Not Serialized Items: {{ numberOfNotSerializedItemsWithoutId }}</p>
+  <p>Sum of Quantity (Not Serialized Items): {{ sumQuantityNotSerializedItemsWithoutId }}</p>
+
+</div>
+  <div *ngIf="items().controls.length == 0">
+    There Is No Details
+  </div>
+</p-dialog> -->
+
+<!-- <p-dialog header="All Transaction Details" [modal]="true" [(visible)]="visibleTransactionDetails" 
+          [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Info</th>
+        <th>Count</th>
+        <th>Quantity</th>
+        <th>Serial Count</th>
+        <th>Serialized</th>
+        <th>Not Serial Count</th>
+        <th>Not Serialized</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="background-color: #b7f79c;"> 
+        <td>Confirmed SKU</td>
+        <td>{{ totalCountItemsWithId }}</td>
+        <td>{{ sumQuantityItemsWithId }}</td>
+        <td>{{ numberOfSerializedItemsWithId }}</td>
+        <td>{{ sumQuantitySerializedItemsWithId }}</td>
+        <td>{{ numberOfNotSerializedItemsWithId }}</td>
+        <td>{{ sumQuantityNotSerializedItemsWithId }}</td>
+      </tr>
+      
+      <tr style="background-color: #f3aaaa;">
+        <td>Pending SKU</td>
+        <td>{{ totalCountItemsWithoutId }}</td>
+        <td>{{ sumQuantityItemsWithoutId }}</td>
+        <td>{{ numberOfSerializedItemsWithoutId }}</td>
+        <td>{{ sumQuantitySerializedItemsWithoutId }}</td>
+        <td>{{ numberOfNotSerializedItemsWithoutId }}</td>
+        <td>{{ sumQuantityNotSerializedItemsWithoutId }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="items().controls.length == 0" class="alert alert-danger">
+    There Is No Details
+  </div>
+</p-dialog> -->
+
+<!-- <p-dialog header="All Transaction Details" [modal]="true" [(visible)]="visibleTransactionDetails" 
+          [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>SKU</th>
+        <th>Status</th>
+        <th>Count</th>
+        <th>Quantity</th>
+        <th>Serial Count</th>
+        <th>Serialized</th>
+        <th>Not Serial Count</th>
+        <th>Not Serialized</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let sku of getObjectKeys(itemsGroupedBySkuAndStatus)">
+        <ng-container *ngFor="let status of getObjectKeys(itemsGroupedBySkuAndStatus[sku])">
+            <td>{{ sku }}</td>
+            <td>{{ status == "1" ? 'New' : status == "2" ? 'Dap' : 'Unknown' }}</td>
+            <td>{{ itemsGroupedBySkuAndStatus[sku][status].totalCount }}</td>
+            <td>{{ itemsGroupedBySkuAndStatus[sku][status].sumQuantity }}</td>
+            <td>{{ itemsGroupedBySkuAndStatus[sku][status].numberOfSerializedItems }}</td>
+            <td>{{ itemsGroupedBySkuAndStatus[sku][status].sumQuantitySerializedItems }}</td>
+            <td>{{ itemsGroupedBySkuAndStatus[sku][status].numberOfNotSerializedItems }}</td>
+            <td>{{ itemsGroupedBySkuAndStatus[sku][status].sumQuantityNotSerializedItems }}</td>
+        </ng-container>
+      </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="getObjectKeys(itemsGroupedBySkuAndStatus).length == 0" class="alert alert-danger">
+    There Is No Details
+  </div>
+
+</p-dialog> -->
+
+<p-dialog header="All Transaction Details" [modal]="true" [(visible)]="visibleTransactionDetails" 
+          [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+
+  <!-- <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>SKU</th>
+        <th>Status</th>
+        <th>Count</th>
+        <th>Quantity</th>
+        <th>Serial Count</th>
+        <th>Serialized</th>
+        <th>Not Serial Count</th>
+        <th>Not Serialized</th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container *ngFor="let sku of getObjectKeys(itemsGroupedBySkuAndStatus)">
+        <ng-container *ngFor="let status of getObjectKeys(itemsGroupedBySkuAndStatus[sku])">
+          <tr>
+            <td>{{ sku }}</td>
+            <td>{{ status == '1' ? 'New' : status == '2' ? 'Dap' : 'Unknown' }}</td>
+            <td>{{ itemsGroupedBySkuAndStatus[sku][status].totalCount }}</td>
+            <td>{{ itemsGroupedBySkuAndStatus[sku][status].sumQuantity }}</td>
+            <td>{{ itemsGroupedBySkuAndStatus[sku][status].numberOfSerializedItems }}</td>
+            <td>{{ itemsGroupedBySkuAndStatus[sku][status].sumQuantitySerializedItems }}</td>
+            <td>{{ itemsGroupedBySkuAndStatus[sku][status].numberOfNotSerializedItems }}</td>
+            <td>{{ itemsGroupedBySkuAndStatus[sku][status].sumQuantityNotSerializedItems }}</td>
+          </tr>
+        </ng-container>
+      </ng-container>
+    </tbody>
+  </table> -->
+  <!-- <table class="table table-bordered text-center">
+    <thead>
+      <tr>
+        <th rowspan="2">SKU</th>
+        <ng-container *ngFor="let status of uniqueStatuses">
+          <th colspan="4">{{ getStatusName(status) }}</th>
+        </ng-container>
+      </tr>
+      <tr>
+        
+        <ng-container *ngFor="let status of uniqueStatuses">
+          <th>Count</th>
+          <th>Quantity</th>
+          <th>Serial Count</th>
+          <th>Serialized</th>
+        </ng-container>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container *ngFor="let sku of getObjectKeys(itemsGroupedBySkuAndStatus)">
+        <tr>
+          <td>{{ sku }}</td>
+          <ng-container *ngFor="let status of uniqueStatuses">
+            <td>{{ itemsGroupedBySkuAndStatus[sku][status]?.totalCount || 0 }}</td>
+            <td>{{ itemsGroupedBySkuAndStatus[sku][status]?.sumQuantity || 0 }}</td>
+            <td>{{ itemsGroupedBySkuAndStatus[sku][status]?.numberOfSerializedItems || 0 }}</td>
+            <td>{{ itemsGroupedBySkuAndStatus[sku][status]?.sumQuantitySerializedItems || 0 }}</td>
+          </ng-container>
+        </tr>
+      </ng-container>
+    </tbody>
+  </table> -->
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>SKU</th>
+        <th>Line Count</th>
+        <th>Quantity</th>
+        <th>Is Serialized</th>
+        <!-- Status columns from itemStatusLookup -->
+        <th *ngFor="let status of itemStatusLookup">{{ status.name }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Loop over SKUs -->
+      <tr *ngFor="let sku of getObjectKeys(itemsGroupedBySku)">
+        <td>{{ sku }}</td> <!-- Display SKU -->
+        <td>{{ itemsGroupedBySku[sku].totalCount }}</td> <!-- Total count -->
+        <td>{{ itemsGroupedBySku[sku].totalQuantity }}</td> <!-- Total quantity -->
+        <td>{{ itemsGroupedBySku[sku].isSerialized ? 'Yes' : 'No' }}</td> <!-- Is Serialized -->
+        
+        <!-- Status columns -->
+        <td *ngFor="let status of itemStatusLookup">
+          {{ itemsGroupedBySku[sku].statusQuantities[status.id] || 0 }}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <div *ngIf="getObjectKeys(itemsGroupedBySku).length == 0" class="alert alert-danger">
+    There Is No Details
+  </div>
+
+</p-dialog>
+

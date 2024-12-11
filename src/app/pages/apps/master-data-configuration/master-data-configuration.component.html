@@ -1,0 +1,427 @@
+
+<!-- Start Breadcrumbs -->
+<app-breadcrumbs
+  title="Master Data Configuration"
+  [breadcrumbItems]="breadCrumbItems"
+  *ngIf="permissionIsLoadded"
+></app-breadcrumbs>
+<ngx-spinner
+  bdColor="rgba(51,51,51,0.8)"
+  size="medium"
+  color="#fff"
+  type="square-jelly-box"
+>
+  <p style="font-size: 20px; color: white">Loading...</p>
+</ngx-spinner>
+<!-- End Breadcrumbs -->
+
+
+<div class="card">
+    <div class="card-body">
+        <ul ngbNav #BorderTop="ngbNav" [activeId]="1" class="nav nav-tabs nav-justified nav-border-top nav-border-top-primary mb-3">
+          <li [ngbNavItem]="1" *ngIf="permissionIsLoadded && internalPermission[this.pagesname.Brand]?.includes(permissionData.View)">
+              <a ngbNavLink>
+                <i class="ri-square-line me-1 align-middle"></i> Brand
+              </a>
+              <ng-template ngbNavContent>
+                <div class="p-4">
+                    <ng-container>
+                      <button (click)="downloadBrandFile()" class="btn btn-primary">Download Template</button>
+                      <dx-file-uploader
+                      [multiple]="true"
+                      uploadMode="useButtons"
+                      uploadUrl="https://js.devexpress.com/Demos/NetCore/FileUploader/Upload"
+                      [allowedFileExtensions]="['.xlsx','xls']"
+                      (onValueChanged)="onBrandFileSelected($event)"
+                    >
+                    </dx-file-uploader>
+                    </ng-container>
+                  <dx-data-grid
+                  id="grid"
+                  [dataSource]="brandSource"
+                  [repaintChangesOnly]="true"
+                  [showBorders]="true"
+                  [columnAutoWidth]="true"
+                  (onExporting)="exportBrandGrid($event)"
+                  (onRowValidating)="onBrandRowValidating($event)"
+                >
+                    <dxo-scrolling mode="standard" [useNative]="false"></dxo-scrolling>
+                    <dxo-editing
+                      mode="cell"
+                      [allowAdding]="(permissionIsLoadded && internalPermission[this.pagesname.Brand]?.includes(permissionData.Add) ?? false)"
+                      [allowUpdating]="(permissionIsLoadded && internalPermission[this.pagesname.Brand]?.includes(permissionData.Update) ?? false)"
+                    >
+                    </dxo-editing>
+                    <dxo-selection mode="multiple"></dxo-selection>
+                    <dxi-column dataField="id" [visible]="false"></dxi-column>
+                    <dxi-column dataField="brandName">
+                      <dxi-validation-rule type="required" message="Brand Name is required"></dxi-validation-rule>
+                    </dxi-column>
+                    <dxi-column dataField="brandIsActive" dataType="boolean"></dxi-column>
+                    <dxo-paging [pageSize]="10"> </dxo-paging>
+                    <dxo-pager
+                      [visible]="true"
+                      
+                      [showPageSizeSelector]="showPageSizeSelector"
+                      [showInfo]="showInfo"
+                      [showNavigationButtons]="showNavButtons"
+                    >
+                    </dxo-pager>
+                    <dxo-export 
+                    [enabled]="true"
+                    [formats]="['xlsx', 'pdf']"
+                    [allowExportSelectedData]="true"
+                    ></dxo-export>
+                    <dxo-filter-row [visible]="true"></dxo-filter-row>
+                    <dxo-search-panel [visible]="true"></dxo-search-panel>
+                    <dxo-group-panel [visible]="true"></dxo-group-panel>
+                  </dx-data-grid>
+                  </div>
+
+              </ng-template>
+          </li>
+          <li [ngbNavItem]="2" *ngIf="permissionIsLoadded && internalPermission[this.pagesname.Category]?.includes(permissionData.View)">
+              <a ngbNavLink>
+                <i class="ri-focus-2-line align-middle me-1"></i>Category
+              </a>
+              <ng-template ngbNavContent>
+                <div class="p-4">
+                    <ng-container>
+                      <button (click)="downloadCategoryFile()" class="btn btn-primary">Download Template</button>
+                      <dx-file-uploader
+                      [multiple]="true"
+                      uploadMode="useButtons"
+                      uploadUrl="https://js.devexpress.com/Demos/NetCore/FileUploader/Upload"
+                      [allowedFileExtensions]="['.xlsx','xls']"
+                      (onValueChanged)="onCategoryFileSelected($event)"
+                    >
+                    </dx-file-uploader>
+                    </ng-container>
+                  <dx-data-grid
+                  id="grid"
+                  [dataSource]="categorySource"
+                  [repaintChangesOnly]="true"
+                  [showBorders]="true"
+                  [columnAutoWidth]="true"
+                  (onExporting)="exportCategoryGrid($event)"
+                  (onRowValidating)="onCategoryRowValidating($event)"
+                >
+                    <dxo-scrolling mode="standard" [useNative]="false"></dxo-scrolling>
+                    <dxo-editing
+                      mode="cell"
+                      [allowAdding]="(permissionIsLoadded && internalPermission[this.pagesname.Category]?.includes(permissionData.Add) ?? false)"
+                      [allowUpdating]="(permissionIsLoadded && internalPermission[this.pagesname.Category]?.includes(permissionData.Update) ?? false)"
+                    >
+                    </dxo-editing>
+                    <dxo-selection mode="multiple"></dxo-selection>
+                    <dxi-column dataField="id" [visible]="false"></dxi-column>
+                    <dxi-column dataField="categoryName">
+                      <dxi-validation-rule type="required" message="Category Name is required"></dxi-validation-rule>
+                    </dxi-column>
+                    <dxi-column dataField="categoriesIsActive" dataType="boolean"></dxi-column>
+                    <dxo-paging [pageSize]="10"> </dxo-paging>
+                    <dxo-pager
+                      [visible]="true"
+                      
+                      [showPageSizeSelector]="showPageSizeSelector"
+                      [showInfo]="showInfo"
+                      [showNavigationButtons]="showNavButtons"
+                    >
+                    </dxo-pager>
+                    <dxo-export 
+                    [enabled]="true"
+                    [formats]="['xlsx', 'pdf']"
+                    [allowExportSelectedData]="true"
+                    ></dxo-export>
+                    <dxo-filter-row [visible]="true"></dxo-filter-row>
+                    <dxo-search-panel [visible]="true"></dxo-search-panel>
+                    <dxo-group-panel [visible]="true"></dxo-group-panel>
+                  </dx-data-grid>
+                  </div>
+              </ng-template>
+          </li>
+          <li [ngbNavItem]="3" *ngIf="permissionIsLoadded && internalPermission[this.pagesname.PalletCategory]?.includes(permissionData.View)">
+            <a ngbNavLink>
+              <i class="ri-grid-fill align-middle me-1"></i>Pallet Category
+            </a>
+            <ng-template ngbNavContent>
+              <div class="p-4">
+                <ng-container>
+                  <button (click)="downloadPalletCategoryFile()" class="btn btn-primary">Download Template</button>
+                  <dx-file-uploader
+                  [multiple]="true"
+                  uploadMode="useButtons"
+                  uploadUrl="https://js.devexpress.com/Demos/NetCore/FileUploader/Upload"
+                  [allowedFileExtensions]="['.xlsx','xls']"
+                  (onValueChanged)="onPalletCategoryFileSelected($event)"
+                >
+                </dx-file-uploader>
+                </ng-container>
+              <dx-data-grid
+              id="grid"
+              [dataSource]="palletCategorySource"
+              [repaintChangesOnly]="true"
+              [showBorders]="true"
+              [columnAutoWidth]="true"
+              (onExporting)="exportPalletCategoryGrid($event)"
+              (onRowValidating)="onPalletCategoryRowValidating($event)"
+            >
+                <dxo-scrolling mode="standard" [useNative]="false"></dxo-scrolling>
+                <dxo-editing
+                  mode="cell"
+                  [allowAdding]="(permissionIsLoadded && internalPermission[this.pagesname.PalletCategory]?.includes(permissionData.Add) ?? false)"
+                  [allowUpdating]="(permissionIsLoadded && internalPermission[this.pagesname.PalletCategory]?.includes(permissionData.Update) ?? false)"
+                >
+                </dxo-editing>
+                <dxo-selection mode="multiple"></dxo-selection>
+                <!-- <dxi-column dataField="id"></dxi-column> -->
+                <dxi-column dataField="categoryName">
+                  <dxi-validation-rule type="required" message="Category Name is required"></dxi-validation-rule>
+                </dxi-column>
+                <dxi-column dataField="descriptions">
+                    <dxi-validation-rule type="required" message="Descriptions is required"></dxi-validation-rule>
+                  </dxi-column>
+                  <dxi-column dataField="type">
+                    <dxi-validation-rule type="required" message="Type is required"></dxi-validation-rule>
+                  </dxi-column>
+                  <dxi-column dataField="height" caption="Height(CM)">
+                    <dxi-validation-rule type="required" message="Height is required"></dxi-validation-rule>
+                  </dxi-column>
+                  <dxi-column dataField="width" caption="Width(CM)">
+                    <dxi-validation-rule type="required" message="Width is required"></dxi-validation-rule>
+                  </dxi-column>
+                  <dxi-column dataField="depth" caption="Length(CM)">
+                    <dxi-validation-rule type="required" message="Depth is required"></dxi-validation-rule>
+                  </dxi-column>
+                  <dxi-column dataField="isBulk" caption="Is Bulk" dataType="boolean">
+                  </dxi-column>
+                  <dxi-column dataField="status" caption="Active" dataType="boolean">
+                  </dxi-column>
+                <!-- <dxi-column dataField="status" dataType="boolean"></dxi-column> -->
+                <dxo-paging [pageSize]="10"> </dxo-paging>
+                <dxo-pager
+                  [visible]="true"
+                  
+                  [showPageSizeSelector]="showPageSizeSelector"
+                  [showInfo]="showInfo"
+                  [showNavigationButtons]="showNavButtons"
+                >
+                </dxo-pager>
+                <dxo-export 
+                [enabled]="true"
+                [formats]="['xlsx', 'pdf']"
+                [allowExportSelectedData]="true"
+                ></dxo-export>
+                <dxo-filter-row [visible]="true"></dxo-filter-row>
+                <dxo-search-panel [visible]="true"></dxo-search-panel>
+                <dxo-group-panel [visible]="true"></dxo-group-panel>
+              </dx-data-grid>
+              </div>
+            </ng-template>
+        </li>
+          <li [ngbNavItem]="4" *ngIf="permissionIsLoadded && internalPermission[this.pagesname.Item]?.includes(permissionData.View)">
+              <a ngbNavLink>
+                <i class="ri-shape-2-fill align-middle me-1"></i>Item
+              </a>
+              <ng-template ngbNavContent>
+                <div class="p-4">
+                    <ng-container>
+                        <button (click)="downloadItemFile()" class="btn btn-primary">Download Template</button>
+                        <dx-file-uploader
+                        [multiple]="true"
+                        uploadMode="useButtons"
+                        uploadUrl="https://js.devexpress.com/Demos/NetCore/FileUploader/Upload"
+                        [allowedFileExtensions]="['.xlsx','xls']"
+                        (onValueChanged)="onItemFileSelected($event)"
+                      >
+                      </dx-file-uploader>
+                      </ng-container>
+                        <dx-data-grid
+                        id="gridContainer"
+                        [dataSource]="itemSource"
+                        [showBorders]="true"
+                        [columnAutoWidth]="true"
+                        [allowColumnReordering]="true"
+                        (onExporting)="exportItemGrid($event)"
+                        (onRowValidating)="onItemRowValidating($event)"
+                        (onCellPrepared)="onCellPrepared($event)"
+                        >
+                        <!-- Master grid columns -->
+                        <dxi-column dataField="itemCode" caption="Item Code" [fixed]="true" alignment="center">
+                          <dxi-validation-rule type="required" message="Item Code is required"></dxi-validation-rule>
+                        </dxi-column>
+                        <dxi-column dataField="globalSku" caption="BarCode" [fixed]="true" alignment="center">
+                          <dxi-validation-rule type="required" message="BarCode is required"></dxi-validation-rule>
+                        </dxi-column>
+                        <dxi-column dataField="companyId" caption="Company" alignment="center">
+                          <dxo-lookup
+                            [dataSource]="companyData"
+                            valueExpr="id"
+                            displayExpr="name"
+                          ></dxo-lookup>
+                          <dxi-validation-rule type="required" message="Company is required"></dxi-validation-rule>
+                        </dxi-column>
+                        <dxi-column dataField="brandId" caption="Brand" alignment="center">
+                          <dxo-lookup
+                            [dataSource]="brandData"
+                            valueExpr="id"
+                            displayExpr="name"
+                          ></dxo-lookup>
+                          <dxi-validation-rule type="required" message="Brand is required"></dxi-validation-rule>
+                        </dxi-column>
+                        <dxi-column dataField="mainCategory" caption="Main Category" alignment="center">
+                          <dxi-validation-rule type="required" message="Main Category is required"></dxi-validation-rule>
+                        </dxi-column>
+                        <dxi-column dataField="categoryId" caption="Category" alignment="center">
+                          <dxo-lookup
+                            [dataSource]="categoryData"
+                            valueExpr="id"
+                            displayExpr="name"
+                          ></dxo-lookup>
+                          <dxi-validation-rule type="required" message="Category is required"></dxi-validation-rule>
+                        </dxi-column>
+                        <dxi-column dataField="weight" caption="Weight(KG)" alignment="center">
+                          <dxi-validation-rule type="required" message="Weight is required"></dxi-validation-rule>
+                        </dxi-column>
+                        <dxi-column caption="Dimension" alignment="center">
+                          <dxi-column dataField="itemLength" caption="Length(CM)" alignment="center">
+                            <dxi-validation-rule type="required" message="Length is required"></dxi-validation-rule>
+                          </dxi-column>
+                          <dxi-column dataField="width" caption="Width(CM)" alignment="center">
+                            <dxi-validation-rule type="required" message="Width is required"></dxi-validation-rule>>
+                          </dxi-column>
+                          <dxi-column dataField="height" caption="Height(CM)" alignment="center">
+                            <dxi-validation-rule type="required" message="Height is required"></dxi-validation-rule>
+                          </dxi-column>
+                        </dxi-column>
+                        <dxi-column dataField="description" caption="Description" alignment="center">
+                          <dxi-validation-rule type="required" message="Description is required"></dxi-validation-rule>
+                        </dxi-column>
+                        
+                        
+                        
+                        <!-- <dxi-column dataField="companyId" caption="Company"></dxi-column> -->
+                        
+                        <dxi-column dataField="itemIsBulky" caption="Is Bulky" dataType="boolean" alignment="center" [defaultValue]="false"></dxi-column>
+                        <dxi-column dataField="itemIsSerializedIn" caption="Serialized In" dataType="boolean" alignment="center" [defaultValue]="false"></dxi-column>
+                        <dxi-column dataField="itemIsSerializedOut" caption="Serialized Out" dataType="boolean" alignment="center" [defaultValue]="false"></dxi-column>
+                        <dxi-column dataField="itemIsExpiration" caption="Is Expiration" dataType="boolean" alignment="center" [defaultValue]="false"></dxi-column>
+                        <dxi-column dataField="itemLifeTime" caption="LifeTime(Days)" dataType="number"></dxi-column>
+                        <dxi-column dataField="itemLifeTimePercentage" caption="LifeTime(%)" dataType="number" alignment="center"></dxi-column>
+                        <dxi-column dataField="itemMinExpirationDays" caption="Expiration(Days)" dataType="number" [allowEditing]="false" [calculateCellValue]='calculateCellMinExpirationDaysValue' alignment="center">
+                        </dxi-column>
+                        <dxi-column dataField="itemIsActive" caption="Is Active" dataType="boolean" alignment="center"></dxi-column>
+                        <dxo-scrolling mode="standard" [useNative]="false"></dxo-scrolling>
+                        <dxo-editing
+                          mode="cell"
+                          [allowAdding]="(permissionIsLoadded && internalPermission[this.pagesname.Item]?.includes(permissionData.Add) ?? false)"
+                          [allowUpdating]="(permissionIsLoadded && internalPermission[this.pagesname.Item]?.includes(permissionData.Update) ?? false)"
+                        ></dxo-editing>
+                  
+                        <dxo-master-detail [enabled]="true" template="detailTemplate"></dxo-master-detail>
+                  
+                                  <div *dxTemplate="let data of 'detailTemplate'">
+                                    <div class="master-detail-caption">
+                                      {{ "Item's Details:" }}
+                                    </div>
+                                    <dx-data-grid
+                                      [dataSource]="data.data.itemDetails"
+                                      [columnAutoWidth]="true"
+                                      [showBorders]="true"
+                                      (onRowInserting)="onItemDetailInserting($event, data.data)"
+                                      (onRowUpdating)="onItemDetailUpdating($event, data.data)"
+                                    >
+                                      <dxi-column dataField="id" [visible]="false"></dxi-column>
+                                      <dxi-column dataField="itemDetailPalletCategoryId" caption="Pallet Category" alignment="center">
+                                        <dxo-lookup
+                                          [dataSource]="palletCategoryData"
+                                          valueExpr="id"
+                                          displayExpr="name"
+                                        ></dxo-lookup>
+                                        <dxi-validation-rule type="required" message="Pallet Category is required"></dxi-validation-rule>
+                                      </dxi-column>
+                                       <!-- Grouped Column with Sub-Headers -->
+                                      <dxi-column caption="Tie">
+                                        <dxi-column dataField="itemDetailTieVertical" caption="Vertical" dataType="number" alignment="center">
+                                          <dxi-validation-rule type="required" message="Tie High is required"></dxi-validation-rule>
+                                          <dxi-validation-rule type="range" [min]="1" message="Tie High must be at least 1"></dxi-validation-rule>
+                                          <dxi-validation-rule 
+                                            type="custom" 
+                                            message="Only integer values are allowed" 
+                                            [validationCallback]="isInteger">
+                                          </dxi-validation-rule>
+                                        </dxi-column>
+                                        <dxi-column dataField="itemDetailTieHorizontal" caption="Horizontal" dataType="number" alignment="center">
+                                          <dxi-validation-rule type="required" message="Tie Width is required"></dxi-validation-rule>
+                                          <dxi-validation-rule type="range" [min]="1" message="Tie Width must be at least 1"></dxi-validation-rule>
+                                          <dxi-validation-rule 
+                                            type="custom" 
+                                            message="Only integer values are allowed" 
+                                            [validationCallback]="isInteger">
+                                          </dxi-validation-rule>
+                                        </dxi-column>
+                                      </dxi-column>
+                                      <dxi-column dataField="itemDetailHigh" caption="High" alignment="center">
+                                        <dxi-validation-rule type="required" message="High is required"></dxi-validation-rule>
+                                        <dxi-validation-rule
+                                            type="range"
+                                            [min]="1"
+                                            message="High must be at least 1">
+                                          </dxi-validation-rule>
+                                      </dxi-column>
+                                      <dxi-column dataField="itemDetailSpc" caption="Spc" [allowEditing]="false"   [calculateCellValue]='calculateCellSpcValue' alignment="center">
+                                      </dxi-column>
+                                      <dxi-column dataField="itemDetailConversion" caption="Multi-Stacking" alignment="center">
+                                        <dxi-validation-rule type="required" message="Conversion is required"></dxi-validation-rule>
+                                        <dxi-validation-rule
+                                            type="range"
+                                            [min]="1"
+                                            message="Conversion must be at least 1">
+                                          </dxi-validation-rule>
+                                      </dxi-column>
+                                      <dxi-column dataField="itemDetailSpcStacking" caption="Spc Stacking" [allowEditing]="false"   [calculateCellValue]='calculateCellStackingValue' alignment="center"></dxi-column>
+                                      <dxi-column
+                                        dataField="itemDetailSqmPerPallet"
+                                        caption="Sqm Per Pallet"
+                                        [allowEditing]="false"
+                                      ></dxi-column>
+                                      <dxi-column dataField="itemDetailCbm" caption="CBM" [allowEditing]="false" alignment="center"></dxi-column>
+                                      <dxi-column dataField="itemDetailSqmEmpty" caption="Sqm Empty" [allowEditing]="false" alignment="center"></dxi-column>
+                                      <dxi-column dataField="itemDetailIsActive" caption="Is Active" dataType="boolean" alignment="center"></dxi-column>
+                                            <dxo-editing
+                                              mode="cell"
+                                              [allowAdding]="(permissionIsLoadded && internalPermission[this.pagesname.Item]?.includes(permissionData.Add) ?? false)"
+                                              [allowUpdating]="(permissionIsLoadded && internalPermission[this.pagesname.Item]?.includes(permissionData.Update) ?? false)"
+                                            ></dxo-editing>
+                                      <dxo-scrolling mode="standard" [useNative]="false"></dxo-scrolling>
+                                      <!-- Define other detail columns -->
+                                    </dx-data-grid>
+                                  </div>
+                                  <dxo-paging [pageSize]="5"> </dxo-paging>
+                                  <dxo-pager
+                                    [visible]="true"
+                                    
+                                    [showPageSizeSelector]="showPageSizeSelector"
+                                    [showInfo]="showInfo"
+                                    [showNavigationButtons]="showNavButtons"
+                                  >
+                                  </dxo-pager>
+                                  <dxo-export 
+                                  [enabled]="true"
+                                  [formats]="['xlsx', 'pdf']"
+                                  [allowExportSelectedData]="true"
+                                  ></dxo-export>
+                                  <dxo-filter-row [visible]="true"></dxo-filter-row>
+                                  <dxo-search-panel [visible]="true"></dxo-search-panel>
+                                  <dxo-group-panel [visible]="true"></dxo-group-panel>
+                      </dx-data-grid>
+                </div>
+              </ng-template>
+          </li>
+          
+        </ul>
+        <div class="tab-content text-muted">
+          <div [ngbNavOutlet]="BorderTop"></div>
+        </div>
+    </div>
+</div>

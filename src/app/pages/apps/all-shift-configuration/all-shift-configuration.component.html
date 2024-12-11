@@ -1,0 +1,256 @@
+
+<!-- Start Breadcrumbs -->
+<app-breadcrumbs
+  title="Shift Configuration"
+  [breadcrumbItems]="breadCrumbItems"
+></app-breadcrumbs>
+
+<!-- End Breadcrumbs -->
+<div class="card">
+    <div class="card-body">
+        <ul ngbNav #BorderTop="ngbNav" [activeId]="1" class="nav nav-tabs nav-justified nav-border-top nav-border-top-primary mb-3">
+          <li [ngbNavItem]="1"*ngIf="permissionIsLoadded && internalPermission[this.pagesname.ShiftAttribute]?.includes(permissionData.View)">
+              <a ngbNavLink>
+                <i class="ri-group-line me-1 align-middle"></i>Shift Attribute
+              </a>
+              <ng-template ngbNavContent>
+                <div class="p-4">
+                  <ng-container>
+                    <button (click)="downloadAttributeFile()" class="btn btn-primary">Download Template</button>
+                    <dx-file-uploader
+                    [multiple]="true"
+                    uploadMode="useButtons"
+                    uploadUrl="https://js.devexpress.com/Demos/NetCore/FileUploader/Upload"
+                    [allowedFileExtensions]="['.xlsx','xls']"
+                    (onValueChanged)="onAttributeFileSelected($event)"
+                  >
+                  </dx-file-uploader>
+                  </ng-container>
+                <dx-data-grid
+                id="grid"
+                [dataSource]="attributeData"
+                [repaintChangesOnly]="true"
+                [showBorders]="true"
+                [columnAutoWidth]="true"
+                (onExporting)="exportAttributeGrid($event)"
+                (onRowValidating)="onAttributeRowValidating($event)"
+              >
+                  <dxo-scrolling mode="standard" [useNative]="false"></dxo-scrolling>
+                  <dxo-editing
+                    mode="cell"
+                    [allowAdding]="(permissionIsLoadded && internalPermission[this.pagesname.ShiftAttribute]?.includes(permissionData.Add) ?? false)"
+                    [allowUpdating]="(permissionIsLoadded && internalPermission[this.pagesname.ShiftAttribute]?.includes(permissionData.Update) ?? false)"
+                  >
+                  </dxo-editing>
+                  <dxo-selection mode="multiple"></dxo-selection>
+                  <dxi-column dataField="attributeName">
+                    <dxi-validation-rule type="required" message="attribute is required"></dxi-validation-rule>
+                  </dxi-column>
+                  <dxi-column dataField="attributeDescription"></dxi-column>
+                  <dxi-column dataField="attributeNote"></dxi-column>
+                  <dxi-column dataField="attributeIsActive" dataType="boolean"></dxi-column>
+                  <dxo-paging [pageSize]="10"> </dxo-paging>
+                  <dxo-pager
+                    [visible]="true"
+                    
+                    [showPageSizeSelector]="showPageSizeSelector"
+                    [showInfo]="showInfo"
+                    [showNavigationButtons]="showNavButtons"
+                  >
+                  </dxo-pager>
+                  <dxo-export 
+                  [enabled]="true"
+                  [formats]="['xlsx', 'pdf']"
+                  [allowExportSelectedData]="true"
+                  ></dxo-export>
+                  <dxo-filter-row [visible]="true"></dxo-filter-row>
+                  <dxo-search-panel [visible]="true"></dxo-search-panel>
+                  <dxo-group-panel [visible]="true"></dxo-group-panel>
+                </dx-data-grid>
+                </div>
+              </ng-template>
+          </li>
+          <li [ngbNavItem]="2" *ngIf="permissionIsLoadded && internalPermission[this.pagesname.ShiftType]?.includes(permissionData.View)">
+              <a ngbNavLink>
+                <i class="ri-function-line align-middle me-1"></i>Shift Type
+              </a>
+              <ng-template ngbNavContent>
+                <div class="p-4">
+                  <dx-data-grid
+                  id="grid"
+                  [dataSource]="shiftTypeSource"
+                  [repaintChangesOnly]="true"
+                  [showBorders]="true"
+                  [columnAutoWidth]="true"
+                  (onExporting)="exportShifTypeGrid($event)"
+                  (onRowValidating)="onShifTypeRowValidating($event)"
+                  (onInitNewRow)="onInitNewShifTypeRow($event)"
+                >
+                    <dxo-scrolling mode="standard" [useNative]="false"></dxo-scrolling>
+                    <dxo-editing
+                      mode="cell"
+                      [allowAdding]="(permissionIsLoadded && internalPermission[this.pagesname.ShiftType]?.includes(permissionData.Add) ?? false)"
+                      [allowUpdating]="(permissionIsLoadded && internalPermission[this.pagesname.ShiftType]?.includes(permissionData.Update) ?? false)"
+                    >
+                    </dxo-editing>
+                    <dxo-selection mode="multiple"></dxo-selection>
+                    <dxi-column dataField="typeIsFixedHour" caption="Shift Type"  [calculateCellValue]="calculateShiftType" [setCellValue]="setShiftType">
+                        <dxo-lookup
+                          [dataSource]="shiftType"
+                          valueExpr="id"
+                          displayExpr="name"
+                        ></dxo-lookup>
+                      </dxi-column>
+                      <dxi-column dataField="typeStartHour" dataType="number" caption="Start Hour"></dxi-column>
+                      <dxi-column dataField="typeEndHour" dataType="number" caption="End Hour"></dxi-column>
+                      <dxi-column dataField="typeTotalShiftHour" dataType="number"  caption="Total Hour"   [calculateCellValue]='calculateCellTotalHourValue' [allowEditing]="false"></dxi-column>
+                      <dxi-column dataField="typeName"  caption="Name"></dxi-column>
+                      <dxi-column dataField="typeWarehouseId" caption="Warehouse">
+                        <dxo-lookup
+                          [dataSource]="warehouseLookupSource"
+                          valueExpr="id"
+                          displayExpr="name"
+                        ></dxo-lookup>
+                      </dxi-column>
+                      
+                      <dxi-column
+                            dataField="typeAttributes"
+                            caption="Attributes"
+                            [width]="200"
+                            [allowSorting]="false"
+                            editCellTemplate="tagBoxEditor"
+                            [cellTemplate]="cellTemplate"
+                            [calculateFilterExpression]="calculateFilterExpression"
+                        >
+                            <dxo-lookup [dataSource]="attributeSource" valueExpr="id" displayExpr="name">
+                            </dxo-lookup>
+                            <dxi-validation-rule type="required"></dxi-validation-rule>
+                        </dxi-column>
+    
+                        <div *dxTemplate="let cellInfo of 'tagBoxEditor'">
+                          <dx-tag-box
+                          [dropDownOptions]="dropDownOptions"
+                            [dataSource]="attributeSource"
+                            [value]="cellInfo.value"
+                            valueExpr="id"
+                            displayExpr="name"
+                            [showSelectionControls]="true"
+                            [maxDisplayedTags]="3"
+                            [showMultiTagOnly]="false"
+                            [inputAttr]="{ 'aria-label': 'Attributes' }"
+                            applyValueMode="useButtons"
+                            [searchEnabled]="true"
+                            (onValueChanged)="onValueChanged($event, cellInfo)"
+                            (onSelectionChanged)="onSelectionChanged($event, cellInfo)"
+                          >
+                          </dx-tag-box>
+                        </div>
+    
+                    <dxi-column dataField="typeNote"  caption="Note"></dxi-column>
+                    <dxi-column dataField="typeIsActive" dataType="boolean"  caption="Is Active"></dxi-column>
+                    <dxo-paging [pageSize]="10"> </dxo-paging>
+                    <dxo-pager
+                      [visible]="true"
+                      
+                      [showPageSizeSelector]="showPageSizeSelector"
+                      [showInfo]="showInfo"
+                      [showNavigationButtons]="showNavButtons"
+                    >
+                    </dxo-pager>
+                    <dxo-export 
+                    [enabled]="true"
+                    [formats]="['xlsx', 'pdf']"
+                    [allowExportSelectedData]="true"
+                    ></dxo-export>
+                    <dxo-filter-row [visible]="true"></dxo-filter-row>
+                    <dxo-search-panel [visible]="true"></dxo-search-panel>
+                    <dxo-group-panel [visible]="true"></dxo-group-panel>
+                  </dx-data-grid>
+                  </div>
+              </ng-template>
+          </li>
+          <li [ngbNavItem]="3" *ngIf="permissionIsLoadded && internalPermission[this.pagesname.ShiftSellingPrice]?.includes(permissionData.View)">
+              <a ngbNavLink>
+                <i class="ri-money-dollar-circle-line align-middle me-1"></i>Shift PriceList
+              </a>
+              <ng-template ngbNavContent>
+                <div class="p-4 underConstruction">
+                    
+                </div>
+              </ng-template>
+          </li>
+          <li [ngbNavItem]="4" *ngIf="permissionIsLoadded && internalPermission[this.pagesname.Holiday]?.includes(permissionData.View)">
+            <a ngbNavLink>
+              <i class="ri-calendar-check-line align-middle me-1"></i>Holidays
+            </a>
+            <ng-template ngbNavContent>
+              <div class="p-5">
+                <dx-data-grid
+                  id="grid"
+                  [dataSource]="holidaySource"
+                  [repaintChangesOnly]="true"
+                  [showBorders]="true"
+                  [columnAutoWidth]="true"
+                  (onExporting)="exportHolidayGrid($event)"
+                >
+                  <dxo-scrolling mode="standard" [useNative]="false"></dxo-scrolling>
+                  <dxo-editing
+                    mode="cell"
+                    [allowAdding]="(permissionIsLoadded && internalPermission[this.pagesname.Holiday]?.includes(permissionData.Add) ?? false)"
+                    [allowUpdating]="(permissionIsLoadded && internalPermission[this.pagesname.Holiday]?.includes(permissionData.Update) ?? false)"
+                  >
+                  </dxo-editing>
+                  <dxo-selection mode="multiple"></dxo-selection>
+                  
+                  <!-- Configure the date picker for holidayDate -->
+                  <dxi-column
+                    dataField="holidayDate"
+                    dataType="datetime"
+                    caption="Date"
+                  >
+                    <!-- Define editor options for datetime picker -->
+                    <dxo-editor-options
+                      [type]="'datetime'"
+                      [displayFormat]="'dd/MM/yyyy HH:mm'"
+                      [useMaskBehavior]="true"
+                      >
+                    </dxo-editor-options>
+                  </dxi-column>
+          
+                  <dxi-column
+                    dataField="holidayCreatedBy"
+                    caption="Created By"
+                  ></dxi-column>
+                  <dxi-column
+                    dataField="holidayIsActive"
+                    dataType="boolean"
+                    caption="Is Active"
+                  ></dxi-column>
+          
+                  <dxo-paging [pageSize]="10"> </dxo-paging>
+                  <dxo-pager
+                    [visible]="true"
+                    [showPageSizeSelector]="showPageSizeSelector"
+                    [showInfo]="showInfo"
+                    [showNavigationButtons]="showNavButtons"
+                  >
+                  </dxo-pager>
+                  <dxo-export
+                    [enabled]="true"
+                    [formats]="['xlsx', 'pdf']"
+                    [allowExportSelectedData]="true"
+                  ></dxo-export>
+                  <dxo-filter-row [visible]="true"></dxo-filter-row>
+                  <dxo-search-panel [visible]="true"></dxo-search-panel>
+                  <dxo-group-panel [visible]="true"></dxo-group-panel>
+                </dx-data-grid>
+              </div>
+            </ng-template>
+          </li>
+          
+        </ul>
+        <div class="tab-content text-muted">
+          <div [ngbNavOutlet]="BorderTop"></div>
+        </div>
+    </div>
+</div>

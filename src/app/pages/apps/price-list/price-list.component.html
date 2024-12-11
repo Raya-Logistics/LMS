@@ -1,0 +1,872 @@
+<app-breadcrumbs *ngIf="permissionIsLoadded && internalPermission?.includes(permissionData.View)" [title]="pagesname.PriceList" [breadcrumbItems]="breadCrumbItems"></app-breadcrumbs>
+
+
+<div class="p-2" *ngIf="(permissionIsLoadded && internalPermission?.includes(permissionData.Add))">
+  <!-- Base Example -->
+  <div class="accordion" id="default-accordion-example">
+    <div class="accordion-item">
+      <h2 class="accordion-header p-2" id="headingOne">
+        <button
+          class="accordion-button collapsed"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#collapseTwo"
+          aria-expanded="false"
+          aria-controls="collapseTwo"
+        >
+          Create Price List
+        </button>
+      </h2>
+      <div
+        id="collapseTwo"
+        class="accordion-collapse collapse"
+        data-bs-parent="#accordionExample"
+      >
+        <div class="accordion-body">
+          <form
+            [formGroup]="priceListForm"
+            (ngSubmit)="addPriceList(priceListForm)"
+          >
+            <div class="row">
+              <div class="col-lg-3 col-md-6">
+                <div>
+                  <label for="code">Code</label>
+                  <input
+                    formControlName="code"
+                    type="text"
+                    name="code"
+                    id="code"
+                    class="form-control mb-3"
+                  />
+                  <div
+                    *ngIf="code?.errors && name?.touched"
+                    class="alert alert-danger"
+                  >
+                    <p *ngIf="code?.errors?.['required']" class="m-0 p-0">
+                      *Code Is Required
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-3 col-md-6">
+                <div>
+                  <label for="companyId">Company</label>
+                  <select
+                    formControlName="companyId"
+                    id="companyId"
+                    class="form-select mb-3"
+                  >
+                    <!--[(ngModel)]="companySelectedValue" (change)="companySelectChanged()"-->
+                    <option [ngValue]="null" [selected]="true">
+                      Choose A Value
+                    </option>
+                    <option
+                      *ngFor="let option of companyLookUp"
+                      [value]="option.id"
+                    >
+                      {{ option.name }}
+                    </option>
+                  </select>
+                  <div
+                    *ngIf="companyId?.errors && companyId?.touched"
+                    class="alert alert-danger"
+                  >
+                    <p *ngIf="companyId?.errors?.['required']" class="m-0 p-0">
+                      *company Is Required
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-3 col-md-6">
+                <div>
+                  <label for="contractLink">Upload Contarct evidence</label>
+                  <input
+                    formControlName="contractLink"
+                    type="file"
+                    name="contractLink"
+                    id="contractLink"
+                    class="form-control mb-2"
+                  />
+                  <div
+                    *ngIf="contractLink?.errors && contractLink?.touched"
+                    class="alert alert-danger"
+                  >
+                    <p *ngIf="contractLink?.errors?.['required']" class="m-0 p-0">
+                      *Contract Link Is Required
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-3 col-md-6">
+                <div>
+                  <label for="startDate">Start Date</label>
+                  <input
+                    formControlName="startDate"
+                    type="datetime-local"
+                    name="startDate"
+                    id="startDate"
+                    class="form-control mb-2"
+                  />
+                  <div
+                    *ngIf="startDate?.errors && startDate?.touched"
+                    class="alert alert-danger"
+                  >
+                    <p *ngIf="startDate?.errors?.['required']" class="m-0 p-0">
+                      *start Date Is Required
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-3 col-md-6">
+                <div>
+                  <label for="endDate">End Date</label>
+                  <input
+                    formControlName="endDate"
+                    type="datetime-local"
+                    name="endDate"
+                    id="endDate"
+                    class="form-control mb-2"
+                  />
+                  <div
+                    *ngIf="endDate?.errors && endDate?.touched"
+                    class="alert alert-danger"
+                  >
+                    <p *ngIf="endDate?.errors?.['required']" class="m-0 p-0">
+                      *end Date Is Required
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-3 col-md-6">
+                <div>
+                  <label for="">Storage Type</label>
+                  <select
+                    formControlName="storageType"
+                    id="storageType"
+                    class="form-select mb-3"
+                    [(ngModel)]="selectStorageTypeValue"
+                    (change)="selectStorageTypeChanged()"
+                  >
+                    <option [ngValue]="null" [selected]="true">
+                      Choose A Value
+                    </option>
+                    <option
+                      *ngFor="let option of storageTypeLookUp"
+                      [value]="option.id"
+                    >
+                      {{ option.name }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-lg-3 col-md-6">
+                <div>
+                  <label for="storagePrice">Storage Price (Per Day)</label>
+                  <input
+                    formControlName="storagePrice"
+                    type="number"
+                    name="storagePrice"
+                    id="storagePrice"
+                    class="form-control mb-2"
+                    [disabled]="isDisaled"
+                  />
+                  <div
+                    *ngIf="storagePrice?.errors && storagePrice?.touched"
+                    class="alert alert-danger"
+                  >
+                    <p
+                      *ngIf="storagePrice?.errors?.['required']"
+                      class="m-0 p-0"
+                    >
+                      *Storage Price Is Required
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-3 col-md-6">
+                <div>
+                  <label for="rentPalletRate">Rent Pallet rate (day)</label>
+                  <input
+                    formControlName="rentPalletRate"
+                    type="number"
+                    name="rentPalletRate"
+                    id="rentPalletRate"
+                    class="form-control mb-2"
+                    [disabled]="isDisaled"
+                  />
+                  <div
+                    *ngIf="rentPalletRate?.errors && rentPalletRate?.touched"
+                    class="alert alert-danger"
+                  >
+                    <p
+                      *ngIf="rentPalletRate?.errors?.['required']"
+                      class="m-0 p-0"
+                    >
+                      *Rent Pallet Rate Is Required
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-3 col-md-6">
+                <div>
+                  <label for="buildPalletRate"
+                    >Build Pallet rate (Pallet)</label
+                  >
+                  <input
+                    formControlName="buildPalletRate"
+                    type="number"
+                    name="buildPalletRate"
+                    id="buildPalletRate"
+                    class="form-control mb-2"
+                    [disabled]="isDisaled"
+                  />
+                  <div
+                    *ngIf="buildPalletRate?.errors && buildPalletRate?.touched"
+                    class="alert alert-danger"
+                  >
+                    <p
+                      *ngIf="buildPalletRate?.errors?.['required']"
+                      class="m-0 p-0"
+                    >
+                      *Build Pallet Rate Is Required
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-3 col-md-6">
+                <div>
+                  <label for="width">Width (Meter)</label>
+                  <input
+                    formControlName="width"
+                    type="number"
+                    name="width"
+                    id="width"
+                    class="form-control mb-2"
+                    [disabled]="isDisaled"
+                  />
+                  <div
+                    *ngIf="width?.errors && width?.touched"
+                    class="alert alert-danger"
+                  >
+                    <p *ngIf="width?.errors?.['required']" class="m-0 p-0">
+                      *Width Is Required
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-3 col-md-6">
+                <div>
+                  <label for="height">Height (Meter)</label>
+                  <input
+                    formControlName="height"
+                    type="number"
+                    name="height"
+                    id="height"
+                    class="form-control mb-2"
+                    [disabled]="isDisaled"
+                  />
+                  <div
+                    *ngIf="height?.errors && height?.touched"
+                    class="alert alert-danger"
+                  >
+                    <p *ngIf="height?.errors?.['required']" class="m-0 p-0">
+                      *Height Is Required
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-3 col-md-6">
+                <div>
+                  <label for="depth">Depth (Meter)</label>
+                  <input
+                    formControlName="depth"
+                    type="number"
+                    name="depth"
+                    id="depth"
+                    class="form-control mb-2"
+                    [disabled]="isDisaled"
+                  />
+                  <div
+                    *ngIf="depth?.errors && depth?.touched"
+                    class="alert alert-danger"
+                  >
+                    <p *ngIf="depth?.errors?.['required']" class="m-0 p-0">
+                      *Depth Is Required
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-3 col-md-6">
+                <div>
+                  <label for="descriptions">Descriptions</label>
+                  <input
+                    formControlName="descriptions"
+                    type="text"
+                    name="descriptions"
+                    id="descriptions"
+                    class="form-control mb-3"
+                    [disabled]="isDisaled"
+                  />
+                  <div
+                    *ngIf="descriptions?.errors && descriptions?.touched"
+                    class="alert alert-danger"
+                  >
+                    <p
+                      *ngIf="descriptions?.errors?.['required']"
+                      class="m-0 p-0"
+                    >
+                      *Descriptions Is Required
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-3 col-md-6">
+                <div>
+                  <label>Handling IN Type:</label>
+                  <select
+                    formControlName="categoryIdHandlingIn"
+                    id="categoryIdHandlingIn"
+                    class="form-select mb-3"
+                    [(ngModel)]="palletCategory1SelectedValue"
+                    (change)="palletCategory1SelectChanged()"
+                  >
+                    <option [ngValue]="null" [selected]="true">
+                      Choose A Value
+                    </option>
+                    <option
+                      *ngFor="let option of palletCategoryLookUp"
+                      [value]="option.id"
+                    >
+                      {{ option.name }}
+                    </option>
+                  </select>
+                  <div
+                    *ngIf="
+                      categoryIdHandlingIn?.errors &&
+                      categoryIdHandlingIn?.touched
+                    "
+                    class="alert alert-danger"
+                  >
+                    <p
+                      *ngIf="categoryIdHandlingIn?.errors?.['required']"
+                      class="m-0 p-0"
+                    >
+                      *categoryIdHandlingIn Is Required
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-3 col-md-6">
+                <div>
+                  <label for="handlingInPrice">Handling IN Rate</label>
+                  <input
+                    formControlName="handlingInPrice"
+                    type="number"
+                    name="handlingInPrice"
+                    id="handlingInPrice"
+                    class="form-control mb-2"
+                    [disabled]="isDisaled"
+                  />
+                  <div
+                    *ngIf="handlingInPrice?.errors && handlingInPrice?.touched"
+                    class="alert alert-danger"
+                  >
+                    <p
+                      *ngIf="handlingInPrice?.errors?.['required']"
+                      class="m-0 p-0"
+                    >
+                      *handlingInPrice Is Required
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-3 col-md-6">
+                <div>
+                  <label>Handling Out Type:</label>
+                  <select
+                    formControlName="categoryIdHandlingOut"
+                    id="categoryIdHandlingOut"
+                    class="form-select mb-3"
+                    [(ngModel)]="palletCategory2SelectedValue"
+                    (change)="palletCategory2SelectChanged()"
+                  >
+                    <option [ngValue]="null" [selected]="true">
+                      Choose A Value
+                    </option>
+                    <option
+                      *ngFor="let option of palletCategoryLookUp"
+                      [value]="option.id"
+                    >
+                      {{ option.name }}
+                    </option>
+                  </select>
+                  <div
+                    *ngIf="
+                      categoryIdHandlingOut?.errors &&
+                      categoryIdHandlingOut?.touched
+                    "
+                    class="alert alert-danger"
+                  >
+                    <p
+                      *ngIf="categoryIdHandlingOut?.errors?.['required']"
+                      class="m-0 p-0"
+                    >
+                      *categoryIdHandlingOut Is Required
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-3 col-md-6">
+                <div>
+                  <label for="handlingOutPrice">Handling out price</label>
+                  <input
+                    formControlName="handlingOutPrice"
+                    type="number"
+                    name="handlingOutPrice"
+                    id="handlingOutPrice"
+                    class="form-control mb-2"
+                    [disabled]="isDisaled"
+                  />
+                  <div
+                    *ngIf="
+                      handlingOutPrice?.errors && handlingOutPrice?.touched
+                    "
+                    class="alert alert-danger"
+                  >
+                    <p
+                      *ngIf="handlingOutPrice?.errors?.['required']"
+                      class="m-0 p-0"
+                    >
+                      *handlingOutPrice Is Required
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-3 col-md-6">
+                <div>
+                  <label>Re-Allocation Type:</label>
+                  <select
+                    formControlName="categoryIdAllocation"
+                    id="categoryIdAllocation"
+                    class="form-select mb-3"
+                    [(ngModel)]="palletCategory3SelectedValue"
+                    (change)="palletCategory3SelectChanged()"
+                  >
+                    <option [ngValue]="null" [selected]="true">
+                      Choose A Value
+                    </option>
+                    <option
+                      *ngFor="let option of palletCategoryLookUp"
+                      [value]="option.id"
+                    >
+                      {{ option.name }}
+                    </option>
+                  </select>
+                  <div
+                    *ngIf="
+                      categoryIdAllocation?.errors &&
+                      categoryIdAllocation?.touched
+                    "
+                    class="alert alert-danger"
+                  >
+                    <p
+                      *ngIf="categoryIdAllocation?.errors?.['required']"
+                      class="m-0 p-0"
+                    >
+                      *categoryIdAllocation Is Required
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-3 col-md-6">
+                <div>
+                  <label for="allocationRate">Re-Allocation Rateprice</label>
+                  <input
+                    formControlName="allocationRate"
+                    type="number"
+                    name="allocationRate"
+                    id="allocationRate"
+                    class="form-control mb-2"
+                    [disabled]="isDisaled"
+                  />
+                  <div
+                    *ngIf="allocationRate?.errors && allocationRate?.touched"
+                    class="alert alert-danger"
+                  >
+                    <p
+                      *ngIf="allocationRate?.errors?.['required']"
+                      class="m-0 p-0"
+                    >
+                      *allocationRate Is Required
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-3">
+                  <div class="form-check">
+                    <input
+                      formControlName="partialMonthStorage30"
+                      class="form-check-input"
+                      type="checkbox"
+                      id="partialMonthStorage30"
+                      name="partialMonthStorage30"
+                    />
+                    <label class="form-check-label  mx-4" for="partialMonthStorage30">
+                      Partial Month 30
+                    </label>
+                    <div
+                      *ngIf="
+                        partialMonthStorage30?.errors &&
+                        partialMonthStorage30?.touched
+                      "
+                      class="alert alert-danger"
+                    >
+                      <p
+                        *ngIf="partialMonthStorage30?.errors?.['required']"
+                        class="m-0 p-0"
+                      >
+                        *partialMonthStorage30 Is Required
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="form-check">
+                    <input
+                      formControlName="partialMonthStorage15"
+                      class="form-check-input"
+                      type="checkbox"
+                      id="partialMonthStorage15"
+                      name="partialMonthStorage15"
+                    />
+                    <label class="form-check-label  mx-4" for="partialMonthStorage15">
+                      Partial Month 15
+                    </label>
+                    <div
+                      *ngIf="
+                        partialMonthStorage15?.errors &&
+                        partialMonthStorage15?.touched
+                      "
+                      class="alert alert-danger"
+                    >
+                      <p
+                        *ngIf="partialMonthStorage15?.errors?.['required']"
+                        class="m-0 p-0"
+                      >
+                        *partialMonthStorage15 Is Required
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="form-check">
+                    <input
+                      formControlName="fixedAmount"
+                      class="form-check-input"
+                      type="checkbox"
+                      id="fixedAmount"
+                      name="fixedAmount"
+                      [(ngModel)]="isFixedValue"
+                      (change)="isFixedCheck()"
+                    />
+                    <label class="form-check-label mx-4" for="fixedAmount">
+                      IS Fixed
+                    </label>
+                    <div
+                      *ngIf="fixedAmount?.errors && fixedAmount?.touched"
+                      class="alert alert-danger"
+                    >
+                      <p
+                        *ngIf="fixedAmount?.errors?.['required']"
+                        class="m-0 p-0"
+                      >
+                        *fixedAmount Is Required
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-3 col-md-6">
+                <div>
+                  <label for="monthlyFixedAreaM">Fixed Area (m)</label>
+                  <input
+                    formControlName="monthlyFixedAreaM"
+                    type="number"
+                    name="monthlyFixedAreaM"
+                    id="monthlyFixedAreaM"
+                    class="form-control mb-2"
+                    [disabled]="isDisaled"
+                  />
+                  <div
+                    *ngIf="
+                      monthlyFixedAreaM?.errors && monthlyFixedAreaM?.touched
+                    "
+                    class="alert alert-danger"
+                  >
+                    <p
+                      *ngIf="monthlyFixedAreaM?.errors?.['required']"
+                      class="m-0 p-0"
+                    >
+                      *monthlyFixedAreaM Is Required
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-3 col-md-6">
+                <div>
+                  <label for="monthlyFixedCost">Fixed Cost</label>
+                  <input
+                    formControlName="monthlyFixedCost"
+                    type="number"
+                    name="monthlyFixedCost"
+                    id="monthlyFixedCost"
+                    class="form-control mb-2"
+                    [disabled]="isDisaled"
+                  />
+                  <div
+                    *ngIf="
+                      monthlyFixedCost?.errors && monthlyFixedCost?.touched
+                    "
+                    class="alert alert-danger"
+                  >
+                    <p
+                      *ngIf="monthlyFixedCost?.errors?.['required']"
+                      class="m-0 p-0"
+                    >
+                      *monthlyFixedCost Is Required
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-3 col-md-6">
+                <div>
+                  <label for="monthlyFixedAdditionalCost"
+                    >Fixed Addtional Cost</label
+                  >
+                  <input
+                    formControlName="monthlyFixedAdditionalCost"
+                    type="number"
+                    name="monthlyFixedAdditionalCost"
+                    id="monthlyFixedAdditionalCost"
+                    class="form-control mb-2"
+                    [disabled]="isDisaled"
+                  />
+                  <div
+                    *ngIf="
+                      monthlyFixedAdditionalCost?.errors &&
+                      monthlyFixedAdditionalCost?.touched
+                    "
+                    class="alert alert-danger"
+                  >
+                    <p
+                      *ngIf="monthlyFixedAdditionalCost?.errors?.['required']"
+                      class="m-0 p-0"
+                    >
+                      *monthlyFixedAdditionalCost Is Required
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-3 col-md-6">
+                <div>
+                  <label for="adminFees">admin Fees</label>
+                  <input
+                    formControlName="adminFees"
+                    type="number"
+                    name="adminFees"
+                    id="adminFees"
+                    class="form-control mb-3"
+                  />
+                  <div
+                    *ngIf="adminFees?.errors && adminFees?.touched"
+                    class="alert alert-danger"
+                  >
+                    <p *ngIf="adminFees?.errors?.['min']" class="m-0 p-0">
+                      *admin Fees Min Value Is Zero
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-3 col-md-6">
+                <div>
+                  <label for="gatePassfees">Gate Pass fees</label>
+                  <input
+                    formControlName="gatePassfees"
+                    type="number"
+                    name="gatePassfees"
+                    id="gatePassfees"
+                    class="form-control mb-3"
+                  />
+                  <div
+                    *ngIf="gatePassfees?.errors && gatePassfees?.touched"
+                    class="alert alert-danger"
+                  >
+                    <p *ngIf="gatePassfees?.errors?.['min']" class="m-0 p-0">
+                      *gate Pass fees Min Value Is Zero
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-3 col-md-6">
+                <div>
+                  <label for="freeStorageDays">Free Storage Days</label>
+                  <input
+                    formControlName="freeStorageDays"
+                    type="number"
+                    name="freeStorageDays"
+                    id="freeStorageDays"
+                    class="form-control mb-3"
+                  />
+                  <div
+                    *ngIf="freeStorageDays?.errors && freeStorageDays?.touched"
+                    class="alert alert-danger"
+                  >
+                    <p *ngIf="freeStorageDays?.errors?.['min']" class="m-0 p-0">
+                      *Free Storage Days Min Value Is Zero
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-3 col-md-6">
+                <div>
+                  <label>Warehouse</label>
+                  <select
+                    formControlName="warehouseId"
+                    id="warehouseId"
+                    class="form-select mb-3"
+                  >
+                    <option [ngValue]="null" [selected]="true">
+                      Choose A Value
+                    </option>
+                    <option
+                      *ngFor="let option of warehouseLookUp"
+                      [value]="option.id"
+                    >
+                      {{ option.name }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <button [disabled]="priceListForm.invalid" class="btn btn-success">
+              <span *ngIf="!isLoading">Create</span>
+              <i *ngIf="isLoading" class="fas fa-spinner fa-pulse"></i>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row" *ngIf="permissionIsLoadded && internalPermission?.includes(permissionData.View)">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body p-0">
+        <div class="p-4">
+          <dx-data-grid
+            id="grid"
+            [dataSource]="dataSource"
+            [repaintChangesOnly]="true"
+            [showBorders]="true"
+            [columnAutoWidth]="true"
+            (onExporting)="exportGrid($event)"
+          >
+            <dxo-scrolling mode="standard" [useNative]="false"></dxo-scrolling>
+            <dxo-editing mode="cell" 
+            [allowUpdating]="(permissionIsLoadded && internalPermission?.includes(permissionData.Update)) ?? false"
+            > </dxo-editing>
+            <dxo-selection mode="multiple"></dxo-selection>
+            <dxi-column dataField="id"></dxi-column>
+            <dxi-column dataField="code"></dxi-column>
+            <dxi-column dataField="companyId" caption="Company">
+              <dxo-lookup
+                [dataSource]="companyData"
+                valueExpr="id"
+                displayExpr="name"
+              ></dxo-lookup>
+            </dxi-column>
+            <dxi-column
+              dataField="status"
+              dataType="boolean"
+              caption="IsActive"
+            ></dxi-column>
+            <dxi-column dataField="startDate" caption="From Date"></dxi-column>
+            <dxi-column dataField="endDate" caption="To Date"></dxi-column>
+            <dxi-column dataField="CategoryId" caption="Type">
+              <dxo-lookup
+                [dataSource]="palletCategoryData"
+                valueExpr="id"
+                displayExpr="name"
+              ></dxo-lookup>
+            </dxi-column>
+            <dxi-column dataField="storagePrice"></dxi-column>
+            <dxi-column dataField="description"></dxi-column>
+            <dxi-column dataField="width"></dxi-column>
+            <dxi-column dataField="height"></dxi-column>
+            <dxi-column dataField="depth"></dxi-column>
+            <dxi-column dataField="categoryIdHandlingOut" caption="H-O Type">
+              <dxo-lookup
+                [dataSource]="palletCategoryData"
+                valueExpr="id"
+                displayExpr="name"
+              ></dxo-lookup>
+            </dxi-column>
+            <dxi-column dataField="handlingOutPrice"></dxi-column>
+            <dxi-column dataField="CategoryIdHandlingIn" caption="H-I Type">
+              <dxo-lookup
+                [dataSource]="palletCategoryData"
+                valueExpr="id"
+                displayExpr="name"
+              ></dxo-lookup>
+            </dxi-column>
+            <dxi-column dataField="handlingInPrice"></dxi-column>
+            <dxi-column dataField="categoryIdAllocation" caption="Re-A Type">
+              <dxo-lookup
+                [dataSource]="palletCategoryData"
+                valueExpr="id"
+                displayExpr="name"
+              ></dxo-lookup>
+            </dxi-column>
+            <dxi-column dataField="allocationRate"></dxi-column>
+            <dxi-column dataField="buildPalletRate"></dxi-column>
+            <dxi-column dataField="rentPalletRate"></dxi-column>
+            <dxi-column
+              dataField="partialMonthStorage30"
+              dataType="boolean"
+            ></dxi-column>
+            <dxi-column
+              dataField="partialMonthStorage15"
+              dataType="boolean"
+            ></dxi-column>
+            <dxi-column dataField="fixedAmount" dataType="boolean"></dxi-column>
+            <dxi-column dataField="monthlyFixedAreaM"></dxi-column>
+            <dxi-column dataField="monthlyFixedCost"></dxi-column>
+            <dxi-column dataField="monthlyFixedAdditionalCost"></dxi-column>
+            <dxo-paging [pageSize]="10"></dxo-paging>
+            <dxo-pager
+              [visible]="true"
+              [showPageSizeSelector]="showPageSizeSelector"
+              [showInfo]="showInfo"
+              [showNavigationButtons]="showNavButtons"
+            >
+            </dxo-pager>
+            <dxo-export
+              [enabled]="true"
+              [formats]="['xlsx', 'pdf']"
+              [allowExportSelectedData]="true"
+            >
+            </dxo-export>
+            <dxo-filter-row [visible]="true"></dxo-filter-row>
+            <dxo-search-panel [visible]="true"></dxo-search-panel>
+            <dxo-group-panel [visible]="true"></dxo-group-panel>
+          </dx-data-grid>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div *ngIf="permissionIsLoadded && !internalPermission?.includes(permissionData.View)" class="alert alert-danger">
+  You Don't Have Permission For This Page Please Contact With Your Manager
+  </div>

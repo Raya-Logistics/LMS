@@ -1,0 +1,7 @@
+<!-- <div class="barcode-container">
+    <svg #barcode></svg>
+  </div> -->
+
+  <div class="barcode-container" *ngFor="let value of barcodeValues; let i = index">
+    <svg #barcode id="barcode{{i}}"></svg>
+  </div>

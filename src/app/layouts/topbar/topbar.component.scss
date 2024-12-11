@@ -1,0 +1,25 @@
+
+@media screen and (min-width: 1021px) {
+    .navbar-header .dropdown .dropdown-menu {
+        right: -60px !important;
+        transform: translate(0, 56px) !important;
+        width: auto !important;
+        transform: translate(0, 56px) !important;
+    }
+}
+@media screen and (min-width: 1001px) and (max-width: 1120px) {
+    .navbar-header .dropdown .dropdown-menu {
+        right: -100px !important;
+        transform: translate(0, 56px) !important;
+        width: auto !important;
+        transform: translate(0, 56px) !important;
+    }
+}
+@media screen and (min-width: 600px) and (max-width: 1000px)  {
+    .navbar-header .dropdown .dropdown-menu {
+        right: -100px !important;
+        transform: translate(0, 56px) !important;
+        width: auto !important;
+        transform: translate(0, 56px) !important;
+    }
+}

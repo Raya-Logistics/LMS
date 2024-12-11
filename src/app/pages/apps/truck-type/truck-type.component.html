@@ -1,0 +1,78 @@
+<!-- Start Breadcrumbs -->
+<app-breadcrumbs *ngIf="permissionIsLoadded && internalPermission?.includes(permissionData.View)" [title]="pagesname.TruckType" [breadcrumbItems]="breadCrumbItems"></app-breadcrumbs>
+<!-- End Breadcrumbs -->
+
+<!-- Start Breadcrumbs -->
+<div class="row" *ngIf="permissionIsLoadded && internalPermission?.includes(permissionData.View)">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body p-0">
+              <div class="p-4">
+                <ng-container  *ngIf="permissionIsLoadded && internalPermission?.includes(permissionData.Add)">
+                  <button (click)="downloadFile()" class="btn btn-primary">Download Template</button>
+                  <dx-file-uploader
+                  [multiple]="true"
+                  uploadMode="useButtons"
+                  uploadUrl="https://js.devexpress.com/Demos/NetCore/FileUploader/Upload"
+                  [allowedFileExtensions]="['.xlsx','xls']"
+                  (onValueChanged)="onFileSelected($event)"
+                >
+                </dx-file-uploader>
+                </ng-container>
+              <dx-data-grid
+              id="grid"
+              [dataSource]="dataSource"
+              [repaintChangesOnly]="true"
+              [showBorders]="true"
+              [columnAutoWidth]="true"
+              (onExporting)="exportGrid($event)"
+              (onRowValidating)="onRowValidating($event)"
+            >
+                <dxo-scrolling mode="standard" [useNative]="false"></dxo-scrolling>
+                <dxo-editing
+                  mode="cell"
+                  [allowAdding]="(permissionIsLoadded && internalPermission?.includes(permissionData.Add) ?? false)"
+                  [allowUpdating]="(permissionIsLoadded && internalPermission?.includes(permissionData.Update) ?? false)"
+                >
+                </dxo-editing>
+                <dxo-selection mode="multiple"></dxo-selection>
+                <!-- <dxi-column dataField="id"></dxi-column> -->
+                <dxi-column dataField="truckType1" caption="Truck Type">
+                  <dxi-validation-rule type="required" message="Truck Type is required"></dxi-validation-rule>
+                </dxi-column>
+                <dxi-column dataField="descriptions" caption="Description">
+                    <dxi-validation-rule type="required" message="Description is required"></dxi-validation-rule>
+                  </dxi-column>
+                  <dxi-column dataField="isContainer" caption="IsContainer" dataType="boolean">
+                  </dxi-column>
+                  <dxi-column dataField="isActive" caption="Active" dataType="boolean">
+                  </dxi-column>
+                <!-- <dxi-column dataField="status" dataType="boolean"></dxi-column> -->
+                <dxo-paging [pageSize]="10"> </dxo-paging>
+                <dxo-pager
+                  [visible]="true"
+                  
+                  [showPageSizeSelector]="showPageSizeSelector"
+                  [showInfo]="showInfo"
+                  [showNavigationButtons]="showNavButtons"
+                >
+                </dxo-pager>
+                <dxo-export 
+                [enabled]="true"
+                [formats]="['xlsx', 'pdf']"
+                [allowExportSelectedData]="true"
+                ></dxo-export>
+                <dxo-filter-row [visible]="true"></dxo-filter-row>
+                <dxo-search-panel [visible]="true"></dxo-search-panel>
+                <dxo-group-panel [visible]="true"></dxo-group-panel>
+              </dx-data-grid>
+              </div>
+            </div> <!-- end card-body-->
+        </div>
+    </div> <!-- end col-->
+</div> 
+<!-- End Breadcrumbs -->
+
+<div *ngIf="permissionIsLoadded && !internalPermission?.includes(permissionData.View)" class="alert alert-danger">
+  You Don't Have Permission For This Page Please Contact With Your Manager
+  </div>

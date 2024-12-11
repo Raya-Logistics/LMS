@@ -1,0 +1,152 @@
+<!-- Start Breadcrumbs -->
+<app-breadcrumbs *ngIf="internalPermission?.includes(permissionData.View)" [title]="pagesname.MasterData" [breadcrumbItems]="breadCrumbItems"></app-breadcrumbs>
+<!-- End Breadcrumbs -->
+
+<!-- Start Breadcrumbs -->
+<div class="row" *ngIf="internalPermission?.includes(permissionData.View)">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body p-0">
+              <div class="p-4">
+                <ng-container  *ngIf="internalPermission?.includes(permissionData.Add)">
+                  <button (click)="downloadFile()" class="btn btn-primary">Download Template</button>
+                  <dx-file-uploader
+                  [multiple]="true"
+                  uploadMode="useButtons"
+                  uploadUrl="https://js.devexpress.com/Demos/NetCore/FileUploader/Upload"
+                  [allowedFileExtensions]="['.xlsx','xls']"
+                  (onValueChanged)="onFileSelected($event)"
+                >
+                </dx-file-uploader>
+                </ng-container>
+              <dx-data-grid
+              id="grid"
+              [dataSource]="dataSource"
+              [repaintChangesOnly]="true"
+              [showBorders]="true"
+              [columnAutoWidth]="true"
+              (onExporting)="exportGrid($event)"
+              (onRowValidating)="onRowValidating($event)"
+            >
+                <dxo-scrolling mode="standard" [useNative]="false"></dxo-scrolling>
+                <dxo-editing
+                  mode="cell"
+                  [allowAdding]="(internalPermission?.includes(permissionData.Add)) ?? false"
+                  [allowUpdating]="(internalPermission?.includes(permissionData.Update)) ?? false"
+                >
+                </dxo-editing>
+                <dxo-selection mode="multiple"></dxo-selection>
+                <dxi-column type="buttons" [width]="110">
+                  <dxi-button
+                    hint="Genetrate Barcode"
+                    icon="print"
+                    [onClick]="onCloneIconClick"
+                  ></dxi-button>
+              </dxi-column>
+                <dxi-column dataField="masterDataItemCode" caption="Item Code">
+                  <dxi-validation-rule type="required" message="Item Code is required"></dxi-validation-rule>
+                </dxi-column>
+                <dxi-column dataField="masterDataBrandId" caption="Brand">
+                    <dxo-lookup
+                      [dataSource]="brandData"
+                      valueExpr="id"
+                      displayExpr="name"
+                    ></dxo-lookup>
+                    <dxi-validation-rule type="required" message="Brand is required"></dxi-validation-rule>
+                  </dxi-column>
+                  <dxi-column dataField="masterDataCategoryId" caption="Category">
+                    <dxo-lookup
+                      [dataSource]="categoryData"
+                      valueExpr="id"
+                      displayExpr="name"
+                    ></dxo-lookup>
+                    <dxi-validation-rule type="required" message="Category is required"></dxi-validation-rule>
+                  </dxi-column>
+                  <dxi-column dataField="masterDataMainCategory" caption="Main Category">
+                    <dxi-validation-rule type="required" message="Main Category is required"></dxi-validation-rule>
+                  </dxi-column>
+                  <dxi-column dataField="masterDataDescription" caption="Description">
+                    <dxi-validation-rule type="required" message="Description is required"></dxi-validation-rule>
+                  </dxi-column>
+                  <dxi-column dataField="masterDataBarCode" caption="BarCode">
+                    <dxi-validation-rule type="required" message="Bar Code is required"></dxi-validation-rule>
+                  </dxi-column>
+                  <dxi-column dataField="masterDataLength" caption="Length">
+                    <dxi-validation-rule type="required" message="Length is required"></dxi-validation-rule>
+                    <dxi-validation-rule type="range" min="0.1" message="Length must be greater than zero"></dxi-validation-rule>
+                  </dxi-column>
+                  <dxi-column dataField="masterDataWidth" caption="Width">
+                    <dxi-validation-rule type="required" message="Width is required"></dxi-validation-rule>
+                    <dxi-validation-rule type="range" min="0.1" message="Width must be greater than zero"></dxi-validation-rule>
+                  </dxi-column>
+                  <dxi-column dataField="masterDataHeight" caption="Height">
+                    <dxi-validation-rule type="required" message="Height is required"></dxi-validation-rule>
+                    <dxi-validation-rule type="range" min="0.1" message="Height must be greater than zero"></dxi-validation-rule>
+                  </dxi-column>
+                  <dxi-column dataField="masterDataTieForRack" caption="Tie(Rack)">
+                    <dxi-validation-rule type="required" message="Tie is required"></dxi-validation-rule>
+                    <dxi-validation-rule type="range" min="0.1" message="Tie must be greater than zero"></dxi-validation-rule>
+                  </dxi-column>
+                  <dxi-column dataField="masterDataHighForRack" caption="High(Rack)">
+                    <dxi-validation-rule type="required" message="High is required"></dxi-validation-rule>
+                    <dxi-validation-rule type="range" min="0.1" message="High must be greater than zero"></dxi-validation-rule>
+                  </dxi-column>
+                  <dxi-column dataField="masterDataSpcForRacks" caption="Spc For Racks" [calculateCellValue]='calculateCellValue'>
+                  </dxi-column>
+                  
+                  
+                  <dxi-column dataField="masterDataTieForStacking" caption="Tie(Stacking)">
+                    <dxi-validation-rule type="required" message="Tie is required"></dxi-validation-rule>
+                    <dxi-validation-rule type="range" min="0.1" message="Tie must be greater than zero"></dxi-validation-rule>
+                  </dxi-column>
+                  <dxi-column dataField="masterDataHighForStacking" caption="High(Stacking)">
+                    <dxi-validation-rule type="required" message="High is required"></dxi-validation-rule>
+                    <dxi-validation-rule type="range" min="0.1" message="High must be greater than zero"></dxi-validation-rule>
+                  </dxi-column>
+                  <dxi-column dataField="masterDataBulkConversion" caption="Satcking Levels">
+                    <dxi-validation-rule type="required" message="Bulk Conversion is required"></dxi-validation-rule>
+                    <dxi-validation-rule type="range" min="0.1" message="Bulk Conversion must be greater than zero"></dxi-validation-rule>
+                  </dxi-column>
+                  <dxi-column dataField="masterDataSpcForBulk" caption="Max Stacking"  [calculateCellValue]='calculateCellStackingValue'>
+                  </dxi-column>
+                  <dxi-column dataField="masterDataIsSerializedIn" dataType="boolean" caption="Serialized(In)">
+                  </dxi-column>
+                  <dxi-column dataField="masterDataIsSerializedOut" dataType="boolean" caption="Serialized(Out)">
+                  </dxi-column>
+                  <dxi-column dataField="masterDataIsExpiration" dataType="boolean">
+                  </dxi-column>
+                  <dxi-column dataField="masterDataMinExpirationMonth" dataType="number">
+                  </dxi-column>
+                  <dxi-column dataField="masterDataIsBulkyStore" dataType="boolean" caption="Bulky Store">
+                  </dxi-column>
+                  <dxi-column dataField="masterDataIsDisabledQuantity" dataType="boolean" caption="Disabled Quantity">
+                  </dxi-column>
+                  <dxi-column dataField="masterDataIsActive" dataType="boolean"></dxi-column>
+                <dxo-paging [pageSize]="10"> </dxo-paging>
+                <dxo-pager
+                  [visible]="true"
+                  
+                  [showPageSizeSelector]="showPageSizeSelector"
+                  [showInfo]="showInfo"
+                  [showNavigationButtons]="showNavButtons"
+                >
+                </dxo-pager>
+                <dxo-export 
+                [enabled]="true"
+                [formats]="['xlsx', 'pdf']"
+                [allowExportSelectedData]="true"
+                >
+              </dxo-export>
+              <dxo-filter-row [visible]="true"></dxo-filter-row>
+                <dxo-search-panel [visible]="true"></dxo-search-panel>
+                <dxo-group-panel [visible]="true"></dxo-group-panel>
+              </dx-data-grid>
+              </div>
+            </div> <!-- end card-body-->
+        </div>
+    </div> <!-- end col-->
+</div> 
+<!-- End Breadcrumbs -->
+<div *ngIf="!internalPermission?.includes(permissionData.View)" class="alert alert-danger">
+  You Don't Have Permission For This Page Please Contact With Your Manager
+  </div>

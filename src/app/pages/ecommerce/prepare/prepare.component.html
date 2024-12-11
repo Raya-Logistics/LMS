@@ -1,0 +1,109 @@
+<app-breadcrumbs
+  *ngIf="
+    permissionIsLoadded && internalPermission?.includes(permissionData.View)
+  "
+  title="Get Out"
+  [breadcrumbItems]="breadCrumbItems"
+></app-breadcrumbs>
+<div class="row mt-2" *ngIf="permissionIsLoadded && internalPermission?.includes(permissionData.View)">
+  <div class="col-12">
+      <div class="card">
+          <div class="card-body p-0">
+            <div class="p-4">
+              <ng-container  *ngIf="permissionIsLoadded && internalPermission?.includes(permissionData.Add)">
+                <div class="d-flex align-items-center justify-content-between">
+                  <!-- <button (click)="downloadFile()" class="btn btn-primary">Download Template</button> -->
+                  <!-- <dx-file-uploader
+                [multiple]="true"
+                uploadMode="useButtons"
+                uploadUrl="https://js.devexpress.com/Demos/NetCore/FileUploader/Upload"
+                [allowedFileExtensions]="['.xlsx','xls']"
+                (onValueChanged)="onFileSelected($event)"
+                style="width: 400px !important;"
+              >
+              </dx-file-uploader> -->
+                </div>
+              </ng-container>
+              <dx-data-grid
+              id="grid"
+              [dataSource]="dataSource"
+              [repaintChangesOnly]="true"
+              [showBorders]="true"
+              [columnAutoWidth]="true"
+              [allowColumnReordering]="true"
+
+              (onExporting)="exportGrid($event)"
+              (onEditorPreparing)="onEditorPreparing($event)"
+              (onRowUpdated)="onRowUpdated($event)"
+
+            >
+              <dxo-scrolling mode="standard" [useNative]="false"></dxo-scrolling>
+              <dxo-editing
+                mode="cell"
+                [allowAdding]="false"
+                [allowUpdating]="true"
+              ></dxo-editing>
+              <dxi-column dataField="transactionsType" caption="Move" [allowEditing]="false">
+                <dxi-validation-rule type="required" message="transactionsType is required"></dxi-validation-rule>
+              </dxi-column>
+              <!-- <dxi-column dataField="serialNumber" caption="Container">
+                <dxo-editing mode="cell" [allowUpdating]="true">
+                  <dxo-editor-options>
+                    <dx-select-box
+                      [items]="serialSource"
+                      displayExpr="serialNumber" 
+                      valueExpr="serialNumber" 
+                      [value]="data?.serialNumber" 
+                    ></dx-select-box>
+                  </dxo-editor-options>
+                </dxo-editing>
+                <dxi-validation-rule type="required" message="Serial is required"></dxi-validation-rule>
+              </dxi-column> -->
+              <dxi-column dataField="serialNumber" caption="Container">
+                <dxo-lookup
+                  [dataSource]="serialSource"
+                  valueExpr="systemPatch"
+                  displayExpr="systemPatch"
+                ></dxo-lookup>
+                <dxi-validation-rule type="required" message="Container is required"></dxi-validation-rule>
+              </dxi-column>
+              <dxi-column dataField="shiftNumber" caption="Shifts Number">
+                <dxi-validation-rule type="required" message="Type is required"></dxi-validation-rule>
+                <dxi-validation-rule 
+                  type="range" 
+                  [min]="0" 
+                  message="Shifts Number must be greater than or equal to 0">
+                </dxi-validation-rule>
+              </dxi-column>
+              <dxi-column dataField="warehouseName" caption="Warehouse" [allowEditing]="false">
+                <dxi-validation-rule type="required" message="Type is required"></dxi-validation-rule>
+              </dxi-column>
+              <dxi-column dataField="companyName" caption="Company" [allowEditing]="false">
+                <dxi-validation-rule type="required" message="Type is required"></dxi-validation-rule>
+              </dxi-column>
+              <dxi-column dataField="patch_BookinkRefrence" caption="Booking" [allowEditing]="false">
+                <dxi-validation-rule type="required" message="Booking Reference is required"></dxi-validation-rule>
+              </dxi-column>
+              <dxi-column dataField="itemCode" caption="Type/Size" [allowEditing]="false">
+                <dxi-validation-rule type="required" message="Serial is required"></dxi-validation-rule>
+              </dxi-column>
+                <dxi-column dataField="freeTime" caption="FreeTime" dataType="datetime" [allowEditing]="false">
+                </dxi-column>
+              <dxo-paging [pageSize]="10"></dxo-paging>
+              <dxo-pager
+                [visible]="true"
+                [showPageSizeSelector]="showPageSizeSelector"
+                [showInfo]="showInfo"
+                [showNavigationButtons]="showNavButtons"
+              ></dxo-pager>
+              <dxo-export [enabled]="true" [formats]="['xlsx', 'pdf']" [allowExportSelectedData]="true"></dxo-export>
+              <dxo-filter-row [visible]="true"></dxo-filter-row>
+              <dxo-search-panel [visible]="true"></dxo-search-panel>
+              <dxo-group-panel [visible]="true"></dxo-group-panel>
+            </dx-data-grid>
+            
+            </div>
+          </div> <!-- end card-body-->
+      </div>
+  </div> <!-- end col-->
+</div> 

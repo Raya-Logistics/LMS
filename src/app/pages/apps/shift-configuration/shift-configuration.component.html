@@ -1,0 +1,223 @@
+<!-- Start Breadcrumbs -->
+<app-breadcrumbs
+  *ngIf="internalPermission?.includes(permissionData.View)"
+  [title]="pagesname.Shift"
+  [breadcrumbItems]="breadCrumbItems"
+></app-breadcrumbs>
+<!-- End Breadcrumbs -->
+
+<!-- <div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body p-0">
+        <div class="p-4 row">
+          <form  [formGroup]="shiftForm" (ngSubmit)="onCreateShift(shiftForm)">
+            <div formGroupName="shiftHeader" class="row">
+              <div class="form-group col-lg-3 col-md-6 mb-3">
+                <label for="shiftWarehouseId">Warehouse</label>
+                <select
+                  id="shiftWarehouseId"
+                  formControlName="shiftWarehouseId"
+                  class="form-control"
+                  [(ngModel)]="warehouseValueSelected"
+                  (change)="warehouseChanged()"
+                >
+                  <option [ngValue]="null" selected>Select Warehouse...</option>
+                  <option
+                    *ngFor="let warehouse of warehouseLookup"
+                    [ngValue]="warehouse.id"
+                  >
+                    {{ warehouse.name }}
+                  </option>
+                </select>
+                <div
+                  *ngIf="
+                    shiftForm.get('shiftHeader.shiftWarehouseId')?.invalid &&
+                    (shiftForm.get('shiftHeader.shiftWarehouseId')?.touched ||
+                      shiftForm.get('shiftHeader.shiftWarehouseId')?.dirty)
+                  "
+                  class="text-danger"
+                >
+                  Must Select Warehouse.
+                </div>
+              </div>
+              <div class="form-group col-lg-3 col-md-6 mb-3" *ngIf="warehouseValueSelected">
+                <label for="shiftShiftTypeId">Shift Type</label>
+                <select id="shiftShiftTypeId" formControlName="shiftShiftTypeId" class="form-control" [(ngModel)]="shiftTypeValueSelected" (change)="shiftTypeChanged()">
+                  <option [ngValue]="null" selected>Select Shift Type...</option>
+                  <option *ngFor="let type of shiftTypeLookup" [ngValue]="type.id">{{ type.name }}</option>
+                </select>
+                <div *ngIf="shiftForm.get('shiftHeader.shiftShiftTypeId')?.invalid && (shiftForm.get('shiftHeader.shiftShiftTypeId')?.touched || shiftForm.get('shiftHeader.shiftShiftTypeId')?.dirty)" class="text-danger">
+                  Must Select Shift Type.
+                </div>
+              </div>
+
+              <div class="form-group col-lg-3 col-md-6 mb-3" *ngIf="!shiftIsFixed && shiftTypeIsSelected">
+                <label for="shiftStartingDate">Shift Starting Date</label>
+                <input id="shiftStartingDate" formControlName="shiftStartingDate" type="datetime-local" class="form-control" />
+                <div *ngIf="shiftForm.get('shiftHeader.shiftStartingDate')?.invalid && (shiftForm.get('shiftHeader.shiftStartingDate')?.touched || shiftForm.get('shiftHeader.shiftStartingDate')?.dirty)" class="text-danger">
+                  Shift Starting Date is required.
+                </div>
+              </div>
+              <div class="form-group col-lg-3 col-md-6 mb-3" *ngIf="!shiftIsFixed && shiftTypeIsSelected">
+                <label for="shiftEndDate">Shift End Date</label>
+                <input id="shiftEndDate" formControlName="shiftEndDate" type="datetime-local" class="form-control" />
+                <div *ngIf="shiftForm.get('shiftHeader.shiftEndDate')?.invalid && (shiftForm.get('shiftHeader.shiftEndDate')?.touched || shiftForm.get('shiftHeader.shiftEndDate')?.dirty)" class="text-danger">
+                  Shift End Date is required.
+                </div>
+              </div>
+              <div class="form-group col-lg-3 col-md-6 mb-3" *ngIf="shiftIsFixed && shiftTypeIsSelected">
+                <label for="shiftStartingHour">Start Hour</label>
+                <input id="shiftStartingHour" formControlName="shiftStartingHour" type="number" class="form-control" />
+                <div *ngIf="shiftForm.get('shiftHeader.shiftStartingHour')?.errors && (shiftForm.get('shiftHeader.shiftStartingHour')?.touched || shiftForm.get('shiftHeader.shiftStartingHour')?.dirty)" class="text-danger">
+                  <p *ngIf="shiftForm.get('shiftHeader.shiftStartingHour')?.errors?.['required']" class="m-0 p-0">*Shift Starting Hour Value Is Required</p>
+                  <p *ngIf="shiftForm.get('shiftHeader.shiftStartingHour')?.errors?.['min']" class="m-0 p-0">*Shift Starting Hour Minmum Value Is 1</p>
+                  <p *ngIf="shiftForm.get('shiftHeader.shiftStartingHour')?.errors?.['max']" class="m-0 p-0">*Shift Starting Hour Max Value Is 23</p>
+                </div>
+              </div>
+              <div class="form-group col-lg-3 col-md-6 mb-3" *ngIf="shiftIsFixed && shiftTypeIsSelected">
+                <label for="shiftEndHour">End Hour</label>
+                <input id="shiftEndHour" formControlName="shiftEndHour" type="number" class="form-control" />
+                <div *ngIf="shiftForm.get('shiftHeader.shiftEndHour')?.errors && (shiftForm.get('shiftHeader.shiftEndHour')?.touched || shiftForm.get('shiftHeader.shiftEndHour')?.dirty)" class="text-danger">
+                  <p *ngIf="shiftForm.get('shiftHeader.shiftEndHour')?.errors?.['required']" class="m-0 p-0">*Shift End Hour Value Is Required</p>
+                  <p *ngIf="shiftForm.get('shiftHeader.shiftEndHour')?.errors?.['min']" class="m-0 p-0">*Shift End Hour Minmum Value Is 1</p>
+                  <p *ngIf="shiftForm.get('shiftHeader.shiftEndHour')?.errors?.['max']" class="m-0 p-0">*Shift End Hour Max Value Is 23</p>
+                </div>
+              </div>
+              <div class="form-group col-lg-3 col-md-6 mb-3" *ngIf="warehouseValueSelected && shiftTypeIsSelected">
+                <label for="shiftName">Shift Name</label>
+                <input id="shiftName" formControlName="shiftName" type="text" class="form-control" />
+                <div *ngIf="shiftForm.get('shiftHeader.shiftName')?.invalid && (shiftForm.get('shiftHeader.shiftName')?.touched || shiftForm.get('shiftHeader.shiftName')?.dirty)" class="text-danger">
+                  Must Enter Name.
+                </div>
+              </div>
+              <div class="form-group col-lg-3 col-md-6 mb-3" *ngIf="warehouseValueSelected && shiftTypeIsSelected">
+                <label for="shiftRequestsEvedance">Attachment</label>
+                <input id="shiftRequestsEvedance" formControlName="shiftRequestsEvedance" type="file" class="form-control" (change)="onFileSelected($event)"/>
+              </div>
+              <div class="form-group col-lg-3 col-md-6 mb-3" *ngIf="warehouseValueSelected && shiftTypeIsSelected">
+                <label for="shiftComment">Comment</label>
+                <input id="shiftComment" formControlName="shiftComment" type="text" class="form-control" />
+              </div>
+
+              <div class="form-group col-lg-3 col-md-6 mb-3" *ngIf="!shiftIsFixed && shiftTypeIsSelected">
+                <label for="shiftRequestBy">Requested By</label>
+                <input id="shiftRequestBy" formControlName="shiftRequestBy" type="text" class="form-control" />
+              </div>
+
+              <div class="form-group col-lg-3 col-md-6 mb-3" *ngIf="!shiftIsFixed && shiftTypeIsSelected">
+                <label for="shiftCompanyId">Company</label>
+                <select id="shiftCompanyId" formControlName="shiftCompanyId" class="form-control" (change)="CompanyChanged($event)" [(ngModel)]="companySelectedValue">
+                  <option [ngValue]="null" selected>Select Company...</option>
+                  <option *ngFor="let company of companyLookup" [ngValue]="company.id">{{ company.name }}</option>
+                </select>
+                <div *ngIf="shiftForm.get('shiftHeader.shiftCompanyId')?.invalid && (shiftForm.get('shiftHeader.shiftCompanyId')?.touched || shiftForm.get('shiftHeader.shiftCompanyId')?.dirty)" class="text-danger">
+                  Must Select Company.
+                </div>
+              </div>
+              <div class="form-group col-lg-3 col-md-6 mb-3" *ngIf="companySelectedValue && shiftTypeIsSelected">
+                <label for="shiftCustomerId">Customer</label>
+                <select id="shiftCustomerId" formControlName="shiftCustomerId" class="form-control">
+                  <option [ngValue]="null" selected>Select Customer...</option>
+                  <option *ngFor="let customer of customerLookup" [ngValue]="customer.id">{{ customer.name }}</option>
+                </select>
+                <div *ngIf="shiftForm.get('shiftHeader.shiftCustomerId')?.invalid && (shiftForm.get('shiftHeader.shiftCustomerId')?.touched || shiftForm.get('shiftHeader.shiftCustomerId')?.dirty)" class="text-danger">
+                  Must Select Company.
+                </div>
+              </div>
+              <div class="form-group col-lg-3 col-md-6 mb-3" *ngIf="shiftTypeIsSelected">
+                <label for="shiftNumberOfAttribute">Number Of Attributes</label>
+                <input id="shiftNumberOfAttribute" formControlName="shiftNumberOfAttribute" type="number" class="form-control" (input)="NumberOfAttributesEntered()" [(ngModel)]="numberOfAttributeValue"/>
+                <div *ngIf="shiftForm.get('shiftHeader.shiftNumberOfAttribute')?.errors && (shiftForm.get('shiftHeader.shiftNumberOfAttribute')?.touched || shiftForm.get('shiftHeader.shiftEndHour')?.dirty)" class="text-danger">
+                  <p *ngIf="shiftForm.get('shiftHeader.shiftNumberOfAttribute')?.errors?.['required']" class="m-0 p-0">*Shift Number Of Attribute Value Is Required</p>
+                  <p *ngIf="shiftForm.get('shiftHeader.shiftNumberOfAttribute')?.errors?.['min']" class="m-0 p-0">*Shift Number Of Attribute Minimum Value Is 1</p>
+                  <p *ngIf="shiftForm.get('shiftHeader.shiftNumberOfAttribute')?.errors?.['max']" class="m-0 p-0">*Shift Number Of Attribute Max Value Is The Same Number Of Attribute</p>
+                </div>
+              </div>
+            </div>
+            <div formArrayName="shiftDetails">
+              <div class="row mb-3">
+                <ng-container *ngFor="let detail of shiftDetails.controls; let i = index" [formGroupName]="i">
+                  <div class="form-group col-lg-3 col-6 mb-3">
+                    <label for="attributeId">Attribute</label>
+                    <select formControlName="attributeId" class="form-control">
+                      <option [ngValue]="null">Select Attribute...</option>
+                      <option *ngFor="let attr of attributeLookup" [ngValue]="attr.id">{{ attr.name }}</option>
+                    </select>
+                    <div *ngIf="detail.get('attributeId')?.invalid && (detail.get('attributeId')?.touched || detail.get('attributeId')?.dirty)" class="text-danger">
+                      Must select an attribute.
+                    </div>
+                  </div>
+                  <div class="form-group col-lg-3 col-6 mb-3">
+                    <label for="value">Quantity</label>
+                    <input type="number" formControlName="value" class="form-control" />
+                    <div *ngIf="detail.get('value')?.invalid && (detail.get('value')?.touched || detail.get('value')?.dirty)" class="text-danger">
+                      <p *ngIf="detail.get('value')?.errors?.['required']">Value is required</p>
+                      <p *ngIf="detail.get('value')?.errors?.['min']">Value must be greater than 0</p>
+                    </div>
+                  </div>
+                </ng-container>
+              </div>
+              <div *ngIf="shiftDetails.errors?.['duplicate']" class="text-danger">
+                Duplicate attributes are not allowed.
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary" [disabled]="shiftForm.invalid">Create Shift</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> -->
+
+
+<!-- Start Breadcrumbs -->
+<div class="accordion mb-2" id="accordionExample">
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="headingOne">
+      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+        Shift Attributes
+      </button>
+    </h2>
+    <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+      <div class="accordion-body">
+        <div class="row" *ngIf="internalPermission?.includes(permissionData.View)">
+          <div class="col-12">
+              <div class="card">
+                  <div class="card-body p-0">
+                    <app-shift-attribute [isChildComponent]="true"></app-shift-attribute>
+                  </div> <!-- end card-body-->
+              </div>
+          </div> <!-- end col-->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="accordion mb-2" id="accordionExample2">
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="headingOne2">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne2" aria-expanded="false" aria-controls="collapseOne2">
+        Shift Type
+      </button>
+    </h2>
+    <div id="collapseOne2" class="accordion-collapse collapse" aria-labelledby="headingOne2" data-bs-parent="#accordionExample2">
+      <div class="accordion-body">
+        <div class="row" *ngIf="internalPermission?.includes(permissionData.View)">
+          <div class="col-12">
+              <div class="card">
+                  <div class="card-body p-0">
+                    <div class="p-4">
+                    <app-shift-type [isChildComponent]="true"></app-shift-type>
+                    </div>
+                  </div> <!-- end card-body-->
+              </div>
+          </div> <!-- end col-->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-shift [isChildComponent]="true"></app-shift>

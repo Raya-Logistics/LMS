@@ -1,0 +1,21 @@
+<app-breadcrumbs
+  *ngIf="internalPermission?.includes(permissionData.View)"
+  title="Handling Scanner"
+  [breadcrumbItems]="breadCrumbItems"
+></app-breadcrumbs>
+
+<div class="card">
+    <div class="card-body">
+      <label>Wh Queue Bar Code</label>
+      <input
+        type="text"
+        name="whQueueBarcode"
+        id="whQueueBarcode"
+        class="form-control mb-3"
+        placeholder="Warehouse Queue Bracode"
+        autocomplete="off"
+        [(ngModel)]="scanWhQueueBarcode"
+        (keyup.enter)="scanWhQueueBarcodeOperation()"
+      />               
+    </div>
+  </div>

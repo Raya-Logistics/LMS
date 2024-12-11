@@ -1,0 +1,379 @@
+
+<!-- Start Breadcrumbs -->
+<app-breadcrumbs
+  title="Company Configuration"
+  [breadcrumbItems]="breadCrumbItems"
+></app-breadcrumbs>
+
+<!-- End Breadcrumbs -->
+
+
+
+
+<div class="card">
+    <div class="card-body">
+        <ul ngbNav #BorderTop="ngbNav" [activeId]="1" class="nav nav-tabs nav-justified nav-border-top nav-border-top-primary mb-3">
+          <li [ngbNavItem]="1" *ngIf="permissionIsLoadded && internalPermission[this.pagesname.Company]?.includes(permissionData.View)">
+              <a ngbNavLink>
+                <i class="ri-community-line me-1 align-middle"></i> Company
+              </a>
+              <ng-template ngbNavContent>
+
+                <div class="p-4">
+                    <ng-container >
+                      <button (click)="downloadCompanyFile()" class="btn btn-primary">Download Template</button>
+                      <dx-file-uploader
+                      [multiple]="true"
+                      uploadMode="useButtons"
+                      uploadUrl="https://js.devexpress.com/Demos/NetCore/FileUploader/Upload"
+                      [allowedFileExtensions]="['.xlsx','xls']"
+                      (onValueChanged)="onCompanyFileSelected($event)"
+                    >
+                    </dx-file-uploader>
+                    </ng-container>
+                  <dx-data-grid
+                  id="grid"
+                  [dataSource]="companySource"
+                  [repaintChangesOnly]="true"
+                  [showBorders]="true"
+                  [columnAutoWidth]="true"
+                  (onExporting)="exportCompanyGrid($event)"
+                  (onRowValidating)="onCompanyRowValidating($event)"
+                >
+                  <dxo-scrolling mode="standard" [useNative]="false"></dxo-scrolling>
+                    <dxo-editing
+                      mode="cell"
+                      [allowAdding]="(permissionIsLoadded && internalPermission[this.pagesname.Company]?.includes(permissionData.Add) ?? false)"
+                      [allowUpdating]="(permissionIsLoadded && internalPermission[this.pagesname.Company]?.includes(permissionData.Update) ?? false)"
+                    >
+                    </dxo-editing>
+                    <dxo-selection mode="multiple"></dxo-selection>
+                    <dxi-column dataField="code" caption="Name">
+                      <dxi-validation-rule type="required" message="Item Code is required"></dxi-validation-rule>
+                    </dxi-column>
+                    <dxi-column dataField="description"></dxi-column>
+                    <dxi-column dataField="phone1">
+                      <dxo-editor-options [inputAttr]="{ 'aria-label': 'Phone 1' }" [showClearButton]="true" [valueChangeEvent]="'input'" />
+                    </dxi-column>
+                    <dxi-column dataField="phone2">
+                    </dxi-column>
+                    <dxi-column dataField="address">
+                      <dxi-validation-rule type="required" message="Item Code is required"></dxi-validation-rule>
+                    </dxi-column>
+                    <dxi-column dataField="email">
+                      <dxi-validation-rule type="required" message="Item Code is required"></dxi-validation-rule>
+                      <dxi-validation-rule type="email" message="Value must be a valid email"></dxi-validation-rule>
+                    </dxi-column>
+                    <dxi-column dataField="contactPerson">
+                      <dxi-validation-rule type="required" message="Item Code is required"></dxi-validation-rule>
+                    </dxi-column>
+                    <!-- <dxi-column dataField="status" dataType="boolean"></dxi-column> -->
+                    <dxo-paging [pageSize]="10"> </dxo-paging>
+                    <dxo-pager
+                      [visible]="true"
+                      
+                      [showPageSizeSelector]="showPageSizeSelector"
+                      [showInfo]="showInfo"
+                      [showNavigationButtons]="showNavButtons"
+                    >
+                    </dxo-pager>
+                    <dxo-export 
+                    [enabled]="true"
+                    [formats]="['xlsx', 'pdf']"
+                    [allowExportSelectedData]="true"
+                    ></dxo-export>
+                    <dxo-filter-row [visible]="true"></dxo-filter-row>
+                    <dxo-search-panel [visible]="true"></dxo-search-panel>
+                    <dxo-group-panel [visible]="true"></dxo-group-panel>
+                  </dx-data-grid>
+                  </div>
+              </ng-template>
+          </li>
+          <li [ngbNavItem]="2"  *ngIf="permissionIsLoadded && internalPermission[this.pagesname.Customers]?.includes(permissionData.View)">
+              <a ngbNavLink>
+                <i class="ri-group-line align-middle me-1"></i>Customers
+              </a>
+              <ng-template ngbNavContent>
+                <div class="p-4">
+                    <ng-container>
+                        <button (click)="downloadCustomerFile()" class="btn btn-primary">Download Template</button>
+                        <dx-file-uploader
+                        [multiple]="true"
+                        uploadMode="useButtons"
+                        uploadUrl="https://js.devexpress.com/Demos/NetCore/FileUploader/Upload"
+                        [allowedFileExtensions]="['.xlsx','xls']"
+                        (onValueChanged)="onCustomerFileSelected($event)"
+                      >
+                      </dx-file-uploader>
+                    </ng-container>
+                  <dx-data-grid
+                  id="grid"
+                  [dataSource]="customerSource"
+                  [repaintChangesOnly]="true"
+                  [showBorders]="true"
+                  [columnAutoWidth]="true"
+                  (onExporting)="exportCustomerGrid($event)"
+                  (onRowValidating)="onCustomerRowValidating($event)"
+                >
+                  <dxo-scrolling mode="standard" [useNative]="false"></dxo-scrolling>
+                    <dxo-editing
+                      mode="cell"
+                      [allowAdding]="(permissionIsLoadded && internalPermission[this.pagesname.Customers]?.includes(permissionData.Add) ?? false)"
+                      [allowUpdating]="(permissionIsLoadded && internalPermission[this.pagesname.Customers]?.includes(permissionData.Update) ?? false)"
+                    >
+                    </dxo-editing>
+                    <dxo-selection mode="multiple"></dxo-selection>
+                      <dxi-column dataField="customersName">
+                        <dxi-validation-rule type="required" message="customers Name is required"></dxi-validation-rule>
+                      </dxi-column>
+                      <dxi-column dataField="customerPhone1">
+                      </dxi-column>
+                      <dxi-column dataField="customerPhone2">
+                      </dxi-column>
+                      <dxi-column dataField="contactPersonName" caption="Contact Person Name">
+                        <dxi-validation-rule type="required" message="Contact Person Name is required"></dxi-validation-rule>
+                      </dxi-column>
+                      <dxi-column dataField="address">
+                        <dxi-validation-rule type="required" message="Address is required"></dxi-validation-rule>
+                      </dxi-column>
+                      <dxi-column dataField="companyId" caption="Company">
+                        <dxo-lookup
+                          [dataSource]="companyLookupData"
+                          valueExpr="id"
+                          displayExpr="name"
+                        ></dxo-lookup>
+                        <dxi-validation-rule type="required" message="Company is required"></dxi-validation-rule>
+                      </dxi-column>
+                      <dxi-column dataField="email">
+                        <dxi-validation-rule type="required" message="Email is required"></dxi-validation-rule>
+                        <dxi-validation-rule type="email" message="Value must be a valid email"></dxi-validation-rule>
+                      </dxi-column>
+                    <dxo-paging [pageSize]="10"> </dxo-paging>
+                    <dxo-pager
+                      [visible]="true"
+                      
+                      [showPageSizeSelector]="showPageSizeSelector"
+                      [showInfo]="showInfo"
+                      [showNavigationButtons]="showNavButtons"
+                    >
+                    </dxo-pager>
+                    <dxo-export 
+                    [enabled]="true"
+                    [formats]="['xlsx', 'pdf']"
+                    [allowExportSelectedData]="true"
+                    ></dxo-export>
+                    <dxo-filter-row [visible]="true"></dxo-filter-row>
+                    <dxo-search-panel [visible]="true"></dxo-search-panel>
+                    <dxo-group-panel [visible]="true"></dxo-group-panel>
+                  </dx-data-grid>
+                  </div>
+              </ng-template>
+          </li>
+          <li [ngbNavItem]="3"  *ngIf="permissionIsLoadded && internalPermission[this.pagesname.Vendor]?.includes(permissionData.View)">
+            <a ngbNavLink>
+              <i class="ri-user-line align-middle me-1"></i>Vendor
+            </a>
+            <ng-template ngbNavContent>
+                <div class="p-4">
+                    <ng-container>
+                      <button (click)="downloadVendorFile()" class="btn btn-primary">Download Template</button>
+                      <dx-file-uploader
+                      [multiple]="true"
+                      uploadMode="useButtons"
+                      uploadUrl="https://js.devexpress.com/Demos/NetCore/FileUploader/Upload"
+                      [allowedFileExtensions]="['.xlsx','xls']"
+                      (onValueChanged)="onVendorFileSelected($event)"
+                    >
+                    </dx-file-uploader>
+                    </ng-container>
+                  <dx-data-grid
+                  id="grid"
+                  [dataSource]="vendorSource"
+                  [repaintChangesOnly]="true"
+                  [showBorders]="true"
+                  [columnAutoWidth]="true"
+                  (onExporting)="exportVendorGrid($event)"
+                  (onRowValidating)="onVendorRowValidating($event)"
+                >
+                    <dxo-scrolling mode="standard" [useNative]="false"></dxo-scrolling>
+                    <dxo-editing
+                      mode="cell"
+                      [allowAdding]="(permissionIsLoadded && internalPermission[this.pagesname.Vendor]?.includes(permissionData.Add) ?? false)"
+                      [allowUpdating]="(permissionIsLoadded && internalPermission[this.pagesname.Vendor]?.includes(permissionData.Update) ?? false)"
+                    >
+                    </dxo-editing>
+                    <dxo-selection mode="multiple"></dxo-selection>
+                    <!-- <dxi-column dataField="id"></dxi-column> -->
+                    <dxi-column dataField="vendorName">
+                      <dxi-validation-rule type="required" message="Vendor Name is required"></dxi-validation-rule>
+                    </dxi-column>
+                      <dxi-column dataField="vendorIsActive" caption="Active" dataType="boolean">
+                      </dxi-column>
+                    <!-- <dxi-column dataField="status" dataType="boolean"></dxi-column> -->
+                    <dxo-paging [pageSize]="10"> </dxo-paging>
+                    <dxo-pager
+                      [visible]="true"
+                      
+                      [showPageSizeSelector]="showPageSizeSelector"
+                      [showInfo]="showInfo"
+                      [showNavigationButtons]="showNavButtons"
+                    >
+                    </dxo-pager>
+                    <dxo-export 
+                    [enabled]="true"
+                    [formats]="['xlsx', 'pdf']"
+                    [allowExportSelectedData]="true"
+                    ></dxo-export>
+                    <dxo-filter-row [visible]="true"></dxo-filter-row>
+                    <dxo-search-panel [visible]="true"></dxo-search-panel>
+                    <dxo-group-panel [visible]="true"></dxo-group-panel>
+                  </dx-data-grid>
+                  </div>
+            </ng-template>
+        </li>
+          <li [ngbNavItem]="4"  *ngIf="permissionIsLoadded && internalPermission[this.pagesname.Services]?.includes(permissionData.View)">
+              <a ngbNavLink>
+                <i class="ri-shape-2-fill align-middle me-1"></i>Service
+              </a>
+              <ng-template ngbNavContent>
+                <div class="p-4">
+                    <ng-container>
+                      <button (click)="downloadCompanyoptionFile()" class="btn btn-primary">Download Template</button>
+                      <dx-file-uploader
+                      [multiple]="true"
+                      uploadMode="useButtons"
+                      uploadUrl="https://js.devexpress.com/Demos/NetCore/FileUploader/Upload"
+                      [allowedFileExtensions]="['.xlsx','xls']"
+                      (onValueChanged)="onCompanyoptionFileSelected($event)"
+                      (onRowValidating)="onCompanyoptionRowValidating($event)"
+                    >
+                    </dx-file-uploader>
+                    </ng-container>
+                  <dx-data-grid
+                  id="grid"
+                  [dataSource]="companyOptionSource"
+                  [repaintChangesOnly]="true"
+                  [showBorders]="true"
+                  [columnAutoWidth]="true"
+                  (onExporting)="exportCompanyoptionGrid($event)"
+                  (onRowValidating)="onCompanyoptionRowValidating($event)"
+                >
+                  <dxo-scrolling mode="standard" [useNative]="false"></dxo-scrolling>
+                    <dxo-editing
+                      mode="cell"
+                      [allowAdding]="(permissionIsLoadded && internalPermission[this.pagesname.Services]?.includes(permissionData.Add) ?? false)"
+                      [allowUpdating]="(permissionIsLoadded && internalPermission[this.pagesname.Services]?.includes(permissionData.Update) ?? false)"
+                    >
+                    </dxo-editing>
+                    <dxo-selection mode="multiple"></dxo-selection>
+                    <dxi-column dataField="options" caption="Name">
+                      <dxi-validation-rule type="required" message="Name is required"></dxi-validation-rule>
+                    </dxi-column>
+                    <dxi-column dataField="description">
+                      <dxi-validation-rule type="required" message="Description is required"></dxi-validation-rule>
+                    </dxi-column>
+                    <dxi-column dataField="monthlyCost">
+                      <dxi-validation-rule type="required" message="Monthly Cost is required"></dxi-validation-rule>
+                      <dxi-validation-rule type="range" min="0" message="Monthly Cost must be greater than or equal to zero"></dxi-validation-rule>
+                    </dxi-column>
+                    <dxi-column dataField="status" dataType="boolean"></dxi-column>
+                    <dxo-paging [pageSize]="10"> </dxo-paging>
+                    <dxo-pager
+                      [visible]="true"
+                      
+                      [showPageSizeSelector]="showPageSizeSelector"
+                      [showInfo]="showInfo"
+                      [showNavigationButtons]="showNavButtons"
+                    >
+                    </dxo-pager>
+                    <dxo-export 
+                    [enabled]="true"
+                    [formats]="['xlsx', 'pdf']"
+                    [allowExportSelectedData]="true"
+                    ></dxo-export>
+                    <dxo-filter-row [visible]="true"></dxo-filter-row>
+                    <dxo-search-panel [visible]="true"></dxo-search-panel>
+                    <dxo-group-panel [visible]="true"></dxo-group-panel>
+                  </dx-data-grid>
+                  </div>
+              </ng-template>
+          </li>
+          <li [ngbNavItem]="5"  *ngIf="permissionIsLoadded && internalPermission[this.pagesname.CompaniesServices]?.includes(permissionData.View)">
+            <a ngbNavLink>
+              <i class="ri-shape-2-fill align-middle me-1"></i>Companies'Service
+            </a>
+            <ng-template ngbNavContent>
+              <div class="p-4">
+                <ng-container>
+                  <button (click)="downloadCompanySettingFile()" class="btn btn-primary">Download Template</button>
+                  <dx-file-uploader
+                  [multiple]="true"
+                  uploadMode="useButtons"
+                  uploadUrl="https://js.devexpress.com/Demos/NetCore/FileUploader/Upload"
+                  [allowedFileExtensions]="['.xlsx','xls']"
+                  (onValueChanged)="onCompanySettingFileSelected($event)"
+                  (onRowValidating)="onCompanySettingRowValidating($event)"
+                >
+                </dx-file-uploader>
+                </ng-container>
+              <dx-data-grid
+              id="grid"
+              [dataSource]="companySettingSource"
+              [repaintChangesOnly]="true"
+              [showBorders]="true"
+              [columnAutoWidth]="true"
+              (onExporting)="exportCompanySettingGrid($event)"
+              (onRowValidating)="onCompanySettingRowValidating($event)"
+            >
+              <dxo-scrolling mode="standard" [useNative]="false"></dxo-scrolling>
+                <dxo-editing
+                  mode="cell"
+                  [allowAdding]="(permissionIsLoadded && internalPermission[this.pagesname.CompaniesServices]?.includes(permissionData.Add) ?? false)"
+                  [allowUpdating]="(permissionIsLoadded && internalPermission[this.pagesname.CompaniesServices]?.includes(permissionData.Update) ?? false)"
+                >
+                </dxo-editing>
+                <dxo-selection mode="multiple"></dxo-selection>
+                <dxi-column dataField="companyId" caption="Company">
+                    <dxo-lookup
+                      [dataSource]="companyLookupData"
+                      valueExpr="id"
+                      displayExpr="name"
+                    ></dxo-lookup>
+                    <dxi-validation-rule type="required" message="Company is required"></dxi-validation-rule>
+                  </dxi-column>
+                <dxi-column dataField="settingId" caption="Option">
+                    <dxo-lookup
+                      [dataSource]="companyOptionLookupData"
+                      valueExpr="id"
+                      displayExpr="name"
+                    ></dxo-lookup>
+                    <dxi-validation-rule type="required" message="Option is required"></dxi-validation-rule>
+                  </dxi-column>
+                  <dxi-column dataField="status" dataType="boolean"></dxi-column>
+                <dxo-paging [pageSize]="10"> </dxo-paging>
+                <dxo-pager
+                  [visible]="true"
+                  
+                  [showPageSizeSelector]="showPageSizeSelector"
+                  [showInfo]="showInfo"
+                  [showNavigationButtons]="showNavButtons"
+                >
+                </dxo-pager>
+                <dxo-export 
+                [enabled]="true"
+                [formats]="['xlsx', 'pdf']"
+                [allowExportSelectedData]="true"
+                ></dxo-export>
+                <dxo-filter-row [visible]="true"></dxo-filter-row>
+                <dxo-search-panel [visible]="true"></dxo-search-panel>
+                <dxo-group-panel [visible]="true"></dxo-group-panel>
+              </dx-data-grid>
+              </div>
+            </ng-template>
+        </li>
+        </ul>
+        <div class="tab-content text-muted">
+          <div [ngbNavOutlet]="BorderTop"></div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,232 @@
+<!-- Start Breadcrumbs -->
+<app-breadcrumbs
+  *ngIf="
+    permissionIsLoadded && internalPermission?.includes(permissionData.View)
+  "
+  title="New Order"
+  [breadcrumbItems]="breadCrumbItems"
+></app-breadcrumbs>
+<ngx-spinner
+  bdColor="rgba(51,51,51,0.8)"
+  size="medium"
+  color="#fff"
+  type="square-jelly-box"
+>
+  <p style="font-size: 20px; color: white">Loading...</p>
+</ngx-spinner>
+<div class="accordion" id="default-accordion-example">
+    <div class="accordion-item">
+      <!-- <h2 class="accordion-header" id="headingOne">
+        <button
+        class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo"
+        >
+          Uploading
+        </button>
+        
+      </h2> -->
+      <h2 class="accordion-header d-flex align-items-center" id="headingOne">
+        <button
+          class="accordion-button collapsed"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#collapseTwo"
+          aria-expanded="false"
+          aria-controls="collapseTwo"
+        >
+          Uploading
+        </button>
+        <div class="ms-3">
+          <select
+            class="form-select"
+            style="width: 200px;"
+            aria-label="Select option"
+            [(ngModel)]="warehouseSelectedValue"
+          >
+            <option *ngFor="let warehouse of warehouseLookup" [value]="warehouse.id">
+              {{ warehouse.name }}
+            </option>
+          </select>
+        </div>
+      </h2>
+      
+      <div
+      id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample"
+      >
+        <div class="accordion-body">
+          <div
+          class="row"
+          *ngIf="
+            permissionIsLoadded && internalPermission?.includes(permissionData.View)
+          "
+        >
+          <div class="col-12">
+            <div class="card">
+              <div class="card-body p-0">
+                <div class="d-flex align-items-center justify-content-between">
+                  <h5 class="card-title mb-3">
+                    <i class="bi bi-cart"></i> Add Orders
+                  </h5>
+                  <div>
+                        <!-- <select
+                          id="warehouseId"
+                          class="form-control"
+                          [(ngModel)]="warehouseSelectedValue"
+                        >
+                          <option *ngFor="let warehouse of warehouseLookup" [value]="warehouse.id">
+                            {{ warehouse.name }}
+                          </option>
+                        </select> -->
+                  </div>
+                </div>
+                  <p class="card-text text-muted">
+                    Upload multiple Orders using an excel file. 
+                    <strong>Template Format: </strong>
+                    <button class="btn btn-link text-primary p-0" (click)="downloadFile()">
+                        <i class="fas fa-file-download me-1"></i> download options
+                      </button>              
+                 </p>
+                  <div class="input-group mb-3">
+                    <input type="file" class="form-control" id="fileInput" aria-label="Choose File" 
+                    (change)="onFileSelected($event)"
+                    #fileInputRef
+                    >
+                    <button class="btn btn-outline-primary" type="button" (click)="uploadFile()"                    >
+                        <i class="fas fa-save"></i> Save
+                    </button>
+                  </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="row mt-2" *ngIf="permissionIsLoadded && internalPermission?.includes(permissionData.View)">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body p-0">
+              <div class="p-4">
+                <ng-container  *ngIf="permissionIsLoadded && internalPermission?.includes(permissionData.Add)">
+                  <div class="d-flex align-items-center justify-content-between">
+                    <!-- <button (click)="downloadFile()" class="btn btn-primary">Download Template</button> -->
+                    <!-- <dx-file-uploader
+                  [multiple]="true"
+                  uploadMode="useButtons"
+                  uploadUrl="https://js.devexpress.com/Demos/NetCore/FileUploader/Upload"
+                  [allowedFileExtensions]="['.xlsx','xls']"
+                  (onValueChanged)="onFileSelected($event)"
+                  style="width: 400px !important;"
+                >
+                </dx-file-uploader> -->
+                  </div>
+                </ng-container>
+              <dx-data-grid
+              id="grid"
+              [dataSource]="dataSource"
+              [repaintChangesOnly]="true"
+              [showBorders]="true"
+              [allowColumnReordering]="true"
+              [columnAutoWidth]="true"
+              (onExporting)="exportGrid($event)"
+              (onInitNewRow)="initNewRow($event)"
+
+            >
+                <dxo-scrolling mode="standard" [useNative]="false"></dxo-scrolling>
+                <dxo-editing
+                  mode="cell"
+                  [allowAdding]="true"
+                  [allowUpdating]="(permissionIsLoadded && internalPermission?.includes(permissionData.Update) ?? false)"
+                >
+                </dxo-editing>
+                <dxo-selection mode="multiple"></dxo-selection>
+                <dxi-column dataField="warehouse" caption="Warehouse" [visible]="false">
+                </dxi-column>
+                <dxi-column dataField="company" caption="Company" [visible]="false">
+                </dxi-column>
+                <dxi-column dataField="createdBy" caption="CreatedBy" [visible]="false">
+                </dxi-column>
+                <dxi-column dataField="errorMessage" caption="ErrorMessage" [visible]="false">
+                </dxi-column>
+                <dxi-column dataField="sku" caption="Item Code">
+                  <dxi-validation-rule type="required" message="sku is required"></dxi-validation-rule>
+
+                </dxi-column>
+                <dxi-column dataField="quantity" caption="quantity">
+                  <dxi-validation-rule type="required" message="quantity is required"></dxi-validation-rule>
+                  <dxi-validation-rule type="range" min="1" message="quantity must be at least 1"></dxi-validation-rule>
+                </dxi-column>
+                <dxi-column dataField="skuTypeId" caption="Type" alignment="center">
+                  <dxo-lookup
+                    [dataSource]="typeSource"
+                    valueExpr="id"
+                    displayExpr="name"
+                  ></dxo-lookup>
+                  <dxi-validation-rule type="required" message="Brand is required"></dxi-validation-rule>
+                </dxi-column>
+                <dxi-column dataField="companyId" caption="Company" alignment="center">
+                  <dxo-lookup
+                    [dataSource]="companySource"
+                    valueExpr="id"
+                    displayExpr="name"
+                  ></dxo-lookup>
+                  <dxi-validation-rule type="required" message="Brand is required"></dxi-validation-rule>
+                </dxi-column>
+                <dxi-column dataField="warehouseId" caption="Warehouse" alignment="center">
+                  <dxo-lookup
+                    [dataSource]="warehouseSource"
+                    valueExpr="id"
+                    displayExpr="name"
+                  ></dxo-lookup>
+                  <dxi-validation-rule type="required" message="Brand is required"></dxi-validation-rule>
+                </dxi-column>
+                <dxi-column dataField="orderReference" caption="Customer Order Reference">
+                </dxi-column>
+                <dxi-column dataField="groupReference" caption="groupReference">
+                </dxi-column>
+                  <dxi-column dataField="shippingDate" caption="shippingDate" dataType="datetime">
+                    <dxi-validation-rule type="required" message="shippingDate is required"></dxi-validation-rule>
+                  </dxi-column>
+                  <dxi-column dataField="createdDate" caption="CreatedDate" dataType="datetime" [allowEditing]="false">
+                  </dxi-column>
+                  <dxi-column dataField="createdBy" caption="CreatedBy" [allowEditing]="false">
+                  </dxi-column>
+                  <dxi-column dataField="modificationDate" caption="LastModificationDate" [allowEditing]="false">
+                  </dxi-column>
+                  <dxi-column dataField="modificationBy" caption="LastModificationBy" [allowEditing]="false">
+                  </dxi-column>
+                  <dxi-column dataField="truckNumber" caption="truckNumber">
+                  </dxi-column>
+                  <dxi-column dataField="statusId" caption="status" alignment="center">
+                    <dxo-lookup
+                      [dataSource]="orderStatusSource"
+                      valueExpr="id"
+                      displayExpr="name"
+                    ></dxo-lookup>
+                    <dxi-validation-rule type="required" message="Brand is required"></dxi-validation-rule>
+                  </dxi-column>
+                <dxo-paging [pageSize]="10"> </dxo-paging>
+                <dxo-pager
+                  [visible]="true"
+                  
+                  [showPageSizeSelector]="showPageSizeSelector"
+                  [showInfo]="showInfo"
+                  [showNavigationButtons]="showNavButtons"
+                >
+                </dxo-pager>
+                <dxo-export 
+                [enabled]="true"
+                [formats]="['xlsx', 'pdf']"
+                [allowExportSelectedData]="true"
+                ></dxo-export>
+                <dxo-filter-row [visible]="true"></dxo-filter-row>
+                <dxo-search-panel [visible]="true"></dxo-search-panel>
+                <dxo-group-panel [visible]="true"></dxo-group-panel>
+              </dx-data-grid>
+              </div>
+            </div> <!-- end card-body-->
+        </div>
+    </div> <!-- end col-->
+  </div> 

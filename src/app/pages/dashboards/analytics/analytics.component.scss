@@ -1,0 +1,99 @@
+::ng-deep #grid {
+    height: 440px;
+  }
+  
+  ::ng-deep .options {
+    padding: 20px;
+    margin-top: 20px;
+    background-color: rgba(191, 191, 191, 0.15);
+  }
+  
+  ::ng-deep .caption {
+    margin-bottom: 10px;
+    font-weight: 500;
+    font-size: 18px;
+  }
+  
+  ::ng-deep .option {
+    margin-bottom: 10px;
+  }
+  
+  ::ng-deep .option > span {
+    position: relative;
+    top: 2px;
+    margin-right: 10px;
+  }
+  
+  ::ng-deep .option > .dx-widget {
+    display: inline-block;
+    vertical-align: middle;
+  }
+  
+  ::ng-deep #requests .caption {
+    float: left;
+    padding-top: 7px;
+  }
+  
+  ::ng-deep #requests > div {
+    padding-bottom: 5px;
+  }
+  
+  ::ng-deep #requests > div::after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+  
+  ::ng-deep #requests #clear {
+    float: right;
+  }
+  
+  ::ng-deep #requests ul {
+    list-style: none;
+    max-height: 100px;
+    overflow: auto;
+    margin: 0;
+  }
+  
+  ::ng-deep #requests ul li {
+    padding: 7px 0;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  ::ng-deep #requests ul li:last-child {
+    border-bottom: none;
+  }
+/* Target the header cells */
+// ::ng-deep #grid .dx-datagrid-headers .dx-datagrid-action {
+//   /* Apply your styles here */
+//   background-color: #405189; /* Example background color */
+//   color: #fff; /* Example text color */
+//   font-weight: bold; /* Example font weight */
+// }
+
+// /* Target the header text */
+// ::ng-deep #grid .dx-datagrid-headers .dx-datagrid-text-content {
+//   /* Apply your styles here */
+//   font-size: 16px; /* Example font size */
+// }
+
+/* Target the body cells */
+// ::ng-deep #grid .dx-datagrid-rowsview .dx-row .dx-datagrid-cell {
+//   /* Apply your styles here */
+//   background-color: #405189; /* Example background color */
+//   color: #333; /* Example text color */
+//   font-size: 14px; /* Example font size */
+//   border: 1px solid #ccc; /* Example border */
+// }
+
+// /* Optional: Target specific columns */
+// ::ng-deep #grid .dx-datagrid-rowsview .dx-row .dx-datagrid-text-content[data-field="Freight"] {
+//   /* Apply styles specific to the "Freight" column */
+//   font-weight: bold; /* Example font weight */
+// }
+
+// ::ng-deep #grid .dx-scrollable-wrapper {
+//   background-color: #405189 !important;
+//   color: white;
+//   font-weight: bold;
+// }

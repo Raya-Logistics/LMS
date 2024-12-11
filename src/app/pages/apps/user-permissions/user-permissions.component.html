@@ -1,0 +1,147 @@
+<!-- Start Breadcrumbs -->
+<app-breadcrumbs *ngIf="permissionIsLoadded && internalPermission?.includes(permissionData.View)" [title]="pagesname.UserPermissions" [breadcrumbItems]="breadCrumbItems"></app-breadcrumbs>
+
+<!-- End Breadcrumbs -->
+
+<div class="p-2" *ngIf="permissionIsLoadded && internalPermission?.includes(permissionData.Add)">
+    <!-- Base Example -->
+    <div class="accordion" id="default-accordion-example">
+      <div class="accordion-item">
+        <h2 class="accordion-header p-2" id="headingOne">
+          <button
+          class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo"
+          >
+            Add Permission
+          </button>
+        </h2>
+        <div
+        id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample"
+        >
+          <div class="accordion-body">
+            <form [formGroup]="userPermissionForm" (ngSubmit)="adduserPermissionMeasure(userPermissionForm)">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div>
+                            <label for="userId">User</label>
+                            <select formControlName="userId" id="userId" class="form-select mb-3">
+                                <option [ngValue]="null" [selected]="true">Choose A Value </option>
+                                <option *ngFor="let option of userLookData" [value]="option.id">{{ option.userName }}</option>
+                              </select>
+                            <div *ngIf="userId?.errors && userId?.touched" class="alert alert-danger">
+                                <p *ngIf="userId?.errors?.['required']" class="m-0 p-0">*user Is Required</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div>
+                            <label for="responsibilityId">Page</label>
+                            <select formControlName="responsibilityId" id="responsibilityId" class="form-select mb-3">
+                                <option [ngValue]="null" [selected]="true">Choose A Value </option>
+                                <option *ngFor="let option of pageLookupData" [value]="option.id">{{ option.name }}</option>
+                              </select>
+                            <div *ngIf="responsibilityId?.errors && responsibilityId?.touched" class="alert alert-danger">
+                                <p *ngIf="responsibilityId?.errors?.['required']" class="m-0 p-0">*Page Is Required</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div>
+                        <label for="permissionIds">Permission</label>
+                        <ng-multiselect-dropdown
+                          [placeholder]="'Select Responsibilities'"
+                          [settings]="dropdownSettings"
+                          [data]="dropdownList"
+                          formControlName="permissionIds"
+                          >
+                        </ng-multiselect-dropdown>
+                        <div *ngIf="userPermissionForm.get('permissionIds')?.errors && userPermissionForm.get('permissionIds')?.touched" class="alert alert-danger">
+                          <p *ngIf="userPermissionForm.get('permissionIds')?.errors?.['required']" class="m-0 p-0">*Permission is required</p>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+                <button [disabled]="userPermissionForm.invalid" class="btn btn-success">
+                    <span *ngIf="!isLoading">Create</span>
+                    <i *ngIf="isLoading" class="fas fa-spinner fa-pulse"></i>
+                </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="row" *ngIf="permissionIsLoadded && internalPermission?.includes(permissionData.View)">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body p-0">
+          <div class="p-4">
+            <dx-data-grid
+                id="grid"
+                [dataSource]="dataSource"
+                [repaintChangesOnly]="true"
+                [showBorders]="true"
+                [columnAutoWidth]="true"
+                (onExporting)="exportGrid($event)"
+              >
+                  <dxo-scrolling mode="standard" [useNative]="false"></dxo-scrolling>
+              <dxo-editing
+                mode="cell"
+                [allowUpdating]="(permissionIsLoadded && internalPermission?.includes(permissionData.Update))?? false"
+                >
+              </dxo-editing>
+              <dxo-selection mode="multiple"></dxo-selection>
+              <dxi-column dataField="userId" caption="User" [groupIndex]="0">
+                <dxo-lookup
+                  [dataSource]="userData"
+                  valueExpr="id"
+                  displayExpr="userName"
+                ></dxo-lookup>
+              </dxi-column>
+              <dxi-column dataField="responsibilityId" caption="Page">
+                <dxo-lookup
+                  [dataSource]="responsibilityData"
+                  valueExpr="id"
+                  displayExpr="name"
+                ></dxo-lookup>
+              </dxi-column>
+              <dxi-column dataField="permissionId" caption="Permission">
+                <dxo-lookup
+                  [dataSource]="permissionsData"
+                  valueExpr="id"
+                  displayExpr="name"
+                ></dxo-lookup>
+              </dxi-column>
+              <dxo-paging [pageSize]="10"> </dxo-paging>
+              <dxo-pager
+                [visible]="true"
+                [showPageSizeSelector]="showPageSizeSelector"
+                [showInfo]="showInfo"
+                [showNavigationButtons]="showNavButtons"
+              >
+              </dxo-pager>
+              <dxo-export 
+                  [enabled]="true"
+                  [formats]="['xlsx', 'pdf']"
+                  [allowExportSelectedData]="true"
+                  >
+                </dxo-export>
+              <dxo-filter-row [visible]="true"></dxo-filter-row>
+              <dxo-search-panel [visible]="true"></dxo-search-panel>
+              <dxo-group-panel [visible]="true"></dxo-group-panel>
+              <dxo-grouping
+                  [autoExpandAll]="false"
+                  [allowCollapsing]="true">
+    </dxo-grouping>
+            </dx-data-grid>
+          </div>
+        </div>
+        <!-- end card-body-->
+      </div>
+    </div>
+    <!-- end col-->
+  </div>
+  <div *ngIf="permissionIsLoadded && !internalPermission?.includes(permissionData.View)" class="alert alert-danger">
+    You Don't Have Permission For This Page Please Contact With Your Manager
+    </div>

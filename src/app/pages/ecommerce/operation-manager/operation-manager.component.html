@@ -1,0 +1,285 @@
+
+<app-breadcrumbs [breadcrumbItems]="breadCrumbItems" title="Operation Manager"></app-breadcrumbs>
+<ngx-spinner
+  bdColor="rgba(51,51,51,0.8)"
+  size="medium"
+  color="#fff"
+  type="square-jelly-box"
+>
+  <p style="font-size: 20px; color: white">Loading...</p>
+</ngx-spinner>
+<div class="card" *ngIf="!IsStockKeeper">
+  <div class="card-body">
+    <form
+      [formGroup]="operationManagerFom"
+      (ngSubmit)="GetTransactions(operationManagerFom)"
+    >
+      <div class="row">
+        
+        <div class="col-lg-6">
+          <div>
+            <label for="warehouseId">Warehouse</label>
+            <select
+              formControlName="warehouseId"
+              id="warehouseId"
+              class="form-select mb-3"
+            >
+              <option *ngFor="let option of warehouseLookUp" [value]="option.id">
+                {{ option.name }}
+              </option>
+            </select>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div>
+            <label for="statusTransaction">Transaction Status</label>
+            <select
+              formControlName="statusTransaction"
+              id="statusTransaction"
+              class="form-select mb-3"
+              [(ngModel)]="companySelectedValue"
+            >
+            <option [value]="null">---Select Status---</option>
+              <option *ngFor="let option of stockStatusLookUp" [value]="option.name">
+                {{ option.name }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <button [disabled]="operationManagerFom.invalid" class="btn btn-success">
+        <span *ngIf="!isLoading">Search</span>
+        <i *ngIf="isLoading" class="fas fa-spinner fa-pulse"></i>
+      </button>
+    </form>
+  </div>
+</div>
+<div class="card">
+    <div class="card-body p-0">
+      <div class="p-4">
+        <dx-data-grid
+          id="grid"
+          [dataSource]="dataSource"
+          [repaintChangesOnly]="true"
+          [showBorders]="true"
+          [columnAutoWidth]="true"
+        >
+          <!-- <dxi-column dataField="transactionID" caption="Transaction ID"></dxi-column> -->
+          <dxi-column dataField="transactionNumber" caption="Transaction Number"></dxi-column>
+          <dxi-column dataField="refrenceNumber" caption="Reference Number"></dxi-column>
+          <dxi-column dataField="transactionType" caption="Transaction Type"></dxi-column>
+          <dxi-column dataField="comment" caption="Comment"></dxi-column>
+          <dxi-column dataField="transactionDate" caption="Transaction Date" dataType="date"></dxi-column>
+          <dxi-column dataField="transactionStatus" caption="Transaction Status"></dxi-column>
+          <dxi-column dataField="submitter" caption="Submitter"></dxi-column>
+          <dxi-column dataField="totalQuantity" caption="Total Quantity"></dxi-column>
+          <dxi-column type="buttons" [width]="110" caption="Details">
+            <dxi-button
+              hint="Details"
+              icon="eyeopen"
+              [onClick]="onCloneIconClickDetails"
+            ></dxi-button>
+            </dxi-column>
+          <dxi-column type="buttons" [width]="110" caption="continue">
+            <dxi-button
+              hint="continue"
+              icon="edit"
+              [onClick]="onCloneIconClickEdit"
+            ></dxi-button>
+            </dxi-column>
+            <dxi-column type="buttons" [width]="110" caption="Revoke">
+              <dxi-button
+                hint="Revoke"
+                icon="preferences"
+                [onClick]="onCloneIconClickRevoke"
+              ></dxi-button>
+              </dxi-column>
+          <dxi-column type="buttons" [width]="110" caption="Approve" *ngIf="!IsStockKeeper">
+            <dxi-button
+              hint="Issued"
+              icon="check"
+              [onClick]="onCloneIconClickStatus"
+            ></dxi-button>
+            </dxi-column>
+          <dxi-column type="buttons" [width]="110" caption="Remove" *ngIf="!IsStockKeeper">
+            <dxi-button
+              hint="Cancel Transaction"
+              icon="clearcircle"
+              [onClick]="onCloneIconClick"
+            ></dxi-button>
+            </dxi-column>
+          <dxo-paging [pageSize]="10"> </dxo-paging>
+          <dxo-paging [pageSize]="10"> </dxo-paging>
+          <dxo-pager
+            [visible]="true"
+            [showPageSizeSelector]="showPageSizeSelector"
+            [showInfo]="showInfo"
+            [showNavigationButtons]="showNavButtons"
+          >
+          </dxo-pager>
+          <dxo-export 
+              [enabled]="true"
+              [formats]="['xlsx', 'pdf']"
+              [allowExportSelectedData]="true"
+              >
+            </dxo-export>
+          <dxo-filter-row [visible]="true"></dxo-filter-row>
+          <dxo-search-panel [visible]="true"></dxo-search-panel>
+          <dxo-group-panel [visible]="true"></dxo-group-panel>
+        </dx-data-grid>
+      </div>
+    </div>
+    <!-- end card-body-->
+  </div>
+
+
+
+<!-- For TransactionDetail -->
+  <p-dialog header="All Transaction Details" [modal]="true" [(visible)]="visibleTransactionDetails" 
+          [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>SKU</th>
+        <th>Line Count</th>
+        <th>Quantity</th>
+        <th>Is Serialized</th>
+        <th *ngFor="let status of itemStatusLookup">{{ status.name }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let sku of getObjectKeys(itemsGroupedBySku)">
+        <td>{{ sku }}</td> 
+        <td>{{ itemsGroupedBySku[sku].totalCount }}</td> 
+        <td>{{ itemsGroupedBySku[sku].totalQuantity }}</td> 
+        <td>{{ itemsGroupedBySku[sku].isSerialized ? 'Yes' : 'No' }}</td> 
+        
+        <td *ngFor="let status of itemStatusLookup">
+          {{ itemsGroupedBySku[sku].statusQuantities[status.id] || 0 }}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <div *ngIf="getObjectKeys(itemsGroupedBySku).length == 0" class="alert alert-danger">
+    There Is No Details
+  </div>
+
+</p-dialog>
+
+
+
+<!-- For Transaction Revoke -->
+<!-- <p-dialog header="All Transaction Details" [modal]="true" [(visible)]="visibleTransactionRevokeDetails" 
+          [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Actions</th>
+        <th>SKU</th>
+        <th>Barcode</th>
+        <th>Description</th>
+        <th>Quantity</th>
+        <th>Locations</th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container *ngFor="let item of transactionRevokeDetails; let i = index">
+        <tr>
+          <td>
+            <button *ngIf="item.itemIsSerializedIn" class="btn btn-sm btn-primary" (click)="toggleSerials(i)">
+              Show Serials
+            </button>
+          </td>
+          <td>{{ item.itemSku }}</td>
+          <td>{{ item.itemCode }}</td>
+          <td>{{ item.itemDescription }}</td>
+          <td>{{ item.quantity }}</td>
+          <td>
+            <ul>
+              <li *ngFor="let location of item.locationOptions">{{ location.name }}</li>
+            </ul>
+          </td>
+        </tr>
+        <tr *ngIf="expandedRowIndex === i">
+          <td colspan="6">
+            <strong>Serial Numbers:</strong>
+            <ul>
+              <li *ngFor="let serial of item.serials">{{ serial }}</li>
+            </ul>
+          </td>
+        </tr>
+      </ng-container>
+    </tbody>
+  </table>
+
+  <div *ngIf="transactionRevokeDetails.length === 0" class="alert alert-danger">
+    There Is No Details
+  </div>
+</p-dialog> -->
+
+<p-dialog header="All Transaction Details" [modal]="true" [(visible)]="visibleTransactionRevokeDetails" 
+          [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Actions</th>
+        <th>SKU</th>
+        <th>Barcode</th>
+        <th>Status</th>
+        <th>Quantity</th>
+        <th>Locations</th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container *ngFor="let item of transactionRevokeDetails; let i = index">
+        <!-- Main Row -->
+        <tr>
+          <td class="d-flex align-items-center justify-content-between gap-2">
+            <button *ngIf="item.itemIsSerializedIn" class="btn btn-sm btn-primary" (click)="toggleSerials(i)">
+              <i [ngClass]="expandedRowIndex === i ? 'pi pi-eye-slash' : 'pi pi-eye'"></i>
+            </button>
+
+            <button *ngIf="item.ids && item.ids.length > 0" class="btn btn-sm btn-info ml-2" (click)="RevokeRow(item.ids)">
+              <i class="pi pi-times"></i>
+            </button>
+          </td>
+          <td>{{ item.itemSku }}</td>
+          <td>{{ item.itemCode }}</td>
+          <td>{{ item.itemStatusName }}</td>
+          <td>{{ item.quantity }}</td>
+          <td>
+            <ul>
+              <li *ngFor="let location of item.locationOptions">{{ location.name }}</li>
+            </ul>
+          </td>
+        </tr>
+
+        <!-- Expandable Row for Details -->
+        <tr *ngIf="expandedRowIndex === i">
+          <td colspan="6">
+            <!-- Description Section -->
+            <div>
+              <strong>Description:</strong>
+              <p>{{ item.itemDescription }}</p>
+            </div>
+
+            <!-- Serial Numbers Section -->
+            <div *ngIf="item.serials && item.serials.length > 0">
+              <strong>Serial Numbers:</strong>
+              <div class="serials-container">
+                <span *ngFor="let serial of item.serials; let j = index" class="badge" [ngClass]="'badge-' + getBadgeColor(j)">
+                  {{ serial }}
+                </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+      </ng-container>
+    </tbody>
+  </table>
+
+  <div *ngIf="transactionRevokeDetails.length === 0" class="alert alert-danger">
+    There Is No Details
+  </div>
+</p-dialog>

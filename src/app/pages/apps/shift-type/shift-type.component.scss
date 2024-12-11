@@ -1,0 +1,14 @@
+// .status-icon {
+//     height: 16px;
+//     width: 16px;
+//     display: inline-block;
+//     margin-right: 8px;
+//   }
+  
+//   .middle {
+//     vertical-align: middle;
+//   }
+
+::ng-deep .dx-checkbox-checked .dx-checkbox-icon::before {
+    left: 0 !important;
+}

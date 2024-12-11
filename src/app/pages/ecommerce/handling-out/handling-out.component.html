@@ -1,0 +1,500 @@
+<app-breadcrumbs
+  *ngIf="internalPermission?.includes(permissionData.View)"
+  [title]="pagesname.HandlingOut"
+  [breadcrumbItems]="breadCrumbItems"
+></app-breadcrumbs>
+
+<div
+  class="card"
+  *ngIf="
+    internalPermission?.includes(permissionData.Add) && !isStockDetailsCreation
+  "
+>
+  <div class="card-body">
+    <form
+      [formGroup]="handlingOutForm"
+      (ngSubmit)="addhandlingOut(handlingOutForm)"
+    >
+      <div class="row">
+        <div class="col-lg-3 col-md-6">
+          <div>
+            <label for="companyId">Company</label>
+            <select
+              formControlName="companyId"
+              id="companyId"
+              class="form-select mb-3"
+              [(ngModel)]="companySelectedValue"
+              (change)="CompanySelectChanged()"
+            >
+              <!--[(ngModel)]="companySelectedValue" (change)="companySelectChanged()"-->
+              <option [ngValue]="null" [selected]="true">Choose A Value</option>
+              <option *ngFor="let option of companyLookUp" [value]="option.id">
+                {{ option.name }}
+              </option>
+            </select>
+            <div
+              *ngIf="companyId?.errors && companyId?.touched"
+              class="alert alert-danger"
+            >
+              <p *ngIf="companyId?.errors?.['required']" class="m-0 p-0">
+                *company Is Required
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+          <div>
+            <label for="typeId">Transaction Type</label>
+            <select
+              formControlName="typeId"
+              id="typeId"
+              class="form-select mb-3"
+              [(ngModel)]="SelectedTypeValue"
+              (change)="TypeSelectChanged()"
+            >
+              <option [ngValue]="null" [selected]="true">Choose A Value</option>
+              <option *ngFor="let option of typeLookUp" [value]="option.id">
+                {{ option.name }}
+              </option>
+            </select>
+            <div
+              *ngIf="typeId?.errors && typeId?.touched"
+              class="alert alert-danger"
+            >
+              <p *ngIf="typeId?.errors?.['required']" class="m-0 p-0">
+                *transaction Type Is Required
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+          <div>
+            <label for="refrenceNumber">Transaction number</label>
+            <input
+              formControlName="refrenceNumber"
+              type="text"
+              name="refrenceNumber"
+              id="refrenceNumber"
+              autocomplete="off"
+              class="form-control mb-3"
+            />
+            <div
+              *ngIf="refrenceNumber?.errors && refrenceNumber?.touched"
+              class="alert alert-danger"
+            >
+              <p *ngIf="refrenceNumber?.errors?.['required']" class="m-0 p-0">
+                *Transaction number Is Required
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+          <div>
+            <label for="warehouseId">From Warehouse</label>
+            <select
+              formControlName="warehouseId"
+              id="warehouseId"
+              class="form-select mb-3"
+            >
+              <!--[(ngModel)]="companySelectedValue" (change)="companySelectChanged()"-->
+              <option [ngValue]="null" [selected]="true">Choose A Value</option>
+              <option
+                *ngFor="let option of warehouseLookUp"
+                [value]="option.id"
+              >
+                {{ option.name }}
+              </option>
+            </select>
+            <div
+              *ngIf="warehouseId?.errors && warehouseId?.touched"
+              class="alert alert-danger"
+            >
+              <p *ngIf="warehouseId?.errors?.['required']" class="m-0 p-0">
+                *warehouse Is Required
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-6" *ngIf="toWarehouseVisible">
+          <div>
+            <label for="toWarehouse">Warehouse To</label>
+            <select
+              formControlName="toWarehouse"
+              id="toWarehouse"
+              class="form-select mb-3"
+            >
+              <!--[(ngModel)]="companySelectedValue" (change)="companySelectChanged()"-->
+              <option [ngValue]="null" [selected]="true">Choose A Value</option>
+              <option
+                *ngFor="let option of warehouseToLookUp"
+                [value]="option.id"
+              >
+                {{ option.name }}
+              </option>
+            </select>
+            <div
+              *ngIf="toWarehouse?.errors && toWarehouse?.touched"
+              class="alert alert-danger"
+            >
+              <p *ngIf="toWarehouse?.errors?.['required']" class="m-0 p-0">
+                *warehouse Is Required
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-6" *ngIf="customerVisible">
+          <div>
+            <label for="cutomerId">Customer</label>
+            <select
+              formControlName="cutomerId"
+              id="cutomerId"
+              class="form-select mb-3"
+            >
+              <!--[(ngModel)]="companySelectedValue" (change)="companySelectChanged()"-->
+              <option [ngValue]="null" [selected]="true">Choose A Value</option>
+              <option *ngFor="let option of customerLookUp" [value]="option.id">
+                {{ option.name }}
+              </option>
+            </select>
+            <div
+              *ngIf="cutomerId?.errors && cutomerId?.touched"
+              class="alert alert-danger"
+            >
+              <p *ngIf="cutomerId?.errors?.['required']" class="m-0 p-0">
+                *cutomer Is Required
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button [disabled]="handlingOutForm.invalid" class="btn btn-success">
+        <span *ngIf="!isLoading">Create</span>
+        <i *ngIf="isLoading" class="fas fa-spinner fa-pulse"></i>
+      </button>
+    </form>
+  </div>
+</div>
+
+<div class="card" *ngIf="isStockDetailsCreation">
+  <div class="card-body">
+    <div class="d-flex align-items-center justify-content-between">
+      <div>
+        Company :
+        <strong>{{
+          isHeaderTransactionOperationData?.headerInfo?.companyName
+        }}</strong>
+      </div>
+      <div>
+        Warehouse :
+        <strong>{{
+          isHeaderTransactionOperationData?.headerInfo?.warehouseName
+        }}</strong>
+      </div>
+      <div>
+        Transaction Number :
+        <strong>{{ isHeaderTransactionOperationData?.headerInfo?.id }}</strong>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- <div class="card" *ngIf="isStockDetailsCreation">
+  <div class="card-body">
+    <form
+      [formGroup]="avaliablityQuantityForm"
+      (ngSubmit)="addManualHandlingOut(avaliablityQuantityForm)"
+    >
+      <div class="row">
+        <div class="col-5">
+          <div>
+            <label for="itemCode">Item Code</label>
+            <input
+              type="text"
+              formControlName="itemCode"
+              class="form-control"
+            />
+          </div>
+        </div>
+        <div class="col-5">
+          <div>
+            <label for="neededQuantity">Quantity</label>
+            <input
+              type="number"
+              min="1"
+              formControlName="neededQuantity"
+              class="form-control"
+            />
+          </div>
+        </div>
+        <div class="col-2">
+          <div>
+            <label for="neededQuntity">Add</label>
+            <button
+              class="btn btn-success d-block"
+              [disabled]="avaliablityQuantityForm.invalid"
+            >
+              Submit
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+    <div *ngIf="stockDetails.length > 0" class="mt-4">
+      <div class="card mt-2">
+        <div class="card-body">
+          <h5>Available Stock</h5>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Location Code</th>
+            <th>Item Code</th>
+            <th>Item ID</th>
+            <th>Pallets</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let location of stockDetails">
+            <td>{{ location.locationCode }}</td>
+            <td>{{ location.itemCode }}</td>
+            <td>{{ location.itemId }}</td>
+            <td>
+              <ul>
+                <li *ngFor="let pallet of location.pallets">
+                  Pallet ID: {{ pallet.palletId }}, Quantity: {{ pallet.quantity }}
+                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> -->
+
+<p-tabView *ngIf="isStockDetailsCreation">
+  <p-tabPanel header="Dev">
+    <form class="d-flex align-items-center gap-4" id="addnewDetailsFormId"
+    [formGroup]="addnewDetailsForm">
+      <div>
+        <label>BarCode</label>
+        <input
+          #barCodeInput
+          formControlName="itemCode"
+          type="text"
+          name="itemCode"
+          id="itemCode"
+          class="form-control mb-3"
+          placeholder="Scan Code"
+          [(ngModel)]="scanItemCode"
+          autocomplete="off"
+          autofocus
+          (keyup.enter)="scanBarCodeOperation()"
+        />
+      </div>
+      <div *ngIf="itemIsSerializedOut">
+        <label>Serial</label>
+        <input
+          #serialInput
+          formControlName="serial"
+          type="text"
+          name="ItemSerialized"
+          id="ItemSerialized"
+          class="form-control mb-3"
+          placeholder="Scan Serial"
+          [(ngModel)]="scanSerial"
+          autocomplete="off"
+          (keyup.enter)="scanSerialOperation()"
+        />
+        <div
+          *ngIf="
+            addnewDetailsForm.controls['serial'].invalid &&
+            (addnewDetailsForm.controls['serial'].dirty ||
+              addnewDetailsForm.controls['serial'].touched)
+          "
+          class="text-danger"
+        >
+          Serial is required.
+        </div>
+      </div>
+    </form>
+        <form [formGroup]="itemForm" (ngSubmit)="submitForm()" class="my-2">
+          <table class="table table-striped">
+            <tr>
+              <th>Item Code</th>
+              <th>Item Type</th>
+              <th>Location</th>
+              <th>Pallet</th>
+              <th>Patch Expiry Number</th>
+              <th>On Hand</th>
+              <th>Input Quantity</th>
+              <th>ATP</th>
+            </tr>
+            <tr *ngFor="let item of items.controls; let i = index" [formGroup]="asFormGroup(item)" class="p-2">
+              <td><input formControlName="item_Code" class="form-control border-0" readonly /></td>
+              <td><input formControlName="itemType" class="form-control border-0" readonly /></td>
+              <td><input formControlName="location" class="form-control border-0" readonly /></td>
+              <td><input formControlName="pallet" class="form-control border-0" readonly /></td>
+              <td><input formControlName="patchExpiryNumber" class="form-control border-0" readonly /></td>
+              <td><input formControlName="onhand" type="number" class="form-control border-0" readonly /></td>
+              <td>
+                <input formControlName="inputQuantity" type="number" class="form-control"/>
+                <div *ngIf="item.get('inputQuantity')?.hasError('quantityExceeds') && item.get('inputQuantity')?.touched" class="text-danger">
+                  Quantity exceeds available stock
+                </div>
+              </td>
+              <td><input formControlName="atp" type="number" class="form-control border-0" readonly /></td>
+            </tr>
+          </table>
+          <button type="submit" class="btn btn-success" [disabled]="!itemForm.valid">Submit</button>
+        </form>
+</p-tabPanel>
+  <p-tabPanel header="Manual">
+      <div class="d-flex align-items-center gap-4">
+        <p-dropdown 
+          [options]="AvailableItems"
+          [filter]="true"
+          [(ngModel)]="selectedItemValue"
+          (onChange)="selectedItemChanged()"
+          optionLabel="item_Code"
+          placeholder="Select a Item" />
+          <input type="text" placeholder="Scan Serial" 
+          class="form-control" *ngIf="itemIsSeializedOut" [(ngModel)]="itemSerial"
+          (keyup.enter)="itemSerializedOutScanning()"/>
+      </div>
+          <form [formGroup]="itemForm" (ngSubmit)="submitForm()" class="my-2">
+            <table class="table table-striped">
+              <tr>
+                <th>Item Code</th>
+                <th>Item Type</th>
+                <th>Location</th>
+                <th>Pallet</th>
+                <th>Patch Expiry Number</th>
+                <th>On Hand</th>
+                <th>Input Quantity</th>
+                <th>ATP</th>
+              </tr>
+              <tr *ngFor="let item of items.controls; let i = index" [formGroup]="asFormGroup(item)" class="p-2">
+                <td><input formControlName="item_Code" class="form-control border-0" readonly /></td>
+                <td><input formControlName="itemType" class="form-control border-0" readonly /></td>
+                <td><input formControlName="location" class="form-control border-0" readonly /></td>
+                <td><input formControlName="pallet" class="form-control border-0" readonly /></td>
+                <td><input formControlName="patchExpiryNumber" class="form-control border-0" readonly /></td>
+                <td><input formControlName="onhand" type="number" class="form-control border-0" readonly /></td>
+                <td>
+                  <input formControlName="inputQuantity" type="number" class="form-control" />
+                  <div *ngIf="item.get('inputQuantity')?.hasError('quantityExceeds') && item.get('inputQuantity')?.touched" class="text-danger">
+                    Quantity exceeds available stock
+                  </div>
+                </td>
+                <td><input formControlName="atp" type="number" class="form-control border-0" readonly /></td>
+              </tr>
+            </table>
+            <button type="submit" class="btn btn-success" [disabled]="!itemForm.valid">Submit</button>
+          </form>
+</p-tabPanel>
+  <p-tabPanel header="FIFO">
+  <div class="d-flex align-items-center justify-content-between gap-3">
+    <p-dropdown 
+    [options]="AvailableItems"
+    [filter]="true"
+    [(ngModel)]="selectedItemValueFIFO"
+    optionLabel="item_Code"
+    placeholder="Select a Item" />
+      <input class="form-control" placeholder="Enter Quantity" type="Number" min="0" id="FifoQuantity">
+      <button class="btn btn-success" (click)="FIFOSubmitHeader()">Add</button>
+  </div>
+  <div class="alert alert-danger my-2" *ngIf="quantityError">لا يوجد عدد كافي من هذا المنتج</div>
+  <form [formGroup]="itemFormFIFO" (ngSubmit)="submitFormFIFO()" class="my-2">
+    <div formArrayName="items">
+      <div>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Item Code</th>
+              <th>Location</th>
+              <th>Item Type</th>
+              <th>Pallet</th>
+              <th>Patch Expiry Number</th>
+              <th>On Hand</th>
+              <!-- <th>Input Quantity</th> -->
+              <th>ATP</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="p-2" *ngFor="let group of itemsFIFO.controls; let i = index" [formGroupName]="i">
+              <td><input formControlName="item_Code" class="form-control border-0" readonly></td>
+              <td><input formControlName="location" class="form-control border-0" readonly></td>
+              <td><input formControlName="itemType" class="form-control border-0" readonly/></td>
+              <td><input formControlName="pallet" class="form-control border-0" readonly/></td>
+              <td><input formControlName="patchExpiryNumber" class="form-control border-0" readonly/></td>
+              <td><input formControlName="onhand" type="number" class="form-control border-0" readonly/></td>
+              <!-- <td>
+                <input formControlName="inputQuantity" type="number" class="form-control"/>
+                <div *ngIf="group.get('inputQuantity')?.hasError('quantityExceeds') && group.get('inputQuantity')?.touched" class="text-danger">
+                  Quantity exceeds available stock
+                </div>
+              </td> -->
+              <td><input formControlName="atp" type="number" class="form-control border-0" readonly/></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <button type="submit" class="btn btn-success" [disabled]="!itemFormFIFO.valid">Submit And Print</button>
+  </form>
+  
+  </p-tabPanel>
+  <p-tabPanel header="FILO">
+    <div class="d-flex align-items-center justify-content-between gap-3">
+      <p-dropdown 
+      [options]="AvailableItems"
+      [filter]="true"
+      [(ngModel)]="selectedItemValueFILO"
+      optionLabel="item_Code"
+      placeholder="Select a Item" />
+        <input class="form-control" placeholder="Enter Quantity" type="Number" min="0" id="FiloQuantity">
+        <button class="btn btn-success" (click)="FILOSubmitHeader()">Add</button>
+    </div>
+    <div class="alert alert-danger my-2" *ngIf="quantityError">لا يوجد عدد كافي من هذا المنتج</div>
+    <form [formGroup]="itemFormFILO" (ngSubmit)="submitFormFILO()" class="my-2">
+      <div formArrayName="items">
+        <div>
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Item Code</th>
+                <th>Location</th>
+                <th>Item Type</th>
+                <th>Pallet</th>
+                <th>Patch Expiry Number</th>
+                <th>On Hand</th>
+                <!-- <th>Input Quantity</th> -->
+                <th>ATP</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="p-2" *ngFor="let group of itemsFILO.controls; let i = index" [formGroupName]="i">
+                <td><input formControlName="item_Code" class="form-control border-0" readonly></td>
+                <td><input formControlName="location" class="form-control border-0" readonly></td>
+                <td><input formControlName="itemType" class="form-control border-0" readonly/></td>
+                <td><input formControlName="pallet" class="form-control border-0" readonly/></td>
+                <td><input formControlName="patchExpiryNumber" class="form-control border-0" readonly/></td>
+                <td><input formControlName="onhand" type="number" class="form-control border-0" readonly/></td>
+                <!-- <td>
+                  <input formControlName="inputQuantity" type="number" class="form-control"/>
+                  <div *ngIf="group.get('inputQuantity')?.hasError('quantityExceeds') && group.get('inputQuantity')?.touched" class="text-danger">
+                    Quantity exceeds available stock
+                  </div>
+                </td> -->
+                <td><input formControlName="atp" type="number" class="form-control border-0" readonly/></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-success" [disabled]="!itemFormFILO.valid">Submit And Print</button>
+    </form>
+  </p-tabPanel>
+</p-tabView>

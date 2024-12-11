@@ -1,0 +1,223 @@
+<!-- Start Breadcrumbs -->
+<app-breadcrumbs *ngIf="permissionIsLoadded && internalPermission?.includes(permissionData.View)" [title]="pagesname.GatesHandler" [breadcrumbItems]="breadCrumbItems"></app-breadcrumbs>
+<!-- End Breadcrumbs -->
+<!-- <div class="row" *ngIf="permissionIsLoadded && internalPermission?.includes(permissionData.View)">
+  <div class="col-12">
+      <div class="card">
+          <div class="card-body p-4">
+            <form [formGroup]="yardHandlingForm" class="form-group row" (ngSubmit)="submitYardDetails(yardHandlingForm)">
+              <div class="mb-3 col">
+                <label for="TransactionsType" class="form-label">Type</label>
+                <select id="TransactionsType" formControlName="TransactionsType" class="form-control">
+                  <option [value]="null">--Select Type--</option>
+                  <option *ngFor="let option of transactionsTypeOptions" [value]="option.id">{{ option.name }}</option>
+                </select>
+              </div>
+              <div class="mb-3 col">
+                <label for="SerialNumber" class="form-label">Serial</label>
+                <input type="text" id="SerialNumber" formControlName="SerialNumber" class="form-control" />
+              </div>
+              <div class="mb-3 col">
+                <label for="WarehouseId" class="form-label">Warehouse</label>
+                <select id="WarehouseId" formControlName="WarehouseId" class="form-control">
+                  <option *ngFor="let warehouse of warehouseOptions" [value]="warehouse.id">{{ warehouse.name }}</option>
+                </select>
+              </div>
+            
+              <div class="mb-3 col">
+                <label for="CompanyId" class="form-label">Company</label>
+                <select id="CompanyId" formControlName="CompanyId" class="form-control">
+                  <option [value]="null">--Select Company--</option>
+                  <option *ngFor="let company of companyOptions" [value]="company.id">{{ company.name }}</option>
+                </select>
+              </div>
+            
+              <div class="mb-3 col">
+                <label for="ItemId" class="form-label">Item</label>
+                <select id="ItemId" formControlName="ItemId" class="form-control">
+                  <option [value]="null">--Select Item--</option>
+
+                  <option *ngFor="let item of itemOptions" [value]="item.id">{{ item.itemCode }}</option>
+                </select>
+              </div>
+              <input type="hidden" id="CategoryId" formControlName="CategoryId" class="form-control" />
+
+              <div class="mb-3 col">
+                <label for="Patch_BookinkRefrence" class="form-label">Reference</label>
+                <input type="text" id="Patch_BookinkRefrence" formControlName="Patch_BookinkRefrence" class="form-control" />
+              </div>
+            
+              <button type="submit" class="btn btn-primary" [disabled]="yardHandlingForm.invalid">Submit</button>
+            </form>
+            
+            
+            </div>
+            </div>
+            </div>
+            </div> -->
+            <div class="row" *ngIf="permissionIsLoadded && internalPermission?.includes(permissionData.View)">
+              <div class="col-12">
+                  <div class="card">
+                      <div class="card-body p-4">
+                        <form [formGroup]="yardHandlingForm" class="form-group row" (ngSubmit)="submitYardDetails(yardHandlingForm)">
+                          <div class="mb-3 col">
+                            <label for="TransactionsType" class="form-label">Type</label>
+                            <select id="TransactionsType" formControlName="TransactionsType" class="form-control" (change)="typechnage()">
+                              <option [value]="null">--Select Type--</option>
+                              <option *ngFor="let option of transactionsTypeOptions" [value]="option.id">{{ option.name }}</option>
+                            </select>
+                          </div>
+                          <div class="mb-3 col">
+                            <label for="SerialNumber" class="form-label">Serial</label>
+                            <input type="text" id="SerialNumber" formControlName="SerialNumber" class="form-control" (input)="serialchnage()"/>
+                          </div>
+                          <div class="mb-3 col">
+                            <label for="WarehouseId" class="form-label">Warehouse</label>
+                            <select id="WarehouseId" formControlName="WarehouseId" class="form-control" [class.read-only-select]="yardHandlingForm.get('TransactionsType')?.value === 2">
+                              <option *ngFor="let warehouse of warehouseOptions" [value]="warehouse.id">{{ warehouse.name }}</option>
+                            </select>
+                          </div>
+                        
+                          <div class="mb-3 col">
+                            <label for="CompanyId" class="form-label">Company</label>
+                            <select id="CompanyId" formControlName="CompanyId" class="form-control"  (change)="companychnage()" [class.read-only-select]="yardHandlingForm.get('TransactionsType')?.value === 2">
+                              <option [value]="null">--Select Company--</option>
+                              <option *ngFor="let company of companyOptions" [value]="company.id">{{ company.name }}</option>
+                            </select>
+                          </div>
+                        
+                          <div class="mb-3 col">
+                            <label for="ItemId" class="form-label">Item</label>
+                            <select id="ItemId" formControlName="ItemId" class="form-control" (change)="itemchnage()" [class.read-only-select]="yardHandlingForm.get('TransactionsType')?.value === 2">
+                              <option [value]="null">--Select Item--</option>
+            
+                              <option *ngFor="let item of itemOptions" [value]="item.id">{{ item.itemCode }}</option>
+                            </select>
+                          </div>
+                          <input type="hidden" id="CategoryId" formControlName="CategoryId" class="form-control" />
+            
+                          <div class="mb-3 col">
+                            <label for="Patch_BookinkRefrence" class="form-label" #refInput>Reference</label>
+                            <input type="text" id="Patch_BookinkRefrence" formControlName="Patch_BookinkRefrence" class="form-control"/>
+                          </div>
+                        
+                          <button type="submit" class="btn btn-primary" [disabled]="yardHandlingForm.invalid">Submit</button>
+                        </form>
+                        
+                        
+                        </div>
+                        </div>
+                        </div>
+                        </div>
+<!-- Start Breadcrumbs -->
+<div class="row" *ngIf="permissionIsLoadded && internalPermission?.includes(permissionData.View)">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body p-0">
+              <div class="p-4">
+                <ng-container  *ngIf="permissionIsLoadded && internalPermission?.includes(permissionData.Add)">
+                  <div class="d-flex align-items-center justify-content-between">
+                    <button (click)="downloadFile()" class="btn btn-primary">Download Template</button>
+                    <dx-file-uploader
+                  [multiple]="true"
+                  uploadMode="useButtons"
+                  uploadUrl="https://js.devexpress.com/Demos/NetCore/FileUploader/Upload"
+                  [allowedFileExtensions]="['.xlsx','xls']"
+                  (onValueChanged)="onFileSelected($event)"
+                  style="width: 400px !important;"
+                >
+                </dx-file-uploader>
+                  </div>
+                </ng-container>
+              <dx-data-grid
+              id="grid"
+              [dataSource]="dataSource"
+              [repaintChangesOnly]="true"
+              [showBorders]="true"
+              [columnAutoWidth]="true"
+              (onExporting)="exportGrid($event)"
+              (onRowValidating)="onRowValidating($event)"
+              (onInitNewRow)="onInitNewRow($event)"
+              (onEditorPreparing)="onEditorPreparing($event)"
+              (onCellValueChanged)="onCellValueChanged($event)"
+            >
+                <dxo-scrolling mode="standard" [useNative]="false"></dxo-scrolling>
+                <dxo-editing
+                  mode="cell"
+                  [allowAdding]="(permissionIsLoadded && internalPermission?.includes(permissionData.Add) ?? false)"
+                  [allowUpdating]="(permissionIsLoadded && internalPermission?.includes(permissionData.Update) ?? false)"
+                >
+                </dxo-editing>
+                <dxo-selection mode="multiple"></dxo-selection>
+                <dxi-column dataField="transactionsType" caption="Type">
+                  <dxo-lookup
+                    [dataSource]="transactionTypeData"
+                    valueExpr="id"
+                    displayExpr="name"
+                  ></dxo-lookup>
+                  <dxi-validation-rule type="required" message="transaction Type is required"></dxi-validation-rule>
+                </dxi-column>
+                <dxi-column dataField="serialNumber" caption="Serial">
+                  <dxi-validation-rule type="required" message="Serial is required"></dxi-validation-rule>
+                </dxi-column>
+                <!-- <dxi-column dataField="id"></dxi-column> -->
+                <dxi-column dataField="warehouseId" caption="Warehouse">
+                    <dxo-lookup
+                      [dataSource]="warehouseData"
+                      valueExpr="id"
+                      displayExpr="name"
+                    ></dxo-lookup>
+                    <dxi-validation-rule type="required" message="Warehouse is required"></dxi-validation-rule>
+                  </dxi-column>
+                  <dxi-column dataField="companyId" caption="Company">
+                    <dxo-lookup
+                      [dataSource]="companyData"
+                      valueExpr="id"
+                      displayExpr="name"
+                    ></dxo-lookup>
+                    <dxi-validation-rule type="required" message="Company is required"></dxi-validation-rule>
+                  </dxi-column>
+                <dxi-column dataField="patch_BookinkRefrence" caption="Booking Refernce Number">
+                  <dxi-validation-rule type="required" message="Booking Reference is required"></dxi-validation-rule>
+                </dxi-column>
+                  <dxi-column dataField="itemId" caption="Code">
+                    <dxo-lookup
+                      [dataSource]="itemCodeData"
+                      valueExpr="id"
+                      displayExpr="itemCode"
+                    ></dxo-lookup>
+                    <dxi-validation-rule type="required" message="Item Code is required"></dxi-validation-rule>
+                  </dxi-column>
+                  <dxi-column dataField="categoryId" [visible]="false" [calculateCellValue]='calculateCellCategoryValue'>
+                  </dxi-column>
+                  <dxi-column dataField="orignalDatetime" caption="Original Date" dataType="datetime" [allowEditing]="false">
+                  </dxi-column>
+                <!-- <dxi-column dataField="status" dataType="boolean"></dxi-column> -->
+                <dxo-paging [pageSize]="10"> </dxo-paging>
+                <dxo-pager
+                  [visible]="true"
+                  
+                  [showPageSizeSelector]="showPageSizeSelector"
+                  [showInfo]="showInfo"
+                  [showNavigationButtons]="showNavButtons"
+                >
+                </dxo-pager>
+                <dxo-export 
+                [enabled]="true"
+                [formats]="['xlsx', 'pdf']"
+                [allowExportSelectedData]="true"
+                ></dxo-export>
+                <dxo-filter-row [visible]="true"></dxo-filter-row>
+                <dxo-search-panel [visible]="true"></dxo-search-panel>
+                <dxo-group-panel [visible]="true"></dxo-group-panel>
+              </dx-data-grid>
+              </div>
+            </div> <!-- end card-body-->
+        </div>
+    </div> <!-- end col-->
+</div> 
+<!-- End Breadcrumbs -->
+
+<div *ngIf="permissionIsLoadded && !internalPermission?.includes(permissionData.View)" class="alert alert-danger">
+  You Don't Have Permission For This Page Please Contact With Your Manager
+  </div>

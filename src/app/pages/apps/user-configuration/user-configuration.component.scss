@@ -1,0 +1,118 @@
+.icon-lg {
+  font-size: 24px;
+}
+
+.d-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.floating-save-btn {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 1000;
+  height: 50px;
+  width: 50px;
+  background-color: #405189;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.floating-save-btn:hover {
+  background-color: #0056b3;
+}
+
+.table-scrollable {
+  width: 100%;
+  overflow-x: auto; /* Enable horizontal scroll for small screens */
+  white-space: nowrap; /* Prevent wrapping in small screens */
+}
+
+.table-scrollable tbody {
+  display: block;
+  height: 400px; /* Set the desired height */
+  overflow-y: auto;
+}
+
+.table-scrollable thead, .table-scrollable tbody tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed; /* Fixes the width of the table */
+}
+
+.table-scrollable thead {
+  width: calc(100% - 17px); /* To account for the scrollbar */
+}
+
+/* Ensure the first column takes enough width */
+.table-scrollable th:first-child, .table-scrollable td:first-child {
+  white-space: nowrap;
+  width: 220px; /* Adjust the width as needed */
+}
+
+@media (max-width: 768px) {
+  .table-scrollable {
+    overflow-x: auto; /* Allow horizontal scrolling */
+    -webkit-overflow-scrolling: touch; /* Enable smooth scrolling */
+  }
+
+  .table-scrollable thead, .table-scrollable tbody tr {
+    display: block;
+    width: 100%;
+  }
+
+  .table-scrollable tbody {
+    height: auto; /* Adjust the height dynamically for mobile */
+  }
+
+  .table-scrollable tr {
+    display: block; /* Stack table rows vertically for mobile */
+    margin-bottom: 1rem;
+  }
+
+  .table-scrollable th, .table-scrollable td {
+    display: block;
+    width: 100%;
+    text-align: left;
+  }
+
+  .table-scrollable td:before {
+    content: attr(data-label); /* Use data-label for mobile headers */
+    float: left;
+    font-weight: bold;
+    text-transform: capitalize;
+  }
+
+  .table-scrollable th:first-child, .table-scrollable td:first-child {
+    width: 100%; /* Allow the first column to take full width on mobile */
+  }
+
+  /* Adjust the floating save button for mobile */
+  .floating-save-btn {
+    bottom: 10px;
+    right: 10px;
+    height: 50px;
+    width: 50px;
+    font-size: 22px;
+  }
+}
+::ng-deep ng-select .ng-select-container {
+  padding-left: 10px; /* Add padding inside the select */
+  height: 40px; /* Adjust height if needed */
+}
+
+::ng-deep ng-select .ng-select-container .ng-value {
+  padding-left: 8px; /* Padding between the border and the selected value */
+}
+
+::ng-deep ng-select .ng-select-container .ng-input {
+  padding-left: 10px; /* Padding for the input inside the select */
+}

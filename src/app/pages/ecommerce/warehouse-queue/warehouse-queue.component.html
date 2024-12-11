@@ -1,0 +1,474 @@
+<!-- Start Breadcrumbs -->
+<app-breadcrumbs
+  *ngIf="permissionIsLoadded && internalPermission?.includes(permissionData.View)"
+  [title]="pagesname.WarehouseQueue"
+  [breadcrumbItems]="breadCrumbItems"
+></app-breadcrumbs>
+<!-- End Breadcrumbs -->
+
+<div class="row" *ngIf="permissionIsLoadded && internalPermission?.includes(permissionData.View)">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">
+        <form [formGroup]="warehouseQueueForm" (ngSubmit)="CreateWhQueue()">
+          <div class="row">
+            <div class="col mb-3">
+              <label for="WhqueueWarehouseId">Warehouse</label>
+              <select
+                formControlName="WhqueueWarehouseId"
+                class="form-select"
+                (change)="onWarehouseSelected()"
+              >
+                <!-- Populate with actual warehouse options -->
+                <option
+                  *ngFor="let option of shiftsUserDetails"
+                  [value]="option.warehouseId"
+                >
+                  {{ option.warehouseName }}
+                </option>
+              </select>
+            </div>
+
+            <div class="col mb-3">
+              <label for="WhqueueCompanyId">Company</label>
+              <select formControlName="WhqueueCompanyId" class="form-select">
+                <!-- Populate with actual company options -->
+                <option
+                  *ngFor="let company of companyLookup"
+                  [value]="company.id"
+                >
+                  {{ company.name }}
+                </option>
+              </select>
+            </div>
+
+            <div class="col mb-3">
+              <label for="WhqueueTransactionTypeId">Transaction Type</label>
+              <select
+                formControlName="WhqueueTransactionTypeId"
+                class="form-select"
+                (change)="onTransactionTypeSelected()"
+                [(ngModel)]="transactionTypeValue"
+              >
+                <!-- Populate with actual transaction type options -->
+                <option [value]="null" selected>--Select Type--</option>
+                <option
+                  *ngFor="let transactionType of transactionTypeLookup"
+                  [value]="transactionType.id"
+                >
+                  {{ transactionType.name }}
+                </option>
+              </select>
+            </div>
+
+            <div class="col mb-3" *ngIf="TransactionTypeIsIn">
+              <label for="WhqueueVendorId">
+                Vendor <i class="fas fa-plus ms-2" (click)="showDialog()"></i>
+              </label>
+              <select formControlName="WhqueueVendorId" class="form-select">
+                <option [value]="null" selected>--Select Vendor--</option>
+                <option *ngFor="let vendor of vendorLookup" [value]="vendor.id">
+                  {{ vendor.name }}
+                </option>
+              </select>
+            </div>
+            <div class="col mb-3">
+              <label for="numberOfTrucks">Number of Trucks</label>
+              <input
+                class="form-control"
+                type="number"
+                formControlName="numberOfTrucks"
+                autocomplete="off"
+                (input)="onTrucksNumberChange()"
+              />
+              <div
+                *ngIf="
+                  numberOfTrucks?.errors &&
+                  (numberOfTrucks?.dirty || numberOfTrucks?.touched)
+                "
+              >
+                <small
+                  class="text-danger"
+                  *ngIf="numberOfTrucks?.errors?.['required']"
+                >
+                  Number of trucks is required.
+                </small>
+                <small
+                  class="text-danger"
+                  *ngIf="numberOfTrucks?.errors?.['min']"
+                >
+                  Please enter a value greater than 0.
+                </small>
+              </div>
+            </div>
+            <div class="col-12 row mt-3">
+              <div formArrayName="WhqueueTruckTypeIds" class="col mb-3">
+                <div
+                  *ngFor="
+                    let truckType of WhqueueTruckTypes.controls;
+                    let i = index
+                  "
+                  class="mb-3"
+                >
+                  <label for="truckType-{{ i }}">Truck {{ i + 1 }}</label>
+                  <select [formControlName]="i" class="form-select">
+                    <option
+                      *ngFor="let truckTypeOption of truckTypeLookup"
+                      [value]="truckTypeOption.id"
+                    >
+                      {{ truckTypeOption.name }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div formArrayName="WhqueueDriverNames" class="col mb-3">
+                <div *ngFor="let driverName of WhqueueDriverNames.controls; let i = index" class="mb-3">
+                  <label for="driverName-{{ i }}">Driver Name {{ i + 1 }}</label>
+                  <input type="text" [formControlName]="i" class="form-control" placeholder="Driver Name" autocomplete="off"/>
+                </div>
+              </div>
+              <div formArrayName="WhqueueDriverIds" class="col mb-3">
+                <div *ngFor="let driverId of WhqueueDriverIds.controls; let i = index" class="mb-3">
+                  <label for="driverId-{{ i }}">Driver ID {{ i + 1 }}</label>
+                  <input type="text" [formControlName]="i" class="form-control" placeholder="Driver ID" (input)="onDriverIdInput($event, i, 'WhqueueDriverIds')" autocomplete="off"/>
+                  
+                  <div *ngIf="driverId.invalid && (driverId.dirty || driverId.touched)">
+                    <small class="text-danger" *ngIf="driverId.errors?.['pattern']">
+                      Driver ID must be exactly 14 digits.
+                    </small>
+                  </div>
+                </div>
+                <div *ngIf="WhqueueDriverIds.errors?.['notUnique'] && (WhqueueDriverIds.dirty || WhqueueDriverIds.touched)">
+                  <small class="text-danger">must be unique.</small>
+                </div>
+              </div>
+              
+              <div formArrayName="WhqueueDriverPhoneNumbers" class="col mb-3">
+                <div *ngFor="let driverPhoneNumber of WhqueueDriverPhoneNumbers.controls; let i = index" class="mb-3">
+                  <label for="driverPhoneNumber-{{ i }}">Driver Phone {{ i + 1 }}</label>
+                  <input type="text" [formControlName]="i" class="form-control" placeholder="Driver Phone" (input)="onDriverPhoneNumberInput($event, i, 'WhqueueDriverPhoneNumbers')" autocomplete="off"/>
+                  
+                  <div *ngIf="driverPhoneNumber.invalid && (driverPhoneNumber.dirty || driverPhoneNumber.touched)">
+                    <small class="text-danger" *ngIf="driverPhoneNumber.errors?.['pattern']">
+                      Enter a valid Number.
+                    </small>
+                  </div>
+                </div>
+                <div *ngIf="WhqueueDriverPhoneNumbers.errors?.['notUnique'] && (WhqueueDriverPhoneNumbers.dirty || WhqueueDriverPhoneNumbers.touched)">
+                  <small class="text-danger">must be unique.</small>
+                </div>
+              </div>
+              <div formArrayName="WhqueueContainerNumbers" class="col mb-3">
+                <div
+                  *ngFor="
+                    let containerNumber of WhqueueContainerNumbers.controls;
+                    let i = index
+                  "
+                  class="mb-3"
+                >
+                  <div *ngIf="isTruckTypeContainer(i)">
+                    <label for="containerNumber-{{ i }}"
+                      >Container {{ i + 1 }}</label
+                    >
+                    <input
+                      type="text"
+                      [formControlName]="i"
+                      class="form-control"
+                      autocomplete="off"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div formArrayName="WhqueuePalletNumbers" class="col-4 mb-3">
+                <div *ngFor="let palletNumberGroup of WhqueuePalletNumbers.controls; let i = index" [formGroupName]="i" class="mb-3">
+                  <label for="palletNumber-{{ i }}">Plate Number {{ i + 1 }}</label>
+                  <div class="row">
+                    <div class="col-4">
+                      <input
+                        type="text"
+                        formControlName="number"
+                        class="form-control text-center"
+                        maxlength="4"
+                        placeholder="1234"
+                        autocomplete="off"
+                        (input)="onNumberInput($event, i, 'number')" 
+                      />
+                    </div>
+                    <div class="col">
+                      <input
+                        type="text"
+                        formControlName="letter1"
+                        class="form-control text-center p-2"
+                        maxlength="1"
+                        placeholder="أ"
+                        autocomplete="off"
+                        (input)="onArabicInput($event, i, 'letter1')"  
+                      />
+                    </div>
+                    <div class="col">
+                      <input
+                        type="text"
+                        formControlName="letter2"
+                        class="form-control text-center p-2"
+                        maxlength="1"
+                        placeholder="ب"
+                        autocomplete="off"
+                        (input)="onArabicInput($event, i, 'letter2')" 
+                      />
+                    </div>
+                    <div class="col">
+                      <input
+                        type="text"
+                        formControlName="letter3"
+                        class="form-control text-center p-2"
+                        maxlength="1"
+                        placeholder="ت"
+                        autocomplete="off"
+                        (input)="onArabicInput($event, i, 'letter3')"  
+                      />
+                    </div>
+                  </div>
+                  <!-- Error message -->
+                  <!-- <small *ngIf="palletNumberGroup.invalid && palletNumberGroup.touched" class="text-danger">
+                    Please ensure all fields contain valid Arabic letters or numbers.
+                  </small> -->
+                </div>
+                
+                <div *ngIf="WhqueuePalletNumbers.errors?.['notUnique']">
+                  <p class="text-danger">Plate Numbers must be unique.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- <div class="col-12 row mb-3">
+                            <div formArrayName="WhqueueTruckTypeIds" class="col-4 mb-3">
+                                <div *ngFor="let truckType of WhqueueTruckTypes.controls; let i = index">
+                                  <label for="truckType-{{i}}">Truck Type {{i + 1}}</label>
+                                  <select [formControlName]="i" class="form-select">
+                                    <option *ngFor="let truckTypeOption of truckTypeLookup" [value]="truckTypeOption.id">{{ truckTypeOption.name }}</option>
+                                  </select>
+                                </div>
+                              </div>
+                            
+                              <div formArrayName="WhqueuePalletNumbers" class="col-4 mb-3">
+                                <div *ngFor="let palletNumber of WhqueuePalletNumbers.controls; let i = index">
+                                  <label for="palletNumber-{{i}}">Car Plate Number {{i + 1}}</label>
+                                  <input type="text" [formControlName]="i" class="form-control"/>
+                                </div>
+                              </div>
+                              <div formArrayName="WhqueueContainerNumbers" class="col-4 mb-3">
+                                <div *ngFor="let containerNumber of WhqueueContainerNumbers.controls; let i = index">
+                                  <div  *ngIf="WhqueueTruckTypes.controls[i].value === '5'">
+                                    <label for="containerNumber-{{i}}">Container Number {{i + 1}}</label>
+                                    <input type="text" [formControlName]="i" class="form-control"/>
+                                  </div>
+                                </div>
+                              </div>
+                          </div> -->
+          </div>
+
+          <button
+            type="submit"
+            [disabled]="!warehouseQueueForm.valid"
+            class="btn btn-success"
+          >
+            Create
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal For Add Vendors -->
+<p-dialog
+  header="Vendors"
+  [modal]="true"
+  [(visible)]="visible"
+  [style]="{ width: '25rem' }"
+>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <span class="p-text-secondary block">Add Your Vendors</span>
+    <i
+      class="fas fa-plus"
+      (click)="addVendorInput()"
+      style="cursor: pointer"
+      style="cursor: pointer"
+    ></i>
+    <!-- Icon to add new input -->
+  </div>
+
+  <form [formGroup]="vendorForm" (ngSubmit)="saveVendors()">
+    <div formArrayName="vendors">
+      <div
+        *ngFor="let vendor of vendors.controls; let i = index"
+        [formGroupName]="i"
+        class="mb-3"
+      >
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <label for="vendorName-{{ i }}">Vendor Name {{ i + 1 }}</label>
+          <i
+            class="fas fa-trash"
+            (click)="removeVendorInput(i)"
+            style="cursor: pointer; color: red"
+          ></i>
+          <!-- Remove icon -->
+        </div>
+        <input
+          pInputText
+          id="vendorName-{{ i }}"
+          formControlName="vendorName"
+          class="form-control"
+        />
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-end gap-2">
+      <button class="btn btn-danger" (click)="cancel()">Cancel</button>
+      <button
+        class="btn btn-success"
+        type="submit"
+        [disabled]="!vendorForm.valid"
+      >
+        Save
+      </button>
+    </div>
+  </form>
+</p-dialog>
+
+<div class="row" *ngIf="permissionIsLoadded && internalPermission?.includes(permissionData.View)">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">
+        <dx-data-grid
+          id="grid"
+          [dataSource]="dataSource"
+          [repaintChangesOnly]="true"
+          [showBorders]="true"
+          [columnAutoWidth]="true"
+          (onExporting)="exportGrid($event)"
+        >
+          <dxo-scrolling mode="standard" [useNative]="false"></dxo-scrolling>
+          <dxo-editing
+            mode="cell"
+            [allowUpdating]="
+              permissionIsLoadded && internalPermission?.includes(permissionData.Update) ?? false
+            "
+          >
+          </dxo-editing>
+          <dxo-selection mode="multiple"></dxo-selection>
+
+          <dxi-column type="buttons" [width]="110">
+            <dxi-button
+              hint="Genetrate Barcode"
+              icon="print"
+              [onClick]="onCloneIconClick"
+            ></dxi-button>
+          </dxi-column>
+          <dxi-column
+            dataField="whqueueWarehouseId"
+            caption="Warehouse"
+            [allowEditing]="false"
+          >
+            <dxo-lookup
+              [dataSource]="warehouseData"
+              valueExpr="id"
+              displayExpr="name"
+            ></dxo-lookup>
+          </dxi-column>
+          <dxi-column
+            dataField="whqueueCompanyId"
+            caption="Company"
+            [allowEditing]="false"
+          >
+            <dxo-lookup
+              [dataSource]="companyData"
+              valueExpr="id"
+              displayExpr="name"
+            ></dxo-lookup>
+          </dxi-column>
+          <dxi-column
+            dataField="whqueueVendorId"
+            caption="Vendor"
+            [allowEditing]="false"
+          >
+            <dxo-lookup
+              [dataSource]="vendorData"
+              valueExpr="id"
+              displayExpr="name"
+            ></dxo-lookup>
+          </dxi-column>
+          <dxi-column
+            dataField="whqueueTransactionTypeId"
+            caption="Type"
+            [allowEditing]="false"
+          >
+            <dxo-lookup
+              [dataSource]="transactionTypeData"
+              valueExpr="id"
+              displayExpr="name"
+            ></dxo-lookup>
+          </dxi-column>
+          <dxi-column
+            dataField="whqueueTruckTypeId"
+            caption="Truck Type"
+            [allowEditing]="false"
+          >
+            <dxo-lookup
+              [dataSource]="truckTypeData"
+              valueExpr="id"
+              displayExpr="name"
+            ></dxo-lookup>
+          </dxi-column>
+          <dxi-column
+            dataField="whqueueStatusId"
+            caption="Status"
+            [allowEditing]="false"
+          >
+            <dxo-lookup
+              [dataSource]="statusData"
+              valueExpr="id"
+              displayExpr="name"
+            ></dxo-lookup>
+          </dxi-column>
+          <dxi-column
+            dataField="whqueuePalletNumber"
+            caption="Car Pallet"
+            [allowEditing]="false"
+          ></dxi-column>
+          <dxi-column
+            dataField="whqueueContainerNumber"
+            caption="Container Number"
+            [allowEditing]="false"
+          ></dxi-column>
+          <dxi-column
+            dataField="whqueueIsActive"
+            caption="Is Active"
+            dataType="boolean"
+          ></dxi-column>
+          <dxo-paging [pageSize]="10"> </dxo-paging>
+          <dxo-pager
+            [visible]="true"
+            [showPageSizeSelector]="showPageSizeSelector"
+            [showInfo]="showInfo"
+            [showNavigationButtons]="showNavButtons"
+          >
+          </dxo-pager>
+          <dxo-export
+            [enabled]="true"
+            [formats]="['xlsx', 'pdf']"
+            [allowExportSelectedData]="true"
+          >
+          </dxo-export>
+          <dxo-filter-row [visible]="true"></dxo-filter-row>
+          <dxo-search-panel [visible]="true"></dxo-search-panel>
+          <dxo-group-panel [visible]="true"></dxo-group-panel>
+        </dx-data-grid>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="permissionIsLoadded && !internalPermission?.includes(permissionData.View)" class="alert alert-danger">
+  You Don't Have Permission For This Page Please Contact With Your Manager
+  </div>

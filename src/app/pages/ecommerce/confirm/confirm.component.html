@@ -1,0 +1,280 @@
+<app-breadcrumbs
+  *ngIf="
+    permissionIsLoadded && internalPermission?.includes(permissionData.View)
+  "
+  title="Yard Confirmation"
+  [breadcrumbItems]="breadCrumbItems"
+></app-breadcrumbs>
+<div class="row mt-2" *ngIf="permissionIsLoadded && internalPermission?.includes(permissionData.View)">
+  <div class="col-12">
+      <div class="card">
+          <div class="card-body p-0">
+            <div class="p-4">
+              <ng-container  *ngIf="permissionIsLoadded && internalPermission?.includes(permissionData.Add)">
+                <div class="d-flex align-items-center justify-content-between">
+                  <!-- <button (click)="downloadFile()" class="btn btn-primary">Download Template</button> -->
+                  <!-- <dx-file-uploader
+                [multiple]="true"
+                uploadMode="useButtons"
+                uploadUrl="https://js.devexpress.com/Demos/NetCore/FileUploader/Upload"
+                [allowedFileExtensions]="['.xlsx','xls']"
+                (onValueChanged)="onFileSelected($event)"
+                style="width: 400px !important;"
+              >
+              </dx-file-uploader> -->
+                </div>
+              </ng-container>
+              <dx-data-grid
+              id="grid"
+              [dataSource]="dataSource"
+              [repaintChangesOnly]="true"
+              [showBorders]="true"
+              [allowColumnReordering]="true"
+              [columnAutoWidth]="true"
+              (onExporting)="exportGrid($event)"
+            >
+              <dxo-scrolling mode="standard" [useNative]="false"></dxo-scrolling>
+              <dxo-editing
+                mode="cell"
+                [allowAdding]="false"
+                [allowUpdating]="false"
+              ></dxo-editing>
+              
+              <!-- Fixed Actions Column at the Start -->
+              <dxi-column type="buttons" [width]="150" caption="Actions" [fixed]="true">
+                <!-- Accept Button -->
+                <dxi-button
+                  hint="Accept"
+                  text="Confirm"
+                  [onClick]="onAcceptClick"
+                ></dxi-button>
+              </dxi-column>
+            
+              <dxi-column dataField="transactionsType" caption="Move">
+                <dxi-validation-rule type="required" message="Serial is required"></dxi-validation-rule>
+              </dxi-column>
+              <dxi-column dataField="serialNumber" caption="Conatiner">
+                <dxi-validation-rule type="required" message="Serial is required"></dxi-validation-rule>
+              </dxi-column>
+              <dxi-column dataField="warehouseName" caption="Warehouse">
+                <dxi-validation-rule type="required" message="Serial is required"></dxi-validation-rule>
+              </dxi-column>
+              <dxi-column dataField="companyName" caption="Company">
+                <dxi-validation-rule type="required" message="Serial is required"></dxi-validation-rule>
+              </dxi-column>
+              <dxi-column dataField="itemCode" caption="Type/Size">
+                <dxi-validation-rule type="required" message="Serial is required"></dxi-validation-rule>
+              </dxi-column>
+              <dxi-column dataField="patch_BookinkRefrence" caption="Booking">
+                <dxi-validation-rule type="required" message="Booking Reference is required"></dxi-validation-rule>
+              </dxi-column>
+                <dxi-column dataField="categoryId" [visible]="false">
+                </dxi-column>
+                <dxi-column dataField="freeTime" caption="FreeTime" dataType="datetime" [allowEditing]="false">
+                </dxi-column>
+              <dxo-paging [pageSize]="10"></dxo-paging>
+              <dxo-pager
+                [visible]="true"
+                [showPageSizeSelector]="showPageSizeSelector"
+                [showInfo]="showInfo"
+                [showNavigationButtons]="showNavButtons"
+              ></dxo-pager>
+              <dxo-export [enabled]="true" [formats]="['xlsx', 'pdf']" [allowExportSelectedData]="true"></dxo-export>
+              <dxo-filter-row [visible]="true"></dxo-filter-row>
+              <dxo-search-panel [visible]="true"></dxo-search-panel>
+              <dxo-group-panel [visible]="true"></dxo-group-panel>
+            </dx-data-grid>
+            
+            </div>
+          </div> <!-- end card-body-->
+      </div>
+  </div> <!-- end col-->
+</div> 
+
+
+<!-- <div
+  *ngIf="showModal"
+  class="modal fade show d-block"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="confirmModalLabel"
+  aria-hidden="true"
+  style="background-color: rgba(0, 0, 0, 0.5);"
+>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmModalLabel">Confirm</h5>
+        <button type="button" class="close" (click)="closeModal()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form #confirmForm="ngForm">
+          <div class="form-group">
+            <label for="transactionId">Transaction ID</label>
+            <input type="text" class="form-control" id="transactionId" [(ngModel)]="transactionId" name="transactionId" required />
+          </div>
+          <div class="form-group">
+            <label for="confirmationNote">Confirmation Note</label>
+            <textarea class="form-control" id="confirmationNote" [(ngModel)]="confirmationNote" name="confirmationNote" required></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeModal()">Close</button>
+        <button type="button" class="btn btn-primary" (click)="submitConfirmation()">Submit</button>
+      </div>
+    </div>
+  </div>
+</div> -->
+<div *ngIf="showModal" class="modal fade show d-block" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel" aria-hidden="true" style="background-color: rgba(0, 0, 0, 0.5);">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="confirmModalLabel">Confirm Transaction</h5>
+          <button type="button" class="close" (click)="closeModal()" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form #confirmForm="ngForm">
+            <div class="row mb-2">
+              <!-- Driver Name -->
+              <div class="form-group col-md-6">
+                <label for="driverName">Driver Name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="driverName"
+                  [(ngModel)]="driverName"
+                  name="driverName"
+                  required
+                  #driverNameInput="ngModel"
+                />
+                <div *ngIf="driverNameInput.touched && !driverNameInput.valid" class="text-danger">
+                  Driver name is required
+                </div>
+              </div>
+          
+              <!-- Vendor -->
+              <div class="form-group col-md-6">
+                <label for="vendor">Vendor</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="vendor"
+                  [(ngModel)]="vendor"
+                  name="vendor"
+                  required
+                  #vendorInput="ngModel"
+                />
+                <div *ngIf="vendorInput.touched && !vendorInput.valid" class="text-danger">
+                  Vendor selection is required
+                </div>
+              </div>
+            </div>
+          
+            <!-- Plate Car Inputs in a New Row -->
+            <div class="form-group">
+              <label for="plateCar">Plate Car</label>
+              <div class="row">
+                <!-- First Input: 1-4 Digit Number (6 Columns) -->
+                <div class="col-md-6 mb-2">
+                  <input
+                    type="text"
+                    class="form-control text-center"
+                    [(ngModel)]="plateCar[0]"
+                    name="plateCar0"
+                    maxlength="4"
+                    required
+                    #plateCar0Input="ngModel"
+                    placeholder="1234"
+                    (keypress)="allowOnlyNumbers($event)"
+                  />
+                  <div *ngIf="plateCar0Input.touched && (!plateCar0Input.valid || !isValidNumber(plateCar[0]))" class="text-danger mt-1">
+                    Please enter a number between 1 and 9999.
+                  </div>
+                </div>
+            
+                <!-- Second Input: One Arabic Character (2 Columns) -->
+                <div class="col-md-2 mb-2">
+                  <input
+                    type="text"
+                    class="form-control text-center"
+                    [(ngModel)]="plateCar[1]"
+                    name="plateCar1"
+                    maxlength="1"
+                    pattern="^[\u0600-\u06FF]$"
+                    required
+                    #plateCar1Input="ngModel"
+                    placeholder="ت"
+                    (keypress)="allowOnlyArabicCharacters($event)"
+                  />
+                  <div *ngIf="plateCar1Input.touched && !plateCar1Input.valid" class="text-danger mt-1">
+                    Arabic character required
+                  </div>
+                </div>
+            
+                <!-- Third Input: One Arabic Character (2 Columns) -->
+                <div class="col-md-2 mb-2">
+                  <input
+                    type="text"
+                    class="form-control text-center"
+                    [(ngModel)]="plateCar[2]"
+                    name="plateCar2"
+                    maxlength="1"
+                    pattern="^[\u0600-\u06FF]$"
+                    required
+                    #plateCar2Input="ngModel"
+                    placeholder="ب"
+                    (keypress)="allowOnlyArabicCharacters($event)"
+                  />
+                  <div *ngIf="plateCar2Input.touched && !plateCar2Input.valid" class="text-danger mt-1">
+                    Arabic character required
+                  </div>
+                </div>
+            
+                <!-- Fourth Input: One Arabic Character (2 Columns) -->
+                <div class="col-md-2 mb-2">
+                  <input
+                    type="text"
+                    class="form-control"
+                    [(ngModel)]="plateCar[3]"
+                    name="plateCar3"
+                    maxlength="1"
+                    pattern="^[\u0600-\u06FF]$"
+                    required
+                    #plateCar3Input="ngModel"
+                    placeholder="أ"
+                    (keypress)="allowOnlyArabicCharacters($event)"
+                  />
+                  <div *ngIf="plateCar3Input.touched && !plateCar3Input.valid" class="text-danger mt-1">
+                    Arabic character required
+                  </div>
+                </div>
+              </div>
+            
+              <!-- Overall Error for Plate Car Fields -->
+              <div
+                *ngIf="isPlateCarIncomplete() && arePlateCarInputsTouched(plateCar0Input, plateCar1Input, plateCar2Input, plateCar3Input)"
+                class="text-danger mt-2"
+              >
+                All plate car fields are required
+              </div>
+            </div>
+            
+            
+            
+          </form>
+          
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeModal()">Close</button>
+          <button type="button" class="btn btn-primary" (click)="save()">Save</button>
+          <button type="button" class="btn btn-primary" (click)="saveAndPrint()">Save and Print</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  

@@ -1,0 +1,113 @@
+
+  
+/* General container */
+.page-container {
+    border: 1px solid #000; /* Outer page border */
+    padding: 20px;
+    margin: 0 auto;
+    max-width: 800px; /* Set max width to keep it readable */
+    font-family: Arial, sans-serif;
+    page-break-after: always; /* Ensure page breaks in print if needed */
+  }
+  
+  .container {
+    margin-bottom: 20px; /* Space between sections */
+  }
+  
+  /* Header section with logo, barcode, and QR code */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #000; /* Border below the header */
+  }
+  
+  .logo img {
+    width: 120px; /* Adjust the size of the logo */
+    height: auto;
+  }
+  .date-info div {
+    font-size: 14px;
+    margin: 10px 0;
+    display: flex;
+    justify-content: space-between;
+  }
+  // .barcode svg {
+  //   width: 250px;
+  //   height: auto;
+  // }
+  
+  // .qrcode canvas {
+  //   width: 100px !important;
+  //   height: 100px !important;
+  // }
+  .barcode .barcodeCanvas {
+    width: 250px;
+    height: auto;
+  }
+  
+  .qrcode .qrcodeCanvas {
+    width: 100px !important;
+    height: 100px !important;
+  }
+  /* Horizontal line */
+  .header-separator {
+    border: none;
+    border-top: 2px solid #000;
+    margin: 10px 0;
+  }
+  
+  .section-separator {
+    border: none;
+    border-top: 2px solid #000;
+    margin: 20px 0;
+  }
+  
+  /* Section border and padding */
+  .section {
+    padding: 20px;
+    border: 1px solid #000; /* Border around each section */
+    margin-bottom: 10px;
+  }
+  
+  /* Car Info section styling */
+  .car-info h3, .general-info h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+  
+  .car-info p, .general-info p {
+    font-size: 14px;
+    margin: 5px 0;
+  }
+  
+  /* Additional content styling */
+  .additional-content {
+    font-size: 14px;
+  }
+  
+  /* Additional styling for content */
+  .additional-content {
+    font-size: 14px;
+  }
+  @media print {
+    @page {
+      size: A4;
+      margin: 10mm;
+    }
+  
+    .container {
+      padding: 0;
+      width: 100%;
+    }
+  
+    .logo img {
+      width: 100px; /* Adjust logo size for print */
+    }
+  
+    .barcode .barcodeCanvas, .qrcode .qrcodeCanvas {
+      width: 120px; /* Adjust code sizes for print */
+    }
+  }
+    
